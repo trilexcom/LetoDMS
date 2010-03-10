@@ -1,0 +1,141 @@
+-------------------------------------------------------------------
+              MyDMS 1.6.0 Update from previous Version
+-------------------------------------------------------------------
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+
+1. Requirements
+
+You must have version 1.5.1 of MyDMS installed and configured correctly on
+your system.
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+To upgrade from a version of MyDMS older than 1.5.1, first follow the
+instructions found in the document "update-1.5.0.txt".
+
+
+2. Updating the Database
+
+IMPORTANT: Backup your database before commencing any upgrade. (Can I make
+this any plainer?)
+
+Run the script "update_tables-1.6.0.sql" from within your MySQL client, ensuring
+that the correct datbase has been created.
+
+
+3. Creating the Document Status Index
+
+MyDMS uses a new document lifecycle management system that allows users to
+review and approve documents. In order to manage this system, new database
+tables have been introduced to record status, and the main status table needs
+to be pre-populated before any upgraded installation can be used. If you do
+not carry out this step, documents will not appear when browsing folders (the
+files are still in MyDMS but the new report relies on content from
+tblDocumentStatus and tblDocumentStatusLog and will silently fail if these
+tables are incomplete.).
+
+To populate the status tables, open a web browser window and log into MyDMS
+as an Administrative user. Then load the following page:
+
+http://${server}/${mydms root}/op/op.CreateStatusIndex.php
+
+This script will only run if the user has administrative privileges. Even so,
+I recommend that the file is deleted after it has been run and you have
+verified that MyDMS is running correctly. The script need only be run once.
+This page can only be accessed directly -- there are no links within MyDMS
+that take to you this page.
+
+
+4. New Page Layout and Styles
+
+The user interface for MyDMS has been completely revised and updated,
+replacing the original theme engine. MyDMS uses CSS style sheets to manage
+all aspects of page layout, including the colour scheme. Stylesheets and
+supporting files such as images are stored in the styles directory. As of
+1.6.0, the default MyDMS style is called "orange". If you would like to
+create your own styles, make a copy of the "orange" directory and begin
+experimenting.
+
+The user interface has been split into 4 basic container types:
+
+	Global Navigation
+		Contains the name of the site, global navigation bar, quick search box
+		and the name of the current user.
+
+		<!-- Outer element. Displays the background gradient. -->
+		<div class="globalBox">
+			<!-- Displays the top right corner. Can also be used to render a logo. -->
+			<div class="globalTR"></div>
+			<!-- The global navigation bar -->
+			<ul class="globalNav">
+				<li id="first">...</li>
+				<li>...</li>
+			</ul>
+			<!-- The name of the Web site. Also displays the top left corner. -->
+			<div class="siteName">MyDMS</div>
+			<!-- Signature tag -->
+			<div id="signatory">Signed in as Guest (Sign out)</div>
+			<!-- Some unpleasant but necessary CSS house-keeping -->
+			<div style="clear: both; height: 0px;">&nbsp;</div>
+		</div>
+
+	Page Navigation
+		Contains context-sensitive navigation bar (e.g. folder actions, document
+		actions, administrative tools), and normally the complete path to the
+		folder or document being displayed.
+
+		<div class="headingContainer">
+			<ul class="localNav">
+				<li id="first">...</li>
+				<li>...</li>
+			</ul>
+			<div class="mainHeading">Root-Folder</div>
+			<div style="clear: both; height: 0px;"></div>
+		</div>
+
+	Content Heading
+		Usually displayed above a content container to act as a heading for the
+		following content. There may be more than one Content Heading on a given
+		page.
+
+		<div class="contentHeading">Folder Information</div>
+
+  Content Container
+		A top level container for any content to be displayed on the page. The
+		content container is comprised of a set of 6 nested div elements, styled
+		according to taste. In the default theme, "orange", the divs are used to
+		display images that create the rounded-corner effect as well as
+		displaying borders along each edge and a background gradient along the
+		bottom edge of the container.
+
+		It is a complex structure for what might seem to be a trivial effect, but
+		it reflects the complexity inherent in the application of cascading style
+		sheets to HTML.
+
+		The container elements are structured as follows:
+
+		<!-- Outer element. Required to ensure that IE renders correctly. -->
+		<div class="contentContainer">
+
+      <!-- Contains background gradient. Must appear as the bottom layer. -->
+      <div class="content">
+		    <!-- Displays the left edge of the container. -->
+    		<div class="content-l">
+    			<!-- Displays the right edge of the container. -->
+    			<div class="content-r">
+    				<!-- Displays the bottom-right corner of the container. -->
+						<div class="content-br">
+	    				<!-- Displays the bottom-left corner of the container. -->
+							<div class="content-bl">\n";
+								Content is displayed here.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+For details, please examine the style sheet to see how each element is
+managed.

@@ -1,0 +1,161 @@
+	a { text-decoration: none; }
+	a:hover { text-decoration: underline; }
+
+	.titlebar {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		background-color : #000080;
+		font-size : 12pt;
+		color : White;
+		font-weight: bold;
+	}
+
+	.header1 {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 11pt;
+		font-style : italic;
+		color : #000080;
+	}
+
+	.foldertree {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.foldertree_inpath {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+		font-style: italic;
+	}
+	
+	.foldertree_active {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 9pt;
+		color: black;
+		font-weight: bold;
+	}
+	
+	.path {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		background-color : #A0A1CE;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.editfolder {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		background-color : #A0A1CE;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.editdocument {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		background-color : #A0A1CE;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.infos {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.filelist {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+
+	.subfolderlist {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.linklist {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.boxHeader {
+			color : White;
+		        background-color : #000080;
+			font-style : italic;
+			font-size : 11pt;
+			font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	}
+
+	.boxBorder {
+			border: 1pt solid #000080;
+	}
+	
+	.pageHeader {
+			font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+			font-size: 13pt;
+			font-weight: bold;
+			color: #000080;
+	}
+	
+	 .inputDescription {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+		font-style: italic;
+	}
+	
+	.notifylist {
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.inheritAccess
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.accessList
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.defaultAccess
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.msgLocked
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.standardText
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+	
+	.groupMembers
+	{
+		font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size : 10pt;
+		color: black;
+	}
+
+	.hline
+	{
+		background-color : #000080;
+	}

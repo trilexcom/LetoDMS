@@ -1,0 +1,27 @@
+-------------------------------------------------------------------
+              MyDMS 1.6.1 Update from previous Version
+-------------------------------------------------------------------
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+
+1. Requirements
+
+You must have version 1.6.0 of MyDMS installed and configured correctly on
+your system.
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+To upgrade from a version of MyDMS older than 1.6.0, first follow the
+instructions found in the document "update-1.6.0.txt".
+
+
+2. Updating the Database
+
+IMPORTANT: Backup your database before commencing any upgrade. (Can I make
+this any plainer?)
+
+From within the database management interface, run the following SQL statement:
+
+ALTER TABLE `tblUsers` ADD `language` VARCHAR( 32 ) NOT NULL AFTER `email` ,
+ADD `theme` VARCHAR( 32 ) NOT NULL AFTER `language` ;

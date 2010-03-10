@@ -1,0 +1,28 @@
+-------------------------------------------------------------------
+              MyDMS 1.7.1 Update from previous Version
+-------------------------------------------------------------------
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+
+1. Requirements
+
+You must have version 1.7.0 of MyDMS installed and configured
+correctly on your system.
+
+IMPORTANT: Backup your database before commencing any upgrade.
+
+To upgrade from a version of MyDMS older than 1.7.0, first follow the
+instructions found in the document "update-1.7.0.txt".
+
+
+2. Updating the Database
+
+IMPORTANT: Backup your database before commencing any upgrade. (Can I make
+this any plainer?)
+
+From within the database management interface, run the following SQL
+statements:
+
+ALTER TABLE `tblNotify` DROP `id`;
+ALTER TABLE `tblNotify` ADD PRIMARY KEY ( `target` , `targetType` , `userID` , `groupID` ) ;

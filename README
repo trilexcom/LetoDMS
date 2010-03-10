@@ -1,0 +1,37 @@
+Current Version of MyDMS is 1.7.2
+
+Please go to http://dms.markuswestphal.de/support.html and use the MyDMS-Forum
+if you have found any errors or if you wish to suggest new features.
+Alternatively, go to http://sf.net/projects/mydms and use the facilities
+available there to report bugs and request feature enhancements.
+
+
+Files
+-----
+
+- changes.txt         New features in Version 1.7.2.
+
+- install.txt         Installation instruction for MyDMS V. 1.7.2.
+
+- create_tables.sql   SQL-Script that generates tables used by MyDMS.
+
+- update-1.4.4.txt    How to update MyDMS if you are currently running a
+                      version previous to 1.4.4.
+
+- update-1.5.0.txt    How to update MyDMS if you are currently running version 
+                      1.4.4.
+
+- update-1.6.0.txt    How to update MyDMS if you are currently running version 
+                      1.5.0.
+
+- update-1.6.1.txt    How to update MyDMS if you are currently running version 
+                      1.6.0.
+
+- update-1.7.0.txt    How to update MyDMS if you are currently running version
+                      1.6.1.
+
+- update-1.7.1.txt    How to update MyDMS if you are currently running version
+                      1.7.0.
+
+- update-1.7.2.txt    How to update MyDMS if you are currently running version
+                      1.7.1.

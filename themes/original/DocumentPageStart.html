@@ -1,0 +1,67 @@
+
+<!-- 
+    MyDMS. Document Management System
+    Copyright (C) 2002-2005  Markus Westphal
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" height="600">
+  <tr>
+    <td width="5" height="30" rowspan="6">
+      &nbsp;
+    </td>
+    <td width="200" height="30" align="right" class="header1">
+      <?php echo $title1?>
+    </td>
+    <td width="45" height="30" background="<?php echo printImgPath("line_vert.gif")?>">
+      &nbsp;
+    </td>
+    <td height="30" valign="center" class="header1">
+      <?php echo $title2?>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" class="hline" 
+        height="1"><img src="images/dummy.gif" 
+	                height="1" width="1"></td>
+  </tr>
+  <tr>
+    <td rowspan="4" align="center" valign="top" class="subfolderlist">
+      &nbsp;<p>
+      <?php printFolderTree($folder->getPath(), 0, $document, false); ?>
+    </td>
+    <td width="45" height="53" background="<?php echo printImgPath("line_vert.gif")?>">
+      &nbsp;
+    </td>
+    <td height="53" valign="top">
+      <table cellpadding="0" cellspacing="0">
+        <tr>
+          <td><img src="<?php echo printImgPath("path_left.gif")?>" 
+	         width="53" height="19" border="0" alt=""></td>
+          <td class="path">
+	    <?php echo $txtpath?>
+          </td>
+          <td><img src="<?php echo printImgPath("path_right.gif")?>"
+	         width="42" height="19" border="0" alt=""></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td width="45" background="<?php echo printImgPath("line_vert.gif")?>">
+      &nbsp;
+    </td>
+    <td valign="top">
+      <ul>

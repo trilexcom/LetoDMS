@@ -1,0 +1,432 @@
+body {
+	font-size: 76%;
+	font-family: sans-serif;
+}
+.headingContainer {
+	background: rgb(178,188,0) url(img/green-gradient.png) repeat-x bottom; 
+	border: 1px solid rgb(96,128,0);
+	min-height: 64px;
+	position: relative;
+}
+a:link {
+	color: rgb(231,111,0);
+}
+a:visited {
+	color: rgb(231,111,0);
+}
+a:hover {
+	text-decoration: none;
+}
+a:active {
+	color: rgb(231,111,0);
+}
+.headingContainer a:link {
+	color: white;
+}
+.headingContainer a:visited {
+	color: white;
+}
+.contentHeading a:link {
+	color: white;
+}
+.contentHeading a:visited {
+	color: white;
+}
+.globalNav a:link {
+	color: rgb(192,102,0);
+	text-decoration: none;
+}
+.globalNav a:visited {
+	color: rgb(192,102,0);
+	text-decoration: none;
+}
+.globalNav a:hover {
+	color: rgb(192,102,0);
+	text-decoration: underline;
+}
+.globalNav a:active {
+	color: rgb(192,102,0);
+}
+.updateLink {
+	margin-top: 0.5em;
+}
+.mainHeading {
+	padding: 2px 4px 0px 4px;
+	font-size: 1.5em;
+	font-weight: bold;
+	color: white;
+	position: absolute;
+	bottom: 1px;
+}
+.contentHeading {
+	background: rgb(189,190,192) url(img/small-grey-gradient.png) repeat-x bottom; 
+	color: white;
+	padding: 2px 4px 2px 4px;
+	margin-top: 2px;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+.contentSubHeading {
+	font-weight: bold;
+	border-bottom: 1px solid;
+	margin-top: 1em;
+	margin-bottom: 2px;
+}
+.contentSubHeading#first {
+	margin-top: 0;
+	margin-bottom: 2px;
+}
+.siteName {
+	background: url(img/bg-global-tl.png) no-repeat top left;
+	padding: 2px 4px 2px 4px;
+	font-size: 1.2em;
+	font-weight: bold;
+	/*width: 40%; */
+}
+.siteName a:link, .siteName a:visited {
+	color: black;
+	text-decoration: none;
+}
+.siteName a:hover {
+	color: black;
+	text-decoration: underline;
+}
+.siteName a:active {
+	color: rgb(192,102,0);
+}
+.projectNav {
+	width:100%;
+	padding: 2px 4px 2px 4px;
+	background-color: rgb(237,155,79);
+	text-align: center;
+	color: white;
+	border-top: 1px solid rgb(231,111,0);
+	border-left: 1px solid rgb(231,111,0);
+	border-right: 1px solid rgb(231,111,0);
+}
+.globalBox {
+	background: url(img/bg-global.png) repeat-x top left;
+	position: relative;
+}
+.globalBox#noNav {
+	height: 48px;
+}
+.globalBox div#signatory {
+	padding-left: 4px;
+	position: absolute;
+	bottom: 1px;
+}
+.globalNav {
+	padding: 4px;
+	list-style-type: none;
+	margin: 0px;
+	text-align: right;
+	float:right;
+}
+.globalNav li {
+	display: inline;
+	padding: 0px 4px 0px 4px;
+	border-left: 1px solid;
+ }
+.globalNav li.first {
+	border-left: none;
+	padding: 0px 4px 0px 0px;
+}
+.globalBox #search-theme-form {
+	float: right;
+	margin-top: 4px;
+	padding: 0px 4px 0px 4px;
+	border-left: 1px solid;
+}
+ul.primary, ul.primary li, ul.secondary, ul.secondary li {
+  border: 0;
+  background: none;
+  margin: 0;
+  padding: 0;
+}
+ul.primary, ul.secondary {
+	padding: 1px;
+	margin: 0px;
+	text-align: center;
+	list-style-type: none;
+	color: white;
+}
+ul.secondary {
+	margin-bottom: 4px;
+}
+ul.primary li, ul.secondary li {
+	display: inline;
+	padding: 0px 4px 0px 4px;
+	border-left: 1px solid;
+}
+ul.primary li#first, ul.secondary li#first {
+	border-left: none;
+}
+
+ul.primary li {
+	text-transform: uppercase;
+}
+
+ul.primary li a, ul.primary li.active a, ul.primary li a:hover, ul.primary li a:visited,
+ul.secondary li a, ul.secondary li.active a, ul.secondary li a:hover, ul.secondary li a:visited {
+  border: 0;
+  background: none;
+  padding: 0px;
+  margin: 0px;
+  height: auto;
+}
+ul.primary li a:hover, ul.secondary li a:hover {
+	text-decoration: underline;
+}
+ul.primary li.active a, ul.secondary li.active a {
+  font-weight: bold;
+	border-bottom: 2px solid rgb(255,199,38);
+	text-decoration: none;
+}
+
+.contentNav {
+	padding: 0px 0px 2px 0px;
+	margin: 0px;
+	list-style-type: none;
+}
+.contentNav li {
+	display: inline;
+	padding: 0px 4px 0px 4px;
+}
+.contentNav li#first {
+	border-left: none;
+	padding-left: 0px;
+}
+.globalTR {
+	background: url(img/bg-global-tr.png) no-repeat top right;
+	float: right;
+	width: 8px;
+	height: 8px;
+}
+
+.breadcrumb {
+	min-height: 1.2em;
+}
+
+body.sidebar-left .contentContainer {
+	padding: 0px;
+	margin-left: 204px;
+}
+body.sidebar-right .contentContainer {
+	padding: 0px;
+	margin-right: 204px;
+}
+body.sidebar-both .contentContainer {
+	padding: 0px;
+	margin-left: 204px;
+	margin-right: 204px;
+}
+body.sidebar-none .contentContainer {
+	padding: 0px;
+	width: 100%;
+	margin: auto;
+}
+.contentContainerLeft {
+	padding: 0px;
+	margin: 0px;
+	width: 200px;
+	float: left;
+}
+.contentContainerRight {
+	padding: 0px;
+	width: 200px;
+	margin: 0px;
+	float: right;
+}
+.contentContainerFullWide {
+	padding: 0px;
+	width: 100%;
+	margin: auto;
+}
+.contentCentre {
+	background: url(img/content-gradient.png) repeat-x bottom left;
+	background-color: white;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+	padding: 0;
+	border-top: 1px solid #e0e0e0;
+}
+.content-l {
+	background: url(img/edge.png) repeat-y bottom left;
+}
+.content-r {
+	background: url(img/edge.png) repeat-y bottom right;
+}
+.content-br {
+	background: url(img/content-br.png) no-repeat bottom right;
+}
+.content-bl {
+	background: url(img/content-bl.png) no-repeat bottom left;
+	padding: 0.6em 1em;
+}
+#feedIcon {
+	margin-top: 4px;
+	padding-top: 4px;
+	border-top: 1px solid rgb(189,190,192);
+}
+#footer {
+	padding: 0px;
+	text-align: center;
+}
+input, select {
+	font-size: 0.8em;
+	border: 1px solid;
+}
+textarea {
+	border: 1px solid;
+	font-family: sans-serif;
+	font-size: 1.0em;
+}
+
+table {
+	border-collapse: collapse;
+  width: 100%;
+}
+thead th {
+	border-bottom: 1px solid rgb(189, 190, 192);
+	text-align: left;
+}
+thead th, td {
+	padding: 0.1em 0.4em;
+	background: none;
+}
+td {
+	border-bottom: 1px solid rgb(224, 224, 224);
+}
+td.menu-disabled {
+  opacity: 0.60;
+	background: rgb(240, 240, 240);
+}
+
+tr.odd, tr.even, tr.info {
+  background: none;
+}
+
+tr.odd td.active {
+  background-color: #ddecf5;
+}
+
+tr.even td.active {
+  background-color: #e6f1f7;
+}
+
+td.region, td.module, td.container {
+  border-top: 1.5em solid #fff;
+  border-bottom: 1px solid rgb(189, 190, 192);
+  background-color: rgb(240, 240, 240);
+  color: black;
+  font-weight: bold;
+}
+
+
+/* I've had to
+ * override these classes as they are set to "clear: both" by default, which
+ * causes problems with my layout. Doesn't seem to have affected anyone else,
+ * though. Maybe it's just me.
+ */
+
+ /* From user.css */
+.profile {
+  clear: none;
+  margin: 1em 0;
+}
+ /* From node.css */
+.node-form .standard {
+  clear: none;
+}
+
+/* Customised the login dialog.
+ * Puts the whole login form and links onto a single line.
+ */
+#user-login-form .form-item label, #user-login-form input {
+	float: left;
+	margin-right: 4px;
+}
+#user-login-form .item-list, #user-bar .user-info, #user-bar .item-list {
+	float: left;
+}
+#user-login-form .item-list li {
+	display: inline;
+	padding: 0px 4px 0px 4px;
+}
+#user-bar .user-info, #user-bar .item-list {
+	padding: 0px;
+	margin: 0px;
+}
+#user-bar .item-list ul {
+	margin: 0 0 2px 0;
+	padding: 0px;
+}
+#user-bar .item-list li {
+	display: inline;
+	margin: 0px;
+	padding: 0px 4px 0px 4px;
+}
+#user-bar a:link, #user-bar a:visited {
+	text-decoration: none;
+}
+#user-bar a:hover {
+	text-decoration: underline;
+}
+
+/**
+ * From the Garland theme.
+ */
+span.clear {
+  display: block;
+  clear: both;
+  height: 1px;
+  line-height: 0px;
+  font-size: 0px;
+  margin-bottom: -1px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0.1em 0 0 0;
+}
+
+/*
+ * I rather foolishly decided to have the title of the page exist at the
+ * bottom of the containing DIV element. This means using absolute
+ * positioning in order to get the desired effect in a way that is consistent.
+ * However, this causes problems when the fonts are scaled as overlap can
+ * occur with other elements, leading to unclean layout (since absolute
+ * positioning removes the element from the document flow). My solution is to
+ * place an empty element in the page directly before the title that remains
+ * in the document flow. This fakes a margin around the title.
+ * I've also applied this to the login form in the global navigation section.
+ */
+span.absSpacerNorm {
+  display: block;
+  height: 1.4em;
+  line-height: 14px;
+  font-size: 1.2em;
+}
+
+span.absSpacerTitle {
+  display: block;
+  height: 1.4em;
+  line-height: 16px;
+  font-size: 1.4em;
+}
+
+.node {
+  margin-bottom: 1em;
+}
+
+/*
+ * Extras for TinyMCE generated content.
+ */
+.fixed-width {
+  font-size: 1.0em;
+        font-family: monospace, courier;
+}
+.variable-width {
+  font-size: 0.76em;
+        font-family: sans-serif;
+}
