@@ -99,15 +99,18 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("document_renamed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("document_renamed_email");
+		$message = getMLText("document_renamed_email")."\r\n";
 		$message .= 
 			getMLText("old").": ".$this->_name."\r\n".
 			getMLText("new").": ".$newName."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -128,14 +131,17 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("comment_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("comment_changed_email");
+		$message = getMLText("comment_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$newComment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -196,14 +202,17 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("document_moved_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("document_moved_email");
+		$message = getMLText("document_moved_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$newComment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -229,9 +238,8 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("ownership_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("ownership_changed_email");
+		$message = getMLText("ownership_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("old").": ".$oldOwner->getFullName()."\r\n".
@@ -239,6 +247,10 @@ class Document
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -271,14 +283,17 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("access_permission_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
+		$message = getMLText("access_permission_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -315,14 +330,17 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("access_permission_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
+		$message = getMLText("access_permission_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$newComment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -376,14 +394,17 @@ class Document
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("expiry_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("expiry_changed_email");
+		$message = getMLText("expiry_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -685,7 +706,7 @@ class Document
 		return $this->_notifyList;
 	}
 
-	function addNotify($userOrGroupID, $isUser) {
+	function addNotify($userOrGroupID, $isUser,$send_email=TRUE) {
 
 		// Return values:
 		// -1: Invalid User/Group ID.
@@ -790,28 +811,32 @@ class Document
 			return -4;
 
 		// Email user / group, informing them of subscription.
-		$path="";
-		$folder = $this->getFolder();
-		$folderPath = $folder->getPath();
-		for ($i = 0; $i  < count($folderPath); $i++) {
-			$path .= $folderPath[$i]->getName();
-			if ($i +1 < count($folderPath))
-				$path .= " / ";
-		}
-		$subject = $setting->_siteName.": ".$this->getName();
-		$message = getMLText("notify_added_email");
-		$message = wordwrap ($message, 72, "\r\n");
-		$message .= 
-			getMLText("document").": ".$this->getName()."\r\n".
-			getMLText("folder").": ".$path."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+		if ($send_email){
+			$path="";
+			$folder = $this->getFolder();
+			$folderPath = $folder->getPath();
+			for ($i = 0; $i  < count($folderPath); $i++) {
+				$path .= $folderPath[$i]->getName();
+				if ($i +1 < count($folderPath))
+					$path .= " / ";
+			}
+			$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_added_email");
+			$message = getMLText("notify_added_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$this->getName()."\r\n".
+				getMLText("folder").": ".$path."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
-		if ($isUser) {
-			Email::toIndividual($user, $obj, $subject, $message);
-		}
-		else {
-			Email::toGroup($user, $obj, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			if ($isUser) {
+				Email::toIndividual($user, $obj, $subject, $message);
+			}
+			else {
+				Email::toGroup($user, $obj, $subject, $message);
+			}
 		}
 
 		unset($this->_notifyList);
@@ -885,14 +910,16 @@ class Document
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
-		$subject = $setting->_siteName.": ".$this->getName();
-		$message = getMLText("notify_deleted_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_deleted_email");
+		$message = getMLText("notify_deleted_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->getName()."\r\n".
 			getMLText("folder").": ".$path."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
 
 		if ($isUser) {
 			Email::toIndividual($user, $obj, $subject, $message);
@@ -906,7 +933,7 @@ class Document
 	}
 
 
-	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array())
+	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$send_email=TRUE)
 	{
 		GLOBAL $db, $settings;
 		
@@ -939,7 +966,7 @@ class Document
 			return false;
 		$statusID = $db->getInsertID();
 
-		$this->addNotify($user->getID(), true);
+		//$this->addNotify($user->getID(),true,FALSE);
 
 		// Add reviewers into the database. Reviewers must review the document
 		// and submit comments, if appropriate. Reviewers can also recommend that
@@ -999,18 +1026,23 @@ class Document
 		$docResultSet->setStatus($status,$comment,$user);
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("document_updated_email");
-		$message = wordwrap ($message, 72, "\r\n");
-		$message .= 
-			getMLText("document").": ".$this->_name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+		if ($send_email){
+			$this->getNotifyList();
+			$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("document_updated_email");
+			$message = getMLText("document_updated_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$this->_name."\r\n".
+				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				Email::toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		return $docResultSet;
@@ -1123,7 +1155,7 @@ class Document
 		return true;
 	}
 
-	function remove()
+	function remove($send_email=TRUE)
 	{
 		GLOBAL $db, $user, $settings;
 		
@@ -1131,7 +1163,7 @@ class Document
 		if (is_bool($res) && !$res) return false;
 		
 		for ($i = 0; $i < count($this->_content); $i++)
-			if (!$this->_content[$i]->remove())
+			if (!$this->_content[$i]->remove(FALSE))
 				return false;
 		
 		$queryStr = "DELETE FROM tblDocuments WHERE id = " . $this->_id;
@@ -1154,23 +1186,30 @@ class Document
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
+		
+		if ($send_email){
+	
+			$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("document_deleted_email");
+			$message = getMLText("document_deleted_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$this->getName()."\r\n".
+				getMLText("folder").": ".$path."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
 
-		$subject = $setting->_siteName.": ".$this->getName();
-		$message = getMLText("document_deleted_email");
-		$message = wordwrap ($message, 72, "\r\n");
-		$message .= 
-			getMLText("document").": ".$this->getName()."\r\n".
-			getMLText("folder").": ".$path."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
-		Email::toIndividual($user, $this->getOwner(), $subject, $message);
-		// Send notification to subscribers.
-		$this->getNotifyList();
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			Email::toIndividual($user, $this->getOwner(), $subject, $message);
+			
+			// Send notification to subscribers.
+			$this->getNotifyList();
+			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				Email::toGroup($user, $grp, $subject, $message);
+			}
 		}
-
+		
 		// Delete the notification list.
 		$queryStr = "DELETE FROM tblNotify WHERE target = " . $this->_id . " AND targetType = " . T_DOCUMENT;
 
@@ -1426,7 +1465,9 @@ class DocumentContent
 			return "/" . $this->_documentID . "/" . $this->_version . "/index.html";
 	}
 
-	function remove()
+	// $send_email=FALSE is used when removing entire document 
+	// to avoid one email for every version
+	function remove($send_email=TRUE)
 	{
 		GLOBAL $settings, $db, $user;
 
@@ -1482,28 +1523,36 @@ class DocumentContent
 			return false;
 
 		// Notify affected users.
-		$recipients = array();
-		foreach ($emailList as $eID) {
-			$eU = getUser($eID);
-			$recipients[] = $eU;
-		}
-		$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-		$message = getMLText("version_deleted_email");
-		$message = wordwrap ($message, 72, "\r\n");
-		$message .= 
-			getMLText("document").": ".$this->getOriginalFileName()."\r\n".
-			getMLText("version").": ".$this->_version."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
-		Email::toList($user, $recipients, $subject, $message);
-		// Send notification to subscribers.
-		if (!isset($this->_document)) {
-			$this->_document = getDocument($this->_documentID);
-		}
-		$nl=$this->_document->getNotifyList();
-		Email::toList($user, $nl["users"], $subject, $message);
-		foreach ($nl["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+		if ($send_email){
+		
+			if (!isset($this->_document)) {
+				$this->_document = getDocument($this->_documentID);
+			}	
+		
+			$recipients = array();
+			foreach ($emailList as $eID) {
+				$eU = getUser($eID);
+				$recipients[] = $eU;
+			}
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("version_deleted_email");
+			$message = getMLText("version_deleted_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$this->_document->getName()."\r\n".
+				getMLText("version").": ".$this->_version."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			Email::toList($user, $recipients, $subject, $message);
+			
+			// Send notification to subscribers.
+			$nl=$this->_document->getNotifyList();
+			Email::toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				Email::toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		return true;
@@ -1566,9 +1615,8 @@ class DocumentContent
 			$this->_document = getDocument($this->_documentID);
 		}
 		$nl=$this->_document->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_document->_name;
-		$message = getMLText("document_status_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_document->_name." - ".getMLText("document_status_changed_email");
+		$message = getMLText("document_status_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_document->_name."\r\n".
 			getMLText("status").": ".getOverallStatusText($status).
@@ -1576,6 +1624,10 @@ class DocumentContent
 			getMLText("comment").": ".$this->_document->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
 		$uu = (is_null($updateUser) ? getUser($settings->_adminID) : $updateUser);
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($uu, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
 			Email::toGroup($uu, $grp, $subject, $message);
@@ -1698,19 +1750,22 @@ class DocumentContent
 		}
 
 		// Add reviewer to event notification table.
-		$this->_document->addNotify($userID, true);
+		//$this->_document->addNotify($userID, true);
 
 		// Send an email notification to the new reviewer.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("review_request_email");
-			$message = wordwrap ($message, 72, "\r\n");
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
+			$message = getMLText("review_request_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ReviewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -1772,19 +1827,22 @@ class DocumentContent
 		}
 
 		// Add reviewer to event notification table.
-		$this->_document->addNotify($groupID, false);
+		//$this->_document->addNotify($groupID, false);
 
 		// Send an email notification to the new reviewer.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("review_request_email");
-			$message = wordwrap ($message, 72, "\r\n");
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
+			$message = getMLText("review_request_email")."\r\n";
 			$message .=
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ReviewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -1846,19 +1904,22 @@ class DocumentContent
 		}
 
 		// Add approver to event notification table.
-		$this->_document->addNotify($userID, true);
+		//$this->_document->addNotify($userID, true);
 
 		// Send an email notification to the new approver.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("approval_request_email");
-			$message = wordwrap ($message, 72, "\r\n");
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_request_email");
+			$message = getMLText("approval_request_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -1920,19 +1981,22 @@ class DocumentContent
 		}
 
 		// Add approver to event notification table.
-		$this->_document->addNotify($groupID, false);
+		//$this->_document->addNotify($groupID, false);
 
 		// Send an email notification to the new approver.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("approval_request_email");
-			$message = wordwrap ($message, 72, "\r\n");
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_request_email");
+			$message = getMLText("approval_request_email")."\r\n";
 			$message .=
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -1968,15 +2032,23 @@ class DocumentContent
 
 		// Send an email notification to the reviewer.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("review_deletion_email");
-			$message = wordwrap ($message, 72, "\r\n");
+		
+			if (!isset($this->_document)) {
+				$this->_document = getDocument($this->_documentID);
+			}
+		
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_deletion_email");
+			$message = getMLText("review_deletion_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -2012,15 +2084,23 @@ class DocumentContent
 
 		// Send an email notification to the review group.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("review_deletion_email");
-			$message = wordwrap ($message, 72, "\r\n");
+		
+			if (!isset($this->_document)) {
+				$this->_document = getDocument($this->_documentID);
+			}
+			
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_deletion_email");
+			$message = getMLText("review_deletion_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -2056,15 +2136,23 @@ class DocumentContent
 
 		// Send an email notification to the approver.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("approval_deletion_email");
-			$message = wordwrap ($message, 72, "\r\n");
+		
+			if (!isset($this->_document)) {
+				$this->_document = getDocument($this->_documentID);
+			}
+			
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_deletion_email");
+			$message = getMLText("approval_deletion_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
@@ -2100,15 +2188,23 @@ class DocumentContent
 
 		// Send an email notification to the approval group.
 		if ($sendEmail) {
-			$subject = $setting->_siteName.": ".$this->getOriginalFileName().", v.".$this->_version;
-			$message = getMLText("approval_deletion_email");
-			$message = wordwrap ($message, 72, "\r\n");
+		
+			if (!isset($this->_document)) {
+				$this->_document = getDocument($this->_documentID);
+			}
+			
+			$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_deletion_email");
+			$message = getMLText("approval_deletion_email")."\r\n";
 			$message .= 
-				getMLText("document").": ".$this->getOriginalFileName()."\r\n".
+				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() ."> ".			
+				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
 			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;

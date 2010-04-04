@@ -104,15 +104,18 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("folder_renamed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_renamed_email");
+		$message = getMLText("folder_renamed_email")."\r\n";
 		$message .= 
 			getMLText("old").": ".$this->_name."\r\n".
 			getMLText("new").": ".$newName."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -134,14 +137,17 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("comment_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("comment_changed_email");
+		$message = getMLText("comment_changed_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$newComment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -203,14 +209,17 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("folder_moved_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_moved_email");
+		$message = getMLText("folder_moved_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -237,9 +246,8 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("ownership_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("ownership_changed_email");
+		$message = getMLText("ownership_changed_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("old").": ".$oldOwner->getFullName()."\r\n".
@@ -247,6 +255,10 @@ class Folder
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -278,14 +290,17 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("access_permission_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
+		$message = getMLText("access_permission_changed_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -324,14 +339,17 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("access_permission_changed_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
+		$message = getMLText("access_permission_changed_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -398,15 +416,18 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("new_subfolder_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("new_subfolder_email");
+		$message = getMLText("new_subfolder_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($newFolder)."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			getMLText("user").": ".$owner->getFullName()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$newFolder->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -497,7 +518,7 @@ class Folder
 			return false;
 		
 		$document = getDocument($db->getInsertID());
-		$res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers);
+		$res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,FALSE);
 		if (is_bool($res) && !$res)
 		{
 			$queryStr = "DELETE FROM tblDocuments WHERE id = " . $document->getID();
@@ -507,14 +528,17 @@ class Folder
 
 		// Send notification to subscribers.
 		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("new_document_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("new_document_email");
+		$message = getMLText("new_document_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -523,7 +547,8 @@ class Folder
 		return array($document, $res);
 	}
 
-	function remove() {
+	
+	function remove($send_email=TRUE) {
 		global $db, $user, $settings;
 
 		// Do not delete the root folder.
@@ -539,13 +564,13 @@ class Folder
 		
 		foreach ($this->_subFolders as $subFolder)
 		{
-			$res = $subFolder->remove();
+			$res = $subFolder->remove(FALSE);
 			if (!$res) return false;
 		}
 		
 		foreach ($this->_documents as $document)
 		{
-			$res = $document->remove();
+			$res = $document->remove(FALSE);
 			if (!$res) return false;
 		}
 		
@@ -558,18 +583,24 @@ class Folder
 			return false;
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $setting->_siteName.": ".$this->_name;
-		$message = getMLText("folder_deleted_email");
-		$message = wordwrap ($message, 72, "\r\n");
-		$message .= 
-			getMLText("name").": ".$this->_name.
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->_comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+		if ($send_email){
+		
+			$this->getNotifyList();
+			$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_deleted_email");
+			$message = getMLText("folder_deleted_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
+				getMLText("comment").": ".$this->_comment."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				Email::toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		$queryStr = "DELETE FROM tblNotify WHERE target = ". $this->_id. " AND targetType = " . T_FOLDER;
@@ -911,15 +942,18 @@ class Folder
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
-		$subject = $setting->_siteName.": ".$this->getName();
-		$message = getMLText("notify_added_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_added_email");
+		$message = getMLText("notify_added_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->getName()."\r\n".
 			getMLText("folder").": ".$path."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		if ($isUser) {
 			Email::toIndividual($user, $obj, $subject, $message);
 		}
@@ -997,15 +1031,17 @@ class Folder
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
-		$subject = $setting->_siteName.": ".$this->getName();
-		$message = getMLText("notify_deleted_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_deleted_email");
+		$message = getMLText("notify_deleted_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$this->getName()."\r\n".
 			getMLText("folder").": ".$path."\r\n".
 			getMLText("comment").": ".$this->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		if ($isUser) {
 			Email::toIndividual($user, $obj, $subject, $message);
 		}

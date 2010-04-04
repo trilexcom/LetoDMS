@@ -33,9 +33,10 @@ if (!$db->createTemporaryTable("ttstatid")) {
 	UI::exitError(getMLText("review_summary"),getMLText("internal_error_exit"));
 }
 
-UI::htmlStartPage(getMLText("review_summary"));
+UI::htmlStartPage(getMLText("my_documents"));
 UI::globalNavigation();
-UI::pageNavigation(getMLText("review_summary"), "my_documents");
+UI::pageNavigation(getMLText("my_documents"), "my_documents");
+
 UI::contentHeading(getMLText("review_summary"));
 UI::contentContainerStart();
 

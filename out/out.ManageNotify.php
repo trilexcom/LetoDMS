@@ -30,9 +30,13 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-UI::htmlStartPage(getMLText("edit_document_notify"));
+UI::htmlStartPage(getMLText("my_documents"));
 UI::globalNavigation();
-UI::pageNavigation(getMLText("my_account").":".getMLText("edit_document_notify"), "my_account");
+UI::pageNavigation(getMLText("my_documents"), "my_documents");
+
+/*UI::htmlStartPage(getMLText("edit_document_notify"));
+UI::globalNavigation();
+UI::pageNavigation(getMLText("my_account").":".getMLText("edit_document_notify"), "my_account");*/
 
 //
 // Get list of subscriptions for user.
@@ -67,10 +71,10 @@ foreach ($resArr as $res) {
 //
 // Display the results.
 //
-UI::contentHeading(getMLText("folders"));
+UI::contentHeading(getMLText("edit_folder_notify"));
 UI::contentContainerStart();
 if (count($fldArr)==0) {
-	printMLText("no_folders");
+	printMLText("empty_notify_list");
 }
 else {
 	print "<table class=\"folderView\">";
@@ -97,10 +101,10 @@ else {
 
 UI::contentContainerEnd();
 
-UI::contentHeading(getMLText("documents"));
+UI::contentHeading(getMLText("edit_document_notify"));
 UI::contentContainerStart();
 if (count($docArr)==0) {
-		printMLText("no_documents");
+	printMLText("empty_notify_list");
 }
 else {
 	print "<table class=\"folderView\">";

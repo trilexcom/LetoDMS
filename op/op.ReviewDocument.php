@@ -99,9 +99,8 @@ if ($_POST["reviewType"] == "ind") {
 	}
 	else {
 		// Send an email notification to the document owner.
-		$subject = $setting->_siteName.": ".$document->getName().", v.".$version;
-		$message = getMLText("review_submit_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
+		$message = getMLText("review_submit_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
 			getMLText("version").": ".$version."\r\n".
@@ -110,11 +109,13 @@ if ($_POST["reviewType"] == "ind") {
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toIndividual($user, $document->getOwner(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
-		$subject = "[Document Notification]: ".$document->getName().", v. ".$version;
 		Email::toList($user, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -155,9 +156,8 @@ else if ($_POST["reviewType"] == "grp") {
 		// Send an email notification to the document owner.
 		$grp = getGroup($grpStatus["required"]);
 		
-		$subject = $setting->_siteName.": ".$document->getName().", v.".$version;
-		$message = getMLText("review_submit_email");
-		$message = wordwrap ($message, 72, "\r\n");
+		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
+		$message = getMLText("review_submit_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
 			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ".
@@ -166,11 +166,13 @@ else if ($_POST["reviewType"] == "grp") {
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
 		Email::toIndividual($user, $document->getOwner(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
-		$subject = "[Document Notification]: ".$document->getName().", v. ".$version;
 		Email::toList($user, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
@@ -232,47 +234,43 @@ if ($_POST["reviewStatus"]==-1){
 		if ($content->setStatus($newStatus, getMLText("automatic_status_update"), $user)) {
 		
 			//Send email notification to document owner reporting the change in status.
-			$subject = $setting->_siteName.": ".$document->getName().", v.".$version;
-			$message = getMLText("automatic_status_update");
-			$message = wordwrap ($message, 72, "\r\n");
+			/*$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("automatic_status_update");
+			$message = getMLText("automatic_status_update")."\r\n";
 			$message .= 
 				getMLText("name").": ".$document->getName()."\r\n".
 				getMLText("version").": ".$version."\r\n".
 				getMLText("status").": ".getOverallStatusText($newStatus)."\r\n".
 				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
-			Email::toIndividual($user, $document->getOwner(), $subject, $message);
+			Email::toIndividual($user, $document->getOwner(), $subject, $message);*/
 
 			// Notify approvers, if necessary.
 			if ($newStatus == S_DRAFT_APP) {
 				$requestUser = $document->getOwner();
 				
-				$subject = $setting->_siteName.": ".$document->getName().", v.".$version;
-				$message = getMLText("approval_request_email");
-				$message = wordwrap ($message, 72, "\r\n");
+				$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_request_email");
+				$message = getMLText("approval_request_email")."\r\n";
 				$message .= 
 					getMLText("name").": ".$content->getOriginalFileName()."\r\n".
 					getMLText("version").": ".$version."\r\n".
 					getMLText("comment").": ".$content->getComment()."\r\n".
 					"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$documentid."&version=".$version."\r\n";
 
+				$subject=mydmsDecodeString($subject);
+				$message=mydmsDecodeString($message);
+				
 				foreach ($docApprovalStatus as $dastat) {
+				
 					if ($dastat["status"] == 0) {
 						if ($dastat["type"] == 0) {
-							$imessage = $requestUser->getFullName()." <". $requestUser->getEmail() ."> ".
-								"has requested that you approve the following document:";
-							$imessage = wordwrap ($imessage, 72, "\r\n");
+
 							$approver = getUser($dastat["required"]);
-							
-							Email::toIndividual($document->getOwner(), $approver, $subject, $imessage.$message);
+							Email::toIndividual($document->getOwner(), $approver, $subject, $message);
 						}
 						else if ($dastat["type"] == 1) {
+						
 							$group = getGroup($dastat["required"]);
-							$gmessage = $requestUser->getFullName()." <". $requestUser->getEmail() ."> ".
-								"has requested that a member of the group '". $group->getName() ."' approve the following document:";
-							$gmessage = wordwrap ($gmessage, 72, "\r\n");
-							
-							Email::toGroup($document->getOwner(), $group, $subject, $gmessage.$message);
+							Email::toGroup($document->getOwner(), $group, $subject, $message);
 						}
 					}
 				}
