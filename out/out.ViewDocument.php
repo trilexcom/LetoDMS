@@ -213,6 +213,7 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 	print "<th>".getMLText("status")."</th>\n";
 	print "<th>".getMLText("comment")."</th>";
 	print "<th>".getMLText("last_update")."</th>\n";
+	print "<th></th>\n";
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	foreach ($reviewStatus as $r) {
@@ -243,7 +244,11 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		print "<td>".$r["comment"]."</td>\n";
 		print "<td>".$r["date"];
 		$updateUser = getUser($r["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'");
+		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'");	
+		print "<td><ul class=\"actions\">";
+		if (($updateUser==$user)&&(($r["status"]==1)||($r["status"]==-1))&&(!$document->hasExpired()))
+			print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit")."</a></li>";
+		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
 	print	"</tbody>\n</table>\n";
@@ -258,7 +263,8 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 	print "<th>".getMLText("name")."</th>\n";
 	print "<th>".getMLText("status")."</th>\n";
 	print "<th>".getMLText("comment")."</th>";
-	print "<th>".getMLText("last_update")."</th>\n";
+	print "<th>".getMLText("last_update")."</th>\n";	
+	print "<th></th>\n";
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	foreach ($approvalStatus as $a) {
@@ -289,7 +295,11 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		print "<td>".$a["comment"]."</td>\n";
 		print "<td>".$a["date"];
 		$updateUser = getUser($a["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'");
+		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'");	
+		print "<td><ul class=\"actions\">";
+		if (($updateUser==$user)&&(($a["status"]==1)||($a["status"]==-1))&&(!$document->hasExpired()))
+			print "<li><a href=\"../out/out.ApproveDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit")."</a></li>";
+		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
 	print	"</tbody>\n</table>\n";

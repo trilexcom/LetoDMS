@@ -109,6 +109,10 @@ function printFolder($folder)
 	print "<li class=\"folderClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewFolder.php?folderid=".$folder->getID()."\">".$folder->getName() ."</a>";
 	
+	$owner = $folder->getOwner();
+	$color = getAccessColor(M_ALL);
+	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";
+	
 	if (! $folder->inheritsAccess())
 		printAccessList($folder);
 	
@@ -132,6 +136,10 @@ function printDocument($document)
 	$color = $document->inheritsAccess() ? "black" : getAccessColor($document->getDefaultAccess());
 	print "<li class=\"documentClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewDocument.php?documentid=".$document->getID()."\">".$document->getName()."</a>";
+	
+	$owner = $document->getOwner();
+	$color = getAccessColor(M_ALL);
+	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";	
 	
 	if (! $document->inheritsAccess())
 		printAccessList($document);

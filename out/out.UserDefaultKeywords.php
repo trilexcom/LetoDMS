@@ -35,7 +35,7 @@ $categories = getAllUserKeywordCategories($user->getID());
 
 UI::htmlStartPage(getMLText("edit_default_keywords"));
 UI::globalNavigation();
-UI::pageNavigation(getMLText("my_account").":".getMLText("edit_default_keywords"), "my_account");
+UI::pageNavigation(getMLText("my_account"), "my_account");
 ?>
 <script language="JavaScript">
 obj = -1;
@@ -52,7 +52,7 @@ function showKeywords(selectObj) {
 }
 </script>
 <?php
-UI::contentHeading(getMLText("edit_default_keyword_category"));
+UI::contentHeading(getMLText("edit_default_keywords"));
 UI::contentContainerStart();
 ?>
 	<table>

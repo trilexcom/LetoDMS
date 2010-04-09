@@ -55,6 +55,6 @@ if (!$folder->remove()) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 }
 
-header("Location:../out/out.ViewFolder.php?folderid=".$parent);
+header("Location:../out/out.ViewFolder.php?folderid=".$parent->getID());
 
 ?>

@@ -200,6 +200,29 @@ a:active {
 td {
 	vertical-align: top;
 }
+
+table.userView {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table.userView th {
+	text-align: left;
+}
+
+ul.groupView{
+	list-style: none;
+	font-weight: bold;
+}
+
+ul.groupView ul{
+	margin-top: 5px;
+	margin-bottom: 20px;
+	border-top: 1px solid #000;
+	list-style-image:url("../../out/images/usericon.gif");
+	font-weight: normal;
+}
+
 table.folderView {
 	border-collapse: collapse;
 	width: 100%;

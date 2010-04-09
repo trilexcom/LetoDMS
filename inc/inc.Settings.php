@@ -20,7 +20,7 @@
 class Settings
 {
 	// Name of site -- used in the page titles. Default: MyDMS
-	var $_siteName = "LetoDMS";
+	var $_siteName = "";
 
 	// Message to display at the bottom of every page.
 	var $_footNote = "";
@@ -29,9 +29,9 @@ class Settings
 	var $_printDisclaimer = true;	
 
 	// Default page on login. Defaults to out/out.ViewFolder.php
-	var $_siteDefaultPage = "";
+	var $_siteDefaultPage = "out/out.MyDocuments.php?inProcess=1";
 
-	//IDs of admin-user, guest-user and root-folder (no need to change)
+	// IDs of admin-user, guest-user and root-folder (no need to change)
 	var $_adminID = 1;
 	var $_guestID = 2;
 	var $_rootFolderID = 1;
@@ -50,8 +50,8 @@ class Settings
 	// submitting a review or overriding document status.
 	var $_strictFormCheck = true;
 
-	//path to where mydms is located
-	var $_rootDir = "";
+	// path to where mydms is located
+	var $_rootDir = "/var/www/...";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
@@ -61,7 +61,7 @@ class Settings
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "";
+	var $_contentDir = "/var/www/...";
 
 	// To work around limitations in the underlying file system, and to
 	// preserve backwards compatibility, a new directory structure has been
@@ -73,26 +73,34 @@ class Settings
 	// To continue using the old directory structure, set $_useLegacyDir = true;
 	var $_useLegacyDir=false;
 	var $_contentOffsetDir = "1048576";
+
 	// Maximum number of sub-directories per parent directory. Default: 32700.
 	var $_maxDirID = 32700;
 
 	//default language (name of a subfolder in folder "languages")
 	var $_language = "English";
 
-	//users are notified about document-changes that took place within the last $_updateNotifyTime seconds
+	// users are notified about document-changes that took place within the last $_updateNotifyTime seconds
 	var $_updateNotifyTime = 86400; //means 24 hours
 
-	//files with one of the following endings can be viewed online
-	var $_viewOnlineFileTypes = array(".txt", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg");
+	// files with one of the following endings can be viewed online
+	/*var $_viewOnlineFileTypes = array(".txt", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg");*/
+	var $_viewOnlineFileTypes = array();
 
-	//enable/disable converting of files
+	// enable/disable converting of files
 	var $_enableConverting = true;
 
-	//default style (name of a subfolder in folder "styles")
+	// default style (name of a subfolder in folder "styles")
 	var $_theme = "clean";
-	
+
 	// Workaround for page titles that go over more than 2 lines.
 	var $_titleDisplayHack = true;
+
+	// enable/disable automatic email notification
+	var $_enableEmail = true;
+	
+	// enable/disable group and user view for all users
+	var $_enableUsersView = true;
 
 	// -------------------------------- Database-Setup --------------------------------------------
 
@@ -106,13 +114,13 @@ class Settings
 	var $_dbHostname = "localhost";
 
 	//database where the tables for mydms are stored (optional - see adodb-readme)
-	var $_dbDatabase = "";
+	var $_dbDatabase = "mydms";
 
 	//username for database-access
-	var $_dbUser = "";
+	var $_dbUser = "mydms";
 
 	//password for database-access
-	var $_dbPass = "";
+	var $_dbPass = "mydms";
 
 	// -------------------------------- LDAP Authentication Setup --------------------------------------------
 

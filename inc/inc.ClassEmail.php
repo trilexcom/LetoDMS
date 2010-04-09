@@ -20,6 +20,11 @@
 class Email {
 
 	function toIndividual($sender, $recipient, $subject, $message) {
+	
+		global $settings;
+		if ($settings->_enableEmail==FALSE) return 0;
+		
+		if ($recipient->getEmail()=="") return 0;
 
 		if ((!is_object($sender) && strcasecmp(get_class($sender), "User")) ||
 				(!is_object($recipient) && strcasecmp(get_class($recipient), "User"))) {
@@ -33,6 +38,9 @@ class Email {
 	}
 
 	function toGroup($sender, $groupRecipient, $subject, $message) {
+	
+		global $settings;
+		if (!$settings->_enableEmail) return 0;
 
 		if ((!is_object($sender) && strcasecmp(get_class($sender), "User")) ||
 				(!is_object($groupRecipient) && strcasecmp(get_class($groupRecipient), "Group"))) {
@@ -44,7 +52,9 @@ class Email {
 
 		$toList = "";
 		foreach ($groupRecipient->getUsers() as $recipient) {
-			$toList .= (strlen($toList)==0 ? "" : ", ") . $recipient->getEmail();
+		
+			if ($recipient->getEmail()!="")
+				$toList .= (strlen($toList)==0 ? "" : ", ") . $recipient->getEmail();
 		}
 
 		if (strlen($toList)==0) {
@@ -55,6 +65,9 @@ class Email {
 	}
 
 	function toList($sender, $recipients, $subject, $message) {
+	
+		global $settings;
+		if (!$settings->_enableEmail) return 0;
 
 		if ((!is_object($sender) && strcasecmp(get_class($sender), "User")) ||
 				(!is_array($recipients) && count($recipients)==0)) {
@@ -67,7 +80,9 @@ class Email {
 		$toList = "";
 		foreach ($recipients as $recipient) {
 			if (is_object($recipient) && !strcasecmp(get_class($recipient), "User")) {
-				$toList .= (strlen($toList)==0 ? "" : ", ") . $recipient->getEmail();
+			
+				if ($recipient->getEmail()!="")
+					$toList .= (strlen($toList)==0 ? "" : ", ") . $recipient->getEmail();
 			}
 		}
 

@@ -190,6 +190,7 @@ class UI {
 	}
 
 	function folderNavigationBar($folder) {
+	
 		global $user, $settings, $theme;
 
 		if (!is_object($folder) || strcasecmp(get_class($folder), "Folder")) {
@@ -221,6 +222,7 @@ class UI {
 	}
 
 	function documentNavigationBar()	{
+	
 		global $user, $settings, $document;
 
 		$accessMode = $document->getAccessMode($user);
@@ -259,11 +261,18 @@ class UI {
 	}
 
 	function accountNavigationBar() {
-
+	
+		global $settings;
+		
 		echo "<ul class=\"localNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.EditUserData.php\">".getMLText("edit_user_details")."</a></li>\n";
 		echo "<li><a href=\"../out/out.UserDefaultKeywords.php\">".getMLText("edit_default_keywords")."</a></li>\n";
-		echo "<li><a href=\"../out/out.ManageNotify.php\">".getMLText("edit_document_notify")."</a></li>\n";
+		
+		if ($settings->_enableUsersView){
+			echo "<li><a href=\"../out/out.UsrView.php\">".getMLText("users")."</a></li>\n";
+			echo "<li><a href=\"../out/out.GroupView.php\">".getMLText("groups")."</a></li>\n";
+		}
+		
 		echo "</ul>\n";
 		return;
 	}
@@ -275,12 +284,12 @@ class UI {
 		echo "<li><a href=\"../out/out.MyDocuments.php\">".getMLText("all_documents")."</a></li>\n";
 		echo "<li><a href=\"../out/out.ReviewSummary.php\">".getMLText("review_summary")."</a></li>\n";
 		echo "<li><a href=\"../out/out.ApprovalSummary.php\">".getMLText("approval_summary")."</a></li>\n";
+		echo "<li><a href=\"../out/out.ManageNotify.php\">".getMLText("edit_document_notify")."</a></li>\n";
 		echo "</ul>\n";
 		return;
 	}
 
 	function adminToolsNavigationBar() {
-		global $settings, $user;
 
 		echo "<ul class=\"localNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.Statistic.php\">".getMLText("folders_and_documents_statistic")."</a></li>\n";

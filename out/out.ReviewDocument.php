@@ -60,11 +60,39 @@ if (!is_object($content)) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
 }
 
-// verify document is waiting for review
-$document->verifyLastestContentExpriry();
-$status = $content->getStatus();
-if ($status["status"]!=S_DRAFT_REV) {
+// operation is admitted only for last deocument version
+$latestContent = $document->getLatestContent();
+if ($latestContent->getVersion()!=$version) {
+	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
+}
+
+// verify if document has expired
+if ($document->hasExpired()){
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
+}
+
+// retrieve the review status for the current user.
+$reviewStatus = $user->getReviewStatus($documentid, $version);
+if (count($reviewStatus["indstatus"]) == 0 && count($reviewStatus["grpstatus"]) == 0) {
+	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("no_action"));
+}
+
+$indReviewer = true;
+if (count($reviewStatus["indstatus"])==0){
+	$indReviewer = false;
+}else if ($reviewStatus["indstatus"][0]["status"]==-2) {
+	$indReviewer = false;
+}
+
+$grpReviewer=false;
+foreach ($reviewStatus["grpstatus"] as $grpStatus) {
+	if (($grpStatus["status"]!=-2)&&(isset($grpStatus["status"]))) {
+		$grpReviewer=true;
+	}
+}
+
+if (!$indReviewer && !$grpReviewer) {
+	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("no_action"));
 }
 
 UI::htmlStartPage(getMLText("document_title", array("documentname" => $document->getName())));
@@ -108,58 +136,11 @@ function checkGrpForm()
 
 UI::contentContainerStart();
 
-// retrieve the review status for the current user.
-$reviewStatus = $user->getReviewStatus($documentid, $version);
-if (count($reviewStatus["indstatus"]) == 0 && count($reviewStatus["grpstatus"]) == 0) {
-	UI::contentSubHeading(getMLText("warning"));
-	printMLText("not_reviewer");
-	UI::contentContainerEnd();
-	UI::htmlEndPage();
-	exit;
-}
-
-$indReviewer = true;
-if (count($reviewStatus["indstatus"])==0){
-	$indReviewer = false;
-}
-else if ($reviewStatus["indstatus"][0]["status"]==-2) {
-	UI::contentSubHeading(getMLText("warning"));
-	print "<dl><dt>".getMLText("user_removed_reviewer")."</dt>";
-	$indUser=getUser($reviewStatus["indstatus"][0]["userID"]);
-	print "<dd><ul class=\"actions\"><li class=\"first\">".getMLText("status_changed_by")." ".$indUser->getFullName()." <".$indUser->getEmail().">, ". $reviewStatus["indstatus"][0]["date"] .".</li>";
-	print "<li>".getMLText("comment").": ". $reviewStatus["indstatus"][0]["comment"] ."</li></ul></dd></dl>";
-	$indReviewer = false;
-}
-
-$grpReviewer=false;
-foreach ($reviewStatus["grpstatus"] as $grpStatus) {
-	if ($grpStatus["status"]==-2) {
-		UI::contentSubHeading(getMLText("warning"));
-		$g=getGroup($grpStatus["required"]);
-		print "<dl><dt>Group ". $g->getName() ." has been removed from the list of reviewers.</dt>";
-		$u=getUser($grpStatus["userID"]);
-		print "<dd><ul class=\"actions\"><li class=\"first\">".getMLText("status_changed_by")." ".$u->getFullName()." <".$u->getEmail().">, ". $grpStatus["date"] .".</li>";
-		print "<li>".getMLText("comment").": ". $grpStatus["comment"] ."</li></ul></dd></dl>";
-	}
-	else {
-		if (isset($grpStatus["status"])) {
-			$grpReviewer=true;
-		}
-	}
-}
-
-if (!$indReviewer && !$grpReviewer) {
-	UI::contentSubHeading(getMLText("warning"));
-	printMLText("not_reviewer");
-	UI::contentContainerEnd();
-	UI::htmlEndPage();
-	exit;
-}
 // Display the Review form.
 if ($indReviewer) {
 	if($reviewStatus["indstatus"][0]["status"]!=0) {
-		print getMLText("user_already_reviewed").":";
-		print "<table><thead><tr>";
+
+		print "<table class=\"folderView\"><thead><tr>";
 		print "<th>".getMLText("status")."</th>";
 		print "<th>".getMLText("comment")."</th>";
 		print "<th>".getMLText("last_update")."</th>";
@@ -169,78 +150,95 @@ if ($indReviewer) {
 		print "</td>";
 		print "<td>".$reviewStatus["indstatus"][0]["comment"]."</td>";
 		$indUser = getUser($reviewStatus["indstatus"][0]["userID"]);
-		print "<td>".$reviewStatus["indstatus"][0]["date"]." by ". $indUser->getFullname() ."</td>";
+		print "<td>".$reviewStatus["indstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
 		print "</tr></tbody></table>";
 	}
-	else {
 ?>
-		<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkIndForm();">
-		<table>
-		<tr><td class='infos' valign='top'><?php printMLText("comment")?>:</td>
-		<td class='infos' valign='top'><textarea name="comment" cols="40" rows="4"></textarea>
-		</td></tr>
-		<tr><td><?php printMLText("review_status")?></td>
-		<td><select name="reviewStatus">
-		<option value=''></option>
-		<option value='1'><?php printMLText("status_reviewed")?></option>
-		<option value='-1'><?php printMLText("rejected")?></option>
-		</select>
-		</td></tr><tr><td></td><td>
-		<input type='hidden' name='reviewType' value='ind'/>
-		<input type='hidden' name='documentid' value='<?php echo $documentid ?>'/>
-		<input type='hidden' name='version' value='<?php echo $version ?>'/>
-		<input type='submit' name='indReview' value='<?php printMLText("submit_review")?>'/>
-		</td></tr></table>
-		</form>
-<?php
-	}
-}
-else if ($grpReviewer) {
-	$grpSelectBox = "";
-	foreach ($reviewStatus["grpstatus"] as $grp) {
-		if ($grp["status"]!=-2) {
-			$g=getGroup($grpStatus["required"]);
-			if ($grp["status"] == 0) {
-				$grpSelectBox .= (strlen($grpSelectBox)==0 ? "": "<option value=''></option>").
-					"<option value='". $grpStatus["required"] ."'>". $g->getName() ."</option>";
-			}
-		}
-	}
-	if (strlen($grpSelectBox)>0) {
-?>
-	<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkGrpForm();">
+	<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkIndForm();">
 	<table>
-	<tr><td><?php printMLText("comment")?>:</td>
-	<td><textarea name="comment" cols="40" rows="4"></textarea>
+	<tr><td class='infos' valign='top'><?php printMLText("comment")?>:</td>
+	<td class='infos' valign='top'><textarea name="comment" cols="40" rows="4"></textarea>
 	</td></tr>
-	<tr><td><?php printMLText("review_group")?>:</td>
-	<td><select name="reviewGroup"><?php print $grpSelectBox; ?></select>
-	</td></tr>
-	<tr><td><?php printMLText("review_status")?>:</td>
-	<td>
-	<select name="reviewStatus">
+	<tr><td><?php printMLText("review_status")?></td>
+	<td><select name="reviewStatus">
 	<option value=''></option>
 	<option value='1'><?php printMLText("status_reviewed")?></option>
 	<option value='-1'><?php printMLText("rejected")?></option>
 	</select>
-	</td></tr>
-	<tr><td></td><td>
-	<input type='hidden' name='reviewType' value='grp'/>
+	</td></tr><tr><td></td><td>
+	<input type='hidden' name='reviewType' value='ind'/>
 	<input type='hidden' name='documentid' value='<?php echo $documentid ?>'/>
 	<input type='hidden' name='version' value='<?php echo $version ?>'/>
-	<input type='submit' name='groupReview' value='<?php printMLText("submit_review")?>'/></td></tr>
-	</table>
+	<input type='submit' name='indReview' value='<?php printMLText("submit_review")?>'/>
+	</td></tr></table>
 	</form>
+<?php
+}
+else if ($grpReviewer) {
+
+	if($reviewStatus["grpstatus"][0]["status"]!=0) {
+
+		print "<table class=\"folderView\"><thead><tr>";
+		print "<th>".getMLText("status")."</th>";
+		print "<th>".getMLText("comment")."</th>";
+		print "<th>".getMLText("last_update")."</th>";
+		print "</tr></thead><tbody><tr>";
+		print "<td>";
+		printReviewStatusText($reviewStatus["grpstatus"][0]["status"]);
+		print "</td>";
+		print "<td>".$reviewStatus["grpstatus"][0]["comment"]."</td>";
+		$indUser = getUser($reviewStatus["grpstatus"][0]["userID"]);
+		print "<td>".$reviewStatus["grpstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
+		print "</tr></tbody></table>";
+	}
+
+	$grpSelectBox = "";
+	foreach ($reviewStatus["grpstatus"] as $grp) {
+		if ($grp["status"]!=-2) {
+		
+			$g=getGroup($grpStatus["required"]);
+			
+			if ($grp["status"] != -2) {
+				$grpSelectBox .= (strlen($grpSelectBox)==0 ? "": "<option value=''></option>").
+					"<option value='". $grpStatus["required"] ."'>". $g->getName() ."</option>";
+			}
+			
+		}
+	}
+	if (strlen($grpSelectBox)>0) {
+?>
+		<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkGrpForm();">
+		<table>
+		<tr><td><?php printMLText("comment")?>:</td>
+		<td><textarea name="comment" cols="40" rows="4"></textarea>
+		</td></tr>
+		<tr><td><?php printMLText("review_group")?>:</td>
+		<td><select name="reviewGroup"><?php print $grpSelectBox; ?></select>
+		</td></tr>
+		<tr><td><?php printMLText("review_status")?>:</td>
+		<td>
+		<select name="reviewStatus">
+		<option value=''></option>
+		<option value='1'><?php printMLText("status_reviewed")?></option>
+		<option value='-1'><?php printMLText("rejected")?></option>
+		</select>
+		</td></tr>
+		<tr><td></td><td>
+		<input type='hidden' name='reviewType' value='grp'/>
+		<input type='hidden' name='documentid' value='<?php echo $documentid ?>'/>
+		<input type='hidden' name='version' value='<?php echo $version ?>'/>
+		<input type='submit' name='groupReview' value='<?php printMLText("submit_review")?>'/></td></tr>
+		</table>
+		</form>
 <?php
 	}
 	else {
 ?>
-	<p><?php printMLText("user_review_not_required")?></p>
+	<p><?php printMLText("no_action")?></p>
 <?php
 	}
 }
 
 UI::contentContainerEnd();
-
 UI::htmlEndPage();
 ?>

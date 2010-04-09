@@ -57,10 +57,13 @@ if (!is_object($content)) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
 }
 
-// verify document is waiting for review
-$document->verifyLastestContentExpriry();
-$status = $content->getStatus();
-if ($status["status"]!=S_DRAFT_REV) {
+// operation is admitted only for last deocument version
+$latestContent = $document->getLatestContent();
+if ($latestContent->getVersion()!=$version) {
+	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
+}
+// verify if document has expired
+if ($document->hasExpired()){
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
 }
 
@@ -76,14 +79,12 @@ if (count($reviewStatus["indstatus"]) == 0 && count($reviewStatus["grpstatus"]) 
 }
 
 if ($_POST["reviewType"] == "ind") {
+
 	$indReviewer = true;
 	if (count($reviewStatus["indstatus"])==0) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
 	}
-	if ($reviewStatus["indstatus"][0]["status"]==-2) {		
-		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
-	}
-	if ($reviewStatus["indstatus"][0]["status"]!=0) {
+	if ($reviewStatus["indstatus"][0]["status"]==-2) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
 	}
 
@@ -128,10 +129,6 @@ else if ($_POST["reviewType"] == "grp") {
 		if ($_POST["reviewGroup"] == $gs["required"]) {
 			if ($gs["status"]==-2) {
 				UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
-			}
-			if ($gs["status"]!=0) {
-				UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
-				
 			}
 			$grpStatus=$gs;
 			$grpReviewer=true;
@@ -233,17 +230,6 @@ if ($_POST["reviewStatus"]==-1){
 		}
 		if ($content->setStatus($newStatus, getMLText("automatic_status_update"), $user)) {
 		
-			//Send email notification to document owner reporting the change in status.
-			/*$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("automatic_status_update");
-			$message = getMLText("automatic_status_update")."\r\n";
-			$message .= 
-				getMLText("name").": ".$document->getName()."\r\n".
-				getMLText("version").": ".$version."\r\n".
-				getMLText("status").": ".getOverallStatusText($newStatus)."\r\n".
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
-
-			Email::toIndividual($user, $document->getOwner(), $subject, $message);*/
-
 			// Notify approvers, if necessary.
 			if ($newStatus == S_DRAFT_APP) {
 				$requestUser = $document->getOwner();

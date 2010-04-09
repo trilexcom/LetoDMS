@@ -32,7 +32,7 @@ include("../inc/inc.Authentication.php");
 
 UI::htmlStartPage(getMLText("edit_user_details"));
 UI::globalNavigation();
-UI::pageNavigation(getMLText("my_account").":".getMLText("edit_user_details"), "my_account");
+UI::pageNavigation(getMLText("my_account"), "my_account");
 
 ?>
 
@@ -43,8 +43,8 @@ function checkForm()
 	msg = "";
 	if (document.form1.pwd.value != document.form1.pwdconf.value) msg += "<?php printMLText("js_pwd_not_conf");?>\n";
 	if (document.form1.fullname.value == "") msg += "<?php printMLText("js_no_name");?>\n";
-	if (document.form1.email.value == "") msg += "<?php printMLText("js_no_email");?>\n";
-	// if (document.form1.comment.value == "") msg += "<?php printMLText("js_no_comment");?>\n";
+	// if (document.form1.email.value == "") msg += "<?php printMLText("js_no_email");?>\n";
+	if (document.form1.comment.value == "") msg += "<?php printMLText("js_no_comment");?>\n";
 	if (msg != "")
 	{
 		alert(msg);
@@ -56,7 +56,7 @@ function checkForm()
 </script>
 
 <?php
-UI::contentHeading(getMLText("user_info"));
+UI::contentHeading(getMLText("edit_user_details"));
 UI::contentContainerStart();
 ?>
 

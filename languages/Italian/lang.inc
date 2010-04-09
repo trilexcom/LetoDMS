@@ -427,7 +427,7 @@ $text["approval_submit_email"] = "Sottoposta approvazione";
 $text["review_submit_email"] = "Sottoposta revisione";
 $text["automatic_status_update"] = "Modifica automatica dello stato";
 $text["old"] = "Vecchio"; 
-$text["new"] = "Vecchio"; 
+$text["new"] = "Nuovo"; 
 $text["folder"] = "Cartella"; 
 
 ?>
