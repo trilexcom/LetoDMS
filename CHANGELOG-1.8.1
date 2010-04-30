@@ -1,0 +1,124 @@
+Changelog for LetoDMS version 1.8.1 - (C)2010 Matteo Lucarelli
+================================================================================
+
+REDESIGNED THE ORGANIZATION OF DATA  FOLDER ===============================
+
+Now the data folder (where files are located) has a more efficient organization:
+
+data_dir / id / version.filetype
+
+This scheme makes backups much more intuitive (the folder name has
+corresponding to the id of the document, all versions and attached files
+are in the same folder.
+
+- Removed no longer needed tdbDirPath and tdlPathList
+- Removed no longer needed free path lookup functions 
+- Modified sql create_tables.sql for changes to the DB in accordance with the new organization
+
+WARNING: This change makes the version incompatible with existing archives/DB
+but is required by the all thennew features (read ahead)
+
+The "UPDATE" folder contais two script for updating existing installations
+
+To update an existing archive:
+- Backup all (including DB)
+- Install the new DMS version
+- Install the "UPDATE" folder containing two files update.php and update.sql
+- Log in as administrator
+- Manually invoke the script (http://indirizzo/UPDATE/update.php
+- Remove the folder "UPDATE"
+
+If everything works well the old content has ben renamed "old" and can be removed (eg via ftp)
+
+ADDITION FILES ================================================================
+
+Added the ability to upload additional files associated to a document (as attachments)
+these files are not versioned and are designed as accessories to the document
+(Eg the PDF version or reductions in the image). The files are associated with 
+the document, not to version.
+
+NOTE: To add attachments the user must have write permission on the document
+The attachment can be removed by the user who added it or having total permissions
+
+BACKUP ================================================= ========================
+
+Added some useful tools for backing up files and folders (real files, not the DB).
+Especially useful for working with entire folders which, being virtual,
+can not easily be backupped via ftp.
+
+There are three operations designed to be eventually applied in sequence.
+
+Data Backup versioning:
+Create for each document in a DMS folder a file containing the main versioning informations
+This allows you to make backup copies of which also contain information from the DB. 
+This is meant to be performed before the creation of an archive, 
+After creating the file versioning file can be viewed from out.ViewDocument
+
+Creating Archives:
+Creates a tar.gz file containing all files related to a specific
+DMS folder. The file is created in settings->_contentDir
+The file is constructed so that it can be unpacked again in the settings->_contentDir
+to restore removed files. In the page is presented the list of  existing backup files
+which you can downloaded or delete
+
+Deleting files:
+you can delete from the server all the files related to a specific
+DMS folder and all its subfolders. By doing this you can
+free space on the server without removing the version information
+saved in the database that will be available for regular consultation.
+Having a backup deleted files can easily be restored when needed.
+
+All backups operations can be performed on the entire archive or only on a DMS folder.
+All backups operations are accessible only to administrators.
+
+OTHER FEATURES ================================================ ==========
+
+Added the possibility to change a approval/review already done.
+The editing is possible at any moment only to the user who made it. 
+The time is retained (so you can understand subsequent amendments). 
+The document status is updated automatically following a change. 
+The editing is only possible on the latest version of the document.
+If a document expire date is set editing is only possible within that time
+
+Added delete_all_contents script. Cleaning DB tool for test use
+
+Proper content of some e-mail
+
+Added general information to the statistic page:
+- No. of documents
+- No. of folders
+- No. of files in every document
+- Number of total files
+- Total size of the archive
+
+Fixed the view of system notify list
+
+The comments related to the update opration (versione comment) are now editable 
+
+Adjusted out.DefaultKeywords now equal to out.UserDefaultKeyword
+
+Added function formatted_size (view size in Bytes / Kb / Mb / Gb) in inc.Utils and applied where necessary
+
+Fixed a bug on documents cancellation (was not removed the corresponding list of notification)
+
+The files in data folder can be removed without cause errors in the DMS. 
+When a file is not effectively present in out.ViewDocument displays a warning "file removed"
+and, of course, is no longer given the option to download.
+This feature can be used to free up space on the server, removing old files, while leaving available the corresponding
+version information.
+
+Fixed the view in out.AddSubFolder.php (default font size)
+
+Added icons for openoffice.org mime-type 
+Added icons for some types of extensions (bz, dot, docx, etc.).
+
+Added (in inc.settings) option to disable the user administrator as a reviewer / approver (not listed)
+
+Remove the untranslated instructions "die" (replaced by UI:: exitError)
+
+Proper control permissions for internal links (related document):
+- The guest user can not add links
+- Users without write permission can only add links private
+- Add link publici the user must have write permission
+- To cancel link should be the user that added or have permission to total
+
