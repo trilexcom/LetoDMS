@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -41,6 +42,7 @@ UI::contentContainerStart();
 ?>
 	<ul>
 		<li class="first"><a href="../out/out.Statistic.php"><?php echo getMLText("folders_and_documents_statistic")?></a></li>
+		<li><a href="../out/out.BackupTools.php"><?php echo getMLText("backup_tools")?></a></li>
 		<li><a href="../out/out.UsrMgr.php"><?php echo getMLText("user_management")?></a></li>
 		<li><a href="../out/out.GroupMgr.php"><?php echo getMLText("group_management")?></a></li>
 		<li><a href="../out/out.DefaultKeywords.php"><?php echo getMLText("global_default_keywords")?></a></li>

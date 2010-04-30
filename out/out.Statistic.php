@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -26,14 +27,17 @@ include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.FileUtils.php");
+include("../inc/inc.Utils.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
-include("../inc/inc.Authentication.php");
+include("../inc/inc.Authentication.php");
+
+// TODO: javascript open/close folder
 if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-UI::htmlStartPage(getMLText("admin_tools"));
+UI::htmlStartPage(getMLText("folders_and_documents_statistic"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("admin_tools"), "admin_tools");
 
@@ -65,30 +69,11 @@ function showFolder(id) {
 </script>
 
 <?php
-UI::contentHeading(getMLText("folders_and_documents_statistic"));
-UI::contentContainerStart();
 
-print "<table><tr><td>\n";
-
-print "<ul class=\"legend\">\n";
-print "<li><span style=\"color:black\">".getMLText("access_inheritance")." </span></li>";
-print "<li><span style=\"color:".getAccessColor(M_ALL)."\">".getMLText("access_mode_all")." </span></li>";
-print "<li><span style=\"color:".getAccessColor(M_READWRITE)."\">".getMLText("access_mode_readwrite")." </span></li>";
-print "<li><span style=\"color:".getAccessColor(M_READ)."\">".getMLText("access_mode_read")." </span></li>";
-print "<li><span style=\"color:".getAccessColor(M_NONE)."\">".getMLText("access_mode_none")." </span></li>";
-print "</ul>\n";
-
-print "</td><td>\n";
-
-print "<ul>\n";
-printFolder(getFolder($settings->_rootFolderID));
-print "</ul>\n";
-
-print "</td></tr></table>\n";
-
-UI::contentContainerEnd();
-UI::htmlEndPage();
-
+$folder_count=0;
+$document_count=0;
+$file_count=0;
+$storage_size=0;
 
 function getAccessColor($mode)
 {
@@ -104,6 +89,9 @@ function getAccessColor($mode)
 
 function printFolder($folder)
 {
+	global $folder_count;
+	$folder_count++;
+
 	$color = $folder->inheritsAccess() ? "black" : getAccessColor($folder->getDefaultAccess());
 	
 	print "<li class=\"folderClass\">";
@@ -130,12 +118,31 @@ function printFolder($folder)
 	print "</ul>";
 }
 
-
 function printDocument($document)
 {
+	global $document_count,$file_count,$settings,$storage_size;
+	$document_count++;
+	
+	$local_file_count=0;
+	if (file_exists($settings->_contentDir.$document->getDir())){
+		$handle = opendir($settings->_contentDir.$document->getDir());
+		while ($entry = readdir($handle) )
+		{
+			if (is_dir($settings->_contentDir.$document->getDir().$entry)) continue;
+			else{
+				$local_file_count++;
+				$storage_size += filesize($settings->_contentDir.$document->getDir().$entry);
+			}
+
+		}
+		closedir($handle);
+	}	
+	
 	$color = $document->inheritsAccess() ? "black" : getAccessColor($document->getDefaultAccess());
 	print "<li class=\"documentClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewDocument.php?documentid=".$document->getID()."\">".$document->getName()."</a>";
+
+	print " - ".getMLText("files").":".$local_file_count;
 	
 	$owner = $document->getOwner();
 	$color = getAccessColor(M_ALL);
@@ -145,6 +152,8 @@ function printDocument($document)
 		printAccessList($document);
 	
 	print "</li>";
+	
+	$file_count += $local_file_count;
 }
 
 function printAccessList($obj)
@@ -173,4 +182,42 @@ function printAccessList($obj)
 	}
 	print ")</span>";
 }
+
+UI::contentHeading(getMLText("folders_and_documents_statistic"));
+UI::contentContainerStart();
+
+print "<table><tr><td>\n";
+
+print "<ul class=\"legend\">\n";
+print "<li><span style=\"color:black\">".getMLText("access_inheritance")." </span></li>";
+print "<li><span style=\"color:".getAccessColor(M_ALL)."\">".getMLText("access_mode_all")." </span></li>";
+print "<li><span style=\"color:".getAccessColor(M_READWRITE)."\">".getMLText("access_mode_readwrite")." </span></li>";
+print "<li><span style=\"color:".getAccessColor(M_READ)."\">".getMLText("access_mode_read")." </span></li>";
+print "<li><span style=\"color:".getAccessColor(M_NONE)."\">".getMLText("access_mode_none")." </span></li>";
+print "</ul>\n";
+
+print "</td><td>\n";
+
+print "<ul>\n";
+printFolder(getFolder($settings->_rootFolderID));
+print "</ul>\n";
+
+print "</td></tr>";
+
+print "<tr><td colspan=\"2\">";
+
+print "<ul class=\"legend\">\n";
+print "<li>".getMLText("folders").": ".$folder_count."</li>\n";
+print "<li>".getMLText("documents").": ".$document_count."</li>\n";
+print "<li>".getMLText("files").": ".$file_count."</li>\n";
+print "<li>".getMLText("storage_size").": ".formatted_size($storage_size)."</li>\n";
+print "</ul>\n";
+
+print "</td></tr>";
+
+print "</table>\n";
+
+UI::contentContainerEnd();
+UI::htmlEndPage();
+
 ?>

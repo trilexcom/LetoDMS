@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -27,16 +28,28 @@ if (strlen($theme)==0) {
 $icons = array();
 $icons["txt"]  = "txt.png";
 $icons["doc"]  = "word.png";
+$icons["dot"]  = "word.png";
+$icons["docx"] = "word.png";
+$icons["dotx"] = "word.png";
 $icons["rtf"]  = "document.png";
 $icons["xls"]  = "excel.png";
+$icons["xlt"]  = "excel.png";
+$icons["xlsx"] = "excel.png";
+$icons["xltx"] = "excel.png";
 $icons["ppt"]  = "powerpoint.png";
+$icons["pot"]  = "powerpoint.png";
+$icons["pptx"] = "powerpoint.png";
+$icons["potx"] = "powerpoint.png";
 $icons["exe"]  = "binary.png";
 $icons["html"] = "html.png";
 $icons["htm"]  = "html.png";
 $icons["gif"]  = "image.png";
 $icons["jpg"]  = "image.png";
+$icons["jpeg"] = "image.png";
 $icons["bmp"]  = "image.png";
 $icons["png"]  = "image.png";
+$icons["tif"]  = "image.png";
+$icons["tiff"] = "image.png";
 $icons["log"]  = "log.png";
 $icons["midi"] = "midi.png";
 $icons["pdf"]  = "pdf.png";
@@ -49,10 +62,35 @@ $icons["java"] = "source_java.png";
 $icons["py"]   = "source_py.png";
 $icons["tar"]  = "tar.png";
 $icons["gz"]   = "gz.png";
+$icons["7z"]   = "gz.png";
+$icons["bz"]   = "gz.png";
+$icons["bz2"]  = "gz.png";
+$icons["tgz"]  = "gz.png";
 $icons["zip"]  = "gz.png";
 $icons["mpg"]  = "video.png";
 $icons["avi"]  = "video.png";
 $icons["tex"]  = "tex.png";
+$icons["ods"]  = "ooo_spreadsheet.png";
+$icons["ots"]  = "ooo_spreadsheet.png";
+$icons["sxc"]  = "ooo_spreadsheet.png";
+$icons["stc"]  = "ooo_spreadsheet.png";
+$icons["odt"]  = "ooo_textdocument.png";
+$icons["ott"]  = "ooo_textdocument.png";
+$icons["sxw"]  = "ooo_textdocument.png";
+$icons["stw"]  = "ooo_textdocument.png";
+$icons["odp"]  = "ooo_presentation.png";
+$icons["otp"]  = "ooo_presentation.png";
+$icons["sxi"]  = "ooo_presentation.png";
+$icons["sti"]  = "ooo_presentation.png";
+$icons["odg"]  = "ooo_drawing.png";
+$icons["otg"]  = "ooo_drawing.png";
+$icons["sxd"]  = "ooo_drawing.png";
+$icons["std"]  = "ooo_drawing.png";
+$icons["odf"]  = "ooo_formula.png";
+$icons["sxm"]  = "ooo_formula.png";
+$icons["smf"]  = "ooo_formula.png";
+$icons["mml"]  = "ooo_formula.png";
+
 $icons["default"] = "default.png";
 
 class UI {
@@ -293,6 +331,7 @@ class UI {
 
 		echo "<ul class=\"localNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.Statistic.php\">".getMLText("folders_and_documents_statistic")."</a></li>\n";
+		echo "<li><a href=\"../out/out.BackupTools.php\">".getMLText("backup_tools")."</a></li>\n";
 		echo "<li><a href=\"../out/out.UsrMgr.php\">".getMLText("user_management")."</a></li>\n";
 		echo "<li><a href=\"../out/out.GroupMgr.php\">".getMLText("group_management")."</a></li>\n";
 		echo "<li><a href=\"../out/out.DefaultKeywords.php\">".getMLText("global_default_keywords")."</a></li>\n";

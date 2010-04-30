@@ -44,6 +44,14 @@ $folderPathHTML = getFolderPathHTML($folder, true);
 if ($folder->getAccessMode($user) < M_READWRITE) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));
 }
+?>
+
+<?php
+UI::htmlStartPage(getMLText("folder_title", array("foldername" => $folder->getName())));
+UI::globalNavigation($folder);
+UI::pageNavigation($folderPathHTML, "view_folder", $folder);
+UI::contentHeading(getMLText("add_subfolder"));
+UI::contentContainerStart();
 ?>
 <script language="JavaScript">
 function checkForm()
@@ -67,13 +75,6 @@ function checkForm()
 }
 </script>
 
-<?php
-UI::htmlStartPage(getMLText("folder_title", array("foldername" => $folder->getName())));
-UI::globalNavigation($folder);
-UI::pageNavigation($folderPathHTML, "view_folder", $folder);
-UI::contentHeading(getMLText("add_subfolder"));
-UI::contentContainerStart();
-?>
 <form action="../op/op.AddSubFolder.php" name="form1" onsubmit="return checkForm();" method="POST">
 	<input type="Hidden" name="folderid" value="<?php print $folderid;?>">
 	<table>

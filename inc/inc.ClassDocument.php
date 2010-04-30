@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -28,8 +29,7 @@ function getDocument($id)
 {
 	GLOBAL $db;
 	
-	if (!is_numeric($id))
-		die ("invalid documentid");
+	if (!is_numeric($id)) return false;
 	
 	$queryStr = "SELECT * FROM tblDocuments WHERE id = " . $id;
 	$resArr = $db->getResultArray($queryStr);
@@ -85,6 +85,12 @@ class Document
 		$this->_keywords = $keywords;
 		$this->_sequence = $sequence;
 	}
+	
+	function getDir() {
+		global $settings;
+		return $settings->_contentOffsetDir."/".$this->_id."/";
+	}
+
 
 	function getID() { return $this->_id; }
 
@@ -937,36 +943,35 @@ class Document
 	{
 		GLOBAL $db, $settings;
 		
-		$dir = getSuitableDocumentDir();
-		if (is_bool($dir))
-			return false;
-
-		//Kopieren der temporären Datei
-		if (!makeDir($settings->_contentDir . $dir))
-			return false;
-		if (!copyFile($tmpFile, $settings->_contentDir . $dir . "data" . $fileType)) {
-			return false;
-		}
+		// the doc path is id/version.filetype
+		$dir = $this->getDir();
 
 		//Eintrag in tblDocumentContent
 		$date = mktime();
 		$queryStr = "INSERT INTO tblDocumentContent (document, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
 					"(".$this->_id.", '".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+
 		$version = $db->getInsertID();
+		
+		// copy file
+		if (!makeDir($settings->_contentDir . $dir)) return false;
+		if (!copyFile($tmpFile, $settings->_contentDir . $dir . $version . $fileType)) return false;
+
 		unset($this->_content);
 		unset($this->_latestContent);
 		$docResultSet = new AddContentResultSet(new DocumentContent($this->_id, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
+
+		// TODO - verify
 		if ($settings->_enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($settings->_convertFileTypes)))
 			$docResultSet->_content->convert(); //Auch wenn das schiefgeht, wird deswegen nicht gleich alles "hingeschmissen" (sprich: false zurückgegeben)
+
 		$queryStr = "INSERT INTO `tblDocumentStatus` (`documentID`, `version`) ".
 			"VALUES ('". $this->_id ."', '". $version ."')";
 		if (!$db->getResult($queryStr))
 			return false;
-		$statusID = $db->getInsertID();
 
-		//$this->addNotify($user->getID(),true,FALSE);
+		$statusID = $db->getInsertID();
 
 		// Add reviewers into the database. Reviewers must review the document
 		// and submit comments, if appropriate. Reviewers can also recommend that
@@ -1069,8 +1074,7 @@ class Document
 
 	function getContentByVersion($version)
 	{
-		if (!is_numeric($version))
-			die ("invalid version");
+		if (!is_numeric($version)) return false;
 		
 		if (isset($this->_content))
 		{
@@ -1149,9 +1153,104 @@ class Document
 		GLOBAL $db;
 		
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $linkID;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
 		unset ($this->_documentLinks);
+		return true;
+	}
+	
+	function getDocumentFiles()
+	{
+		if (!isset($this->_documentFiles))
+		{
+			GLOBAL $db;
+			
+			$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id;
+			$resArr = $db->getResultArray($queryStr);
+			if (is_bool($resArr) && !$resArr) return false;
+				
+			$this->_documentFiles = array();
+			
+			foreach ($resArr as $row)
+				array_push($this->_documentFiles, new DocumentFile($row["id"], $row["document"], $row["userID"], $row["comment"], $row["date"], $row["dir"], $row["fileType"], $row["mimeType"], $row["orgFileName"], $row["name"]));
+		}
+		return $this->_documentFiles;		
+	}
+
+	function addDocumentFile($name, $comment, $user, $tmpFile, $orgFileName,$fileType, $mimeType )
+	{
+		GLOBAL $db, $settings;
+		
+		$dir = $settings->_contentOffsetDir."/".$this->_id."/";
+	
+		$queryStr = "INSERT INTO tblDocumentFiles (comment, date, dir, document, fileType, mimeType, orgFileName, userID, name) VALUES ".
+			"('".$comment."', '".mktime()."', '" . $dir ."', " . $this->_id.", '".$fileType."', '".$mimeType."', '".$orgFileName."',".$user->getID().",'".$name."')";
+		if (!$db->getResult($queryStr)) return false;
+			
+		$id = $db->getInsertID();
+		
+		$file = getDocumentFile($id);
+		if (is_bool($file) && !$file) return false;
+
+		// copy file
+		if (!makeDir($settings->_contentDir . $dir)) return false;
+		if (!copyFile($tmpFile, $settings->_contentDir . $file->getPath() )) return false;
+		
+		// Send notification to subscribers.
+		$this->getNotifyList();
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("new_file_email");
+		$message = getMLText("new_file_email")."\r\n";
+		$message .= 
+			getMLText("name").": ".$name."\r\n".
+			getMLText("comment").": ".$comment."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
+			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		foreach ($this->_notifyList["groups"] as $grp) {
+			Email::toGroup($user, $grp, $subject, $message);
+		}
+			
+		return true;
+	}
+	
+	function removeDocumentFile($ID)
+	{
+		global $settings,$user;
+	
+		$file=getDocumentFile($ID);
+		if (is_bool($file) && !$file) return false;
+					
+		if (file_exists( $settings->_contentDir . $file->getPath() )){
+			if (!removeFile( $settings->_contentDir . $file->getPath() ))
+				return false;
+		}
+		
+		$file->remove();
+			
+		unset ($this->_documentFiles);
+		
+		// Send notification to subscribers.
+		$this->getNotifyList();
+		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("removed_file_email");
+		$message = getMLText("removed_file_email")."\r\n";
+		$message .= 
+			getMLText("name").": ".$this->name."\r\n".
+			getMLText("comment").": ".$this->comment."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
+			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		foreach ($this->_notifyList["groups"] as $grp) {
+			Email::toGroup($user, $grp, $subject, $message);
+		}
+
+		
 		return true;
 	}
 
@@ -1165,6 +1264,20 @@ class Document
 		for ($i = 0; $i < count($this->_content); $i++)
 			if (!$this->_content[$i]->remove(FALSE))
 				return false;
+				
+		// remove document file
+		$res = $this->getDocumentFiles();
+		if (is_bool($res) && !$res) return false;
+		
+		for ($i = 0; $i < count($this->_documentFiles); $i++)
+			if (!$this->_documentFiles[$i]->remove())
+				return false;
+				
+		// TODO: versioning file?
+				
+		if (file_exists( $settings->_contentDir . $this->getDir() ))
+			if (!removeDir( $settings->_contentDir . $this->getDir() ))
+				return false;
 		
 		$queryStr = "DELETE FROM tblDocuments WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -1176,6 +1289,9 @@ class Document
 		if (!$db->getResult($queryStr))
 			return false;
 		$queryStr = "DELETE FROM tblDocumentLocks WHERE document = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+		$queryStr = "DELETE FROM tblDocumentFiles WHERE document = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
@@ -1212,6 +1328,8 @@ class Document
 		
 		// Delete the notification list.
 		$queryStr = "DELETE FROM tblNotify WHERE target = " . $this->_id . " AND targetType = " . T_DOCUMENT;
+		if (!$db->getResult($queryStr))
+			return false;
 
 		return true;
 	}
@@ -1239,6 +1357,8 @@ class Document
 				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
 			}
 			foreach ($tmpList["users"] as $user) {
+			
+				if (!$settings->enableAdminRevApp && $user->getUserID()==1) continue;
 				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
 			}
 
@@ -1283,6 +1403,7 @@ class Document
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
+					if ((!$settings->enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
 					$this->_approversList["users"][] = new User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}
@@ -1395,7 +1516,45 @@ class DocumentContent
 			$this->_user = getUser($this->_userID);
 		return $this->_user;
 	}
-	function getPath() { return $this->_dir . "data" . $this->_fileType; }
+	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
+	
+	function setComment($newComment) {
+	
+		GLOBAL $db, $user, $settings;
+
+		$queryStr = "UPDATE tblDocumentContent SET comment = '" . $newComment . "' WHERE `document` = " . $this->_documentID .	" AND `version` = " . $this->_version;
+		if (!$db->getResult($queryStr))
+			return false;
+
+		$this->_comment = $newComment;
+		
+		// Send notification to subscribers.
+		if (!isset($this->_document)) {
+			$this->_document = getDocument($this->_documentID);
+		}	
+
+		$nl=$this->_document->getNotifyList();
+
+		$subject = $settings->_siteName.": ".$this->_document->getName().", v.".$this->_version." - ".getMLText("comment_changed_email");
+		$message = getMLText("comment_changed_email")."\r\n";
+		$message .= 
+			getMLText("document").": ".$this->_document->getName()."\r\n".
+			getMLText("version").": ".$this->_version."\r\n".
+			getMLText("comment").": ".$newComment."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		Email::toList($user, $nl["users"], $subject, $message);
+		foreach ($nl["groups"] as $grp) {
+			Email::toGroup($user, $grp, $subject, $message);
+		}
+
+		return true;
+	}
+
 
 	function convert()
 	{
@@ -1474,17 +1633,21 @@ class DocumentContent
 		$emailList = array();
 		$emailList[] = $this->_userID;
 
-		if (!removeDir($settings->_contentDir . $this->_dir))
-			return false;
+		if (file_exists( $settings->_contentDir.$this->getPath() ))
+			if (!removeFile( $settings->_contentDir.$this->getPath() ))
+				return false;
+			
+		$status = $this->getStatus();
+		$stID = $status["statusID"];
+			
 		$queryStr = "DELETE FROM tblDocumentContent WHERE `document` = " . $this->_documentID .	" AND `version` = " . $this->_version;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		$status = $this->getStatus();
-		$stID = $status["statusID"];
+		
 		$queryStr = "DELETE FROM `tblDocumentStatusLog` WHERE `statusID` = '".$stID."'";
 		if (!$db->getResult($queryStr))
 			return false;
+			
 		$queryStr = "DELETE FROM `tblDocumentStatus` WHERE `documentID` = '". $this->_documentID ."' AND `version` = '" . $this->_version."'";
 		if (!$db->getResult($queryStr))
 			return false;
@@ -1622,7 +1785,8 @@ class DocumentContent
 			getMLText("status").": ".getOverallStatusText($status).
 			getMLText("folder").": ".getFolderPathPlain($this->_document->getFolder())."\r\n".
 			getMLText("comment").": ".$this->_document->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."\r\n";
+			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+
 		$uu = (is_null($updateUser) ? getUser($settings->_adminID) : $updateUser);
 
 		$subject=mydmsDecodeString($subject);
@@ -1902,9 +2066,6 @@ class DocumentContent
 		if (is_bool($res) && !$res) {
 			return -1;
 		}
-
-		// Add approver to event notification table.
-		//$this->_document->addNotify($userID, true);
 
 		// Send an email notification to the new approver.
 		if ($sendEmail) {
@@ -2215,10 +2376,10 @@ class DocumentContent
  /* ---------------------------------------------------------------------------------------------------- */
  
 function getDocumentLink($linkID) {
+
 	GLOBAL $db;
 	
-	if (!is_numeric($linkID))
-		die ("invalid linkID");
+	if (!is_numeric($linkID)) return false;
 
 	$queryStr = "SELECT * FROM tblDocumentLinks WHERE id = " . $linkID;
 	$resArr = $db->getResultArray($queryStr);
@@ -2287,6 +2448,89 @@ class DocumentLink
 		GLOBAL $db;
 		
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+		
+		return true;
+	}
+}
+
+ /* ---------------------------------------------------------------------------------------------------- */
+ 
+function getDocumentFile($ID) {
+
+	GLOBAL $db;
+	
+	if (!is_numeric($ID)) return false;
+
+	$queryStr = "SELECT * FROM tblDocumentFiles WHERE id = " . $ID;
+	$resArr = $db->getResultArray($queryStr);
+	if ((is_bool($resArr) && !$resArr) || count($resArr)==0) return false;
+
+	$resArr = $resArr[0];
+	return new DocumentFile($resArr["id"], $resArr["document"], $resArr["userID"], $resArr["comment"], $resArr["date"], $resArr["dir"], $resArr["fileType"], $resArr["mimeType"], $resArr["orgFileName"], $resArr["name"]);
+}
+
+class DocumentFile
+{
+	var $_id;
+	var $_documentID;
+	var $_userID;
+	var $_comment;
+	var $_date;
+	var $_dir;
+	var $_fileType;
+	var $_mimeType;
+	var $_orgFileName;
+	var $_name;
+
+	function DocumentFile($id, $documentID, $userID, $comment, $date, $dir, $fileType, $mimeType, $orgFileName,$name)
+	{
+		$this->_id = $id;
+		$this->_documentID = $documentID;
+		$this->_userID = $userID;
+		$this->_comment = $comment;
+		$this->_date = $date;
+		$this->_dir = $dir;
+		$this->_fileType = $fileType;
+		$this->_mimeType = $mimeType;
+		$this->_orgFileName = $orgFileName;
+		$this->_name = $name;
+	}
+
+	function getID() { return $this->_id; }
+	function getDocumentID() { return $this->_documentID; }
+	function getUserID() { return $this->_userID; }
+	function getComment() { return $this->_comment; }
+	function getDate() { return $this->_date; }
+	function getDir() { return $this->_dir; }
+	function getFileType() { return $this->_fileType; }
+	function getMimeType() { return $this->_mimeType; }
+	function getOriginalFileName() { return $this->_orgFileName; }
+	function getName() { return $this->_name; }
+	
+	function getUser()
+	{
+		if (!isset($this->_user))
+			$this->_user = getUser($this->_userID);
+		return $this->_user;
+	}
+	
+	function getPath()
+	{
+		return $this->_dir . "f" .$this->_id . $this->_fileType;
+	}
+
+	function remove()
+	{
+		GLOBAL $db,$settings;
+		
+		if (file_exists( $settings->_contentDir.$this->getPath() ))
+			if (!removeFile( $settings->_contentDir.$this->getPath() ))
+				return false;
+	
+		
+		$queryStr = "DELETE FROM tblDocumentFiles WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 		

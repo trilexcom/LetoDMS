@@ -21,8 +21,7 @@ function getFolder($id)
 {
 	GLOBAL $db;
 
-	if (!is_numeric($id))
-		die ("invalid folderid");
+	if (!is_numeric($id)) return false;
 	
 	$queryStr = "SELECT * FROM tblFolders WHERE id = " . $id;
 	$resArr = $db->getResultArray($queryStr);
@@ -1080,6 +1079,8 @@ class Folder
 					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
 				}
 			}
+			
+			print_r($userIDs);
 
 			// Construct a query against the users table to identify those users
 			// that have write access to this folder, either directly through an
@@ -1122,6 +1123,7 @@ class Folder
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
+					if ((!$settings->enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
 					$this->_approversList["users"][] = new User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}

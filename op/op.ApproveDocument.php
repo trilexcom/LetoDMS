@@ -110,7 +110,7 @@ if ($_POST["approvalType"] == "ind") {
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
 			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
 			getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
@@ -163,7 +163,7 @@ else if ($_POST["approvalType"] == "grp") {
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
 			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
 			getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";

@@ -37,7 +37,7 @@ if (!$user->isAdmin()) {
 
 UI::htmlStartPage(getMLText("admin_tools"));
 UI::globalNavigation();
-UI::pageNavigation(getMLText("admin_tools").": ".getMLText("global_default_keywords"), "admin_tools");
+UI::pageNavigation(getMLText("admin_tools"), "admin_tools");
 
 $categories = getAllUserKeywordCategories($settings->_adminID);
 ?>
@@ -58,25 +58,7 @@ function showKeywords(selectObj) {
 </script>
 <?php
 
-UI::contentHeading(getMLText("new_default_keyword_category"));
-UI::contentContainerStart();
-?>
-	<form action="../op/op.DefaultKeywords.php" >
-	<input type="Hidden" name="action" value="addcategory">
-	<table>
-		<tr>
-			<td><?php printMLText("name");?>:</td>
-			<td><input name="name"></td>
-		</tr>
-		<tr>
-			<td colspan="2"><input type="Submit"></td>
-		</tr>
-	</table>
-	</form>
-
-<?php
-UI::contentContainerEnd();
-UI::contentHeading(getMLText("edit_default_keyword_category"));
+UI::contentHeading(getMLText("edit_default_keywords"));
 UI::contentContainerStart();
 ?>
 	<table>
@@ -170,6 +152,25 @@ UI::contentContainerStart();
 <?php } ?>
 	</table>
 	
+<?php
+UI::contentContainerEnd();
+
+UI::contentHeading(getMLText("new_default_keyword_category"));
+UI::contentContainerStart();
+?>
+	<form action="../op/op.DefaultKeywords.php" >
+	<input type="Hidden" name="action" value="addcategory">
+	<table>
+		<tr>
+			<td><?php printMLText("name");?>:</td>
+			<td><input name="name"></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="Submit" value="<?php printMLText("add"); ?>"></td>
+		</tr>
+	</table>
+	</form>
+
 <?php
 UI::contentContainerEnd();
 UI::htmlEndPage();

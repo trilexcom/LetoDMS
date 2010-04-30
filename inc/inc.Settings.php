@@ -20,16 +20,16 @@
 class Settings
 {
 	// Name of site -- used in the page titles. Default: MyDMS
-	var $_siteName = "";
+	var $_siteName = "LetoDMS Demo";
 
 	// Message to display at the bottom of every page.
-	var $_footNote = "";
+	var $_footNote = "LetoDMS Powered By Trilex Labs Group V1.81";
 	
 	// if true the disclaimer message the lang.inc files will be print on the bottom of the page
 	var $_printDisclaimer = true;	
 
 	// Default page on login. Defaults to out/out.ViewFolder.php
-	var $_siteDefaultPage = "out/out.MyDocuments.php?inProcess=1";
+	var $_siteDefaultPage = "";
 
 	// IDs of admin-user, guest-user and root-folder (no need to change)
 	var $_adminID = 1;
@@ -51,33 +51,29 @@ class Settings
 	var $_strictFormCheck = true;
 
 	// path to where mydms is located
-	var $_rootDir = "/var/www/...";
+	var $_rootDir = "/home/letodms/public_html/demo/";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
 	// http://www.example.com/mydms/, set $_httpRoot = "/mydms/".
 	// If the URL is http://www.example.com/, set $_httpRoot = "/".
-	var $_httpRoot = "";
+	var $_httpRoot = "/";
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "/var/www/...";
+	var $_contentDir = "/content";
 
-	// To work around limitations in the underlying file system, and to
-	// preserve backwards compatibility, a new directory structure has been
-	// devised that exists within the content directory ($_contentDir). This
-	// requires a base directory from which to begin. Usually leave this to the
-	// default setting, 1048576, but can be any number or string that does not
-	// already exist within $_contentDir.
-	//
-	// To continue using the old directory structure, set $_useLegacyDir = true;
-	var $_useLegacyDir=false;
+	// To work around limitations in the underlying file system, a new 
+	// directory structure has been devised that exists within the content 
+	// directory ($_contentDir). This requires a base directory from which 
+	// to begin. Usually leave this to the default setting, 1048576, but can 
+	// be any number or string that does not already exist within $_contentDir.	
 	var $_contentOffsetDir = "1048576";
 
 	// Maximum number of sub-directories per parent directory. Default: 32700.
 	var $_maxDirID = 32700;
 
-	//default language (name of a subfolder in folder "languages")
+	// default language (name of a subfolder in folder "languages")
 	var $_language = "English";
 
 	// users are notified about document-changes that took place within the last $_updateNotifyTime seconds
@@ -91,7 +87,7 @@ class Settings
 	var $_enableConverting = true;
 
 	// default style (name of a subfolder in folder "styles")
-	var $_theme = "clean";
+	var $_theme = "blue";
 
 	// Workaround for page titles that go over more than 2 lines.
 	var $_titleDisplayHack = true;
@@ -101,11 +97,18 @@ class Settings
 	
 	// enable/disable group and user view for all users
 	var $_enableUsersView = true;
+	
+	// false to don't list administrator as reviewer/approver
+	var $_enableAdminRevApp = false;
+	
+	// the name of the versioning info file created by the backup tool
+	var $_versioningFileName = "versioning_info.txt";
+	
 
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb
-	var $_ADOdbPath = "";
+	var $_ADOdbPath = "/home/letodms/public_html/demo/adodb/";
 
 	//DB-Driver used by adodb (see adodb-readme)
 	var $_dbDriver = "mysql";
@@ -114,13 +117,13 @@ class Settings
 	var $_dbHostname = "localhost";
 
 	//database where the tables for mydms are stored (optional - see adodb-readme)
-	var $_dbDatabase = "mydms";
+	var $_dbDatabase = "letodms_demo";
 
 	//username for database-access
-	var $_dbUser = "mydms";
+	var $_dbUser = "letodms_admin";
 
 	//password for database-access
-	var $_dbPass = "mydms";
+	var $_dbPass = "admin";
 
 	// -------------------------------- LDAP Authentication Setup --------------------------------------------
 

@@ -105,7 +105,7 @@ if ($_POST["reviewType"] == "ind") {
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
 			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
 			getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
@@ -157,7 +157,7 @@ else if ($_POST["reviewType"] == "grp") {
 		$message = getMLText("review_submit_email")."\r\n";
 		$message .= 
 			getMLText("name").": ".$document->getName()."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
 			getMLText("version").": ".$version."\r\n".
 			getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
 			getMLText("comment").": ".$comment."\r\n".

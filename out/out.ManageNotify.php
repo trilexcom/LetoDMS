@@ -34,10 +34,6 @@ UI::htmlStartPage(getMLText("my_documents"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("my_documents"), "my_documents");
 
-/*UI::htmlStartPage(getMLText("edit_document_notify"));
-UI::globalNavigation();
-UI::pageNavigation(getMLText("my_account").":".getMLText("edit_document_notify"), "my_account");*/
-
 //
 // Get list of subscriptions for user.
 //
@@ -47,8 +43,8 @@ $groups = $user->getGroups();
 $grpList = "";
 foreach ($groups as $group) {
 	$grpList .= (strlen($grpList)==0 ? "" : ", ") . $group->getID();
-
 }
+
 // Now send the main query.
 $queryStr = "(SELECT `tblNotify`.* FROM `tblNotify` ".
 	"WHERE `tblNotify`.`userID` = '". $user->getID() ."') ".
@@ -59,6 +55,7 @@ $resArr = $db->getResultArray($queryStr);
 // Parse the results, creating arrays to contain the document and folder IDs.
 $docArr = array();
 $fldArr = array();
+
 foreach ($resArr as $res) {
 	if ($res["targetType"] == T_DOCUMENT && !in_array($res["target"], $docArr)) {
 		$docArr[] = $res["target"];
@@ -103,6 +100,7 @@ UI::contentContainerEnd();
 
 UI::contentHeading(getMLText("edit_document_notify"));
 UI::contentContainerStart();
+
 if (count($docArr)==0) {
 	printMLText("empty_notify_list");
 }

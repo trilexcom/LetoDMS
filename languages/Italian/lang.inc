@@ -114,14 +114,14 @@ $text["draft_pending_review"] = "Bozza in revisione";
 $text["edit_default_keyword_category"] = "Modifica categorie";
 $text["edit_default_keywords"] = "Modifica parole chiave";
 $text["edit_document_access"] = "Modifica permessi";
-$text["edit_document_notify"] = "Lista Notifica";
+$text["edit_document_notify"] = "Lista di notifica file";
 $text["edit_document_props_again"] = "Modifica nuovamente il documento";
 $text["edit_document_props"] = "Gestione documento";
 $text["edit_document"] = "Modifica documento";
 $text["edit_existing_access"] = "Gestione permessi";
 $text["edit_existing_notify"] = "Gestione lista di notifica";
 $text["edit_folder_access"] = "Modifica permessi";
-$text["edit_folder_notify"] = "Lista di Notifica";
+$text["edit_folder_notify"] = "Lista di notifica cartelle";
 $text["edit_folder_props_again"] = "Modifica nuovamente la cartella";
 $text["edit_folder_props"] = "Gestione Cartella";
 $text["edit_folder"] = "Modifica cartella";
@@ -140,7 +140,7 @@ $text["error_occured"] = "Si verificato un errore";
 $text["exp_date"] = "Data Scadenza";
 $text["expired"] = "Scaduto";
 $text["expires"] = "Scadenza";
-$text["file_info"] = "File di Informazioni";
+$text["file_info"] = "Informazioni sul file";
 $text["file_size"] = "Grandezza";
 $text["file"] = "File";
 $text["folder_contents"] = "Contenuto cartella";
@@ -149,7 +149,7 @@ $text["folder_notify_again"] = "Modifica nuovamente lista notifica";
 $text["folder_overview"] = "Vista generale cartella";
 $text["folder_path"] = "Percorso";
 $text["folder_title"] = "Cartella '[foldername]'";
-$text["folders_and_documents_statistic"] = "Visualizzazione generale permessi";
+$text["folders_and_documents_statistic"] = "Visualizzazione generale";
 $text["foldertree"] = "Albero cartella";
 $text["from_approval_process"] = "dal processo di approvazione";
 $text["from_review_process"] = "dal processo di revisione";
@@ -199,7 +199,7 @@ $text["js_no_email"] = "Scrivi nel tuo indirizzo di Email";
 $text["js_no_file"] = "Per favore seleziona un file";
 $text["js_no_keywords"] = "Specifica alcune parole chiave";
 $text["js_no_login"] = "Il campo ID utente é necessario";
-$text["js_no_name"] = "Il nome utente é necessario";
+$text["js_no_name"] = "Il nome é necessario";
 $text["js_no_override_status"] = "E' necessario selezionare un nuovo stato";
 $text["js_no_pwd"] = "La password è necessaria";
 $text["js_no_query"] = "Scrivi nella query";
@@ -430,4 +430,33 @@ $text["old"] = "Vecchio";
 $text["new"] = "Nuovo"; 
 $text["folder"] = "Cartella"; 
 
+$text["new_file_email"] = "Nuovo file allegato";
+$text["removed_file_email"] = "Rimosso file allegato";
+
+$text["document_deleted"] = "Documento rimosso"; 
+$text["linked_files"] = "File allegati"; 
+$text["invalid_file_id"] = "ID del file non valido";
+$text["rm_file"] = "Rimuovi file allegato"; 
+$text["confirm_rm_file"] = "Vuoi veramente eliminare il file \"[name]\" del documento \"[documentname]\"?<br>Attenzione: L'operazione &egrave; irreversibile";
+
+$text["backup_tools"] = "Strumenti di backup"; 
+$text["versioning_file_creation"] = "Creazione file di versionamento"; 
+$text["archive_creation"] = "Creazione archivi"; 
+$text["files_deletion"] = "Cancellazione file"; 
+
+$text["versioning_info"] = "Informazioni di versionamento";
+$text["versioning_file_creation_warning"] = "Con questa operazione &egrave; possibile creare un file di backup delle informazioni di versionamento dei documenti di una intera cartella. Dopo la creazione ogni file viene salvato nella cartella del relativo documento.";
+$text["archive_creation_warning"] = "Con questa operazione &egrave; possibile creare archivi contenenti i file di intere cartelle del DMS. Dopo la creazione l'archivio viene salvato nella cartella dati del server.";
+$text["files_deletion_warning"] = "Con questa operazione &egrave; possible cancellare i file di intere cartelle. Dopo la cancellazione le informazioni di versionamento resteranno disponibili."; 
+
+$text["confirm_rm_folder_files"] = "Vuoi davvero rimuovere tutti i file dalla cartella \"[foldername]\" e dalle sue sottocartelle?<br>Attenzione: Questa operazione non pu&ograve; essere annullata.";
+
+$text["files"] = "Files";
+$text["storage_size"] = "Dimensione totale";
+
+$text["backup_list"] = "Lista dei backup presenti";
+$text["backup_remove"] = "Elimina file di backup";
+$text["confirm_rm_backup"] = "Vuoi davvero rimuovere il file \"[arkname]\"?<br>Attenzione: Questa operazione non pu&ograve; essere annullata.";
+
+$text["edit_comment"] = "Modifica il commento";
 ?>

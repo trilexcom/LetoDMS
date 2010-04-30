@@ -17,6 +17,14 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+function formatted_size($size_bytes)
+{
+	if ($size_bytes>1000000000) return number_format($size_bytes/1000000000,1,".","")." GBytes";
+	else if ($size_bytes>1000000) return number_format($size_bytes/1000000,1,".","")." MBytes";
+	else if ($size_bytes>1000) return number_format($size_bytes/1000,1,".","")." KBytes";
+	return number_format($size_bytes,0,"","")." Bytes";
+}
+
 function getReadableDate($timestamp) {
 	return date("d.m.Y", $timestamp);
 }

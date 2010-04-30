@@ -19,8 +19,8 @@
 
 class Version {
 
-	var $_number = "1.7.2";
-	var $_string = "MyDMS Standard";
+	var $_number = "v1.8.1";
+	var $_string = "LetoDMS";
 
 	function Version() {
 		return;

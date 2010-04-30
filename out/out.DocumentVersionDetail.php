@@ -115,6 +115,9 @@ if ($document->isLocked()) {
 <?php
 UI::contentContainerEnd();
 
+// verify if file exists
+$file_exists=file_exists($settings->_contentDir . $version->getPath());
+
 UI::contentHeading(getMLText("details_version", array ("version" => $version->getVersion())));
 UI::contentContainerStart();
 print "<table class=\"folderView\">";
@@ -128,15 +131,22 @@ print "<th></th>\n";
 print "</tr>\n</thead>\n<tbody>\n";
 print "<tr>\n";
 print "<td><ul class=\"actions\">";
-print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\"> ".getMLText("download")."</a>";
-if ($version->viewOnline())
-	print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+
+if ($file_exists){
+	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\"> ".getMLText("download")."</a>";
+	if ($version->viewOnline())
+		print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+}else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\"> ";
+
 print "</ul></td>\n";
 print "<td class=\"center\">".$version->getVersion()."</td>\n";
 
 print "<td><ul class=\"documentDetail\">\n";
 print "<li>".$version->getOriginalFileName()."</li>\n";
-print "<li>". filesize($settings->_contentDir . $version->getPath()) ." bytes ".$version->getMimeType()."</li>";
+
+if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
+else print "<li>". $version->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+
 $updatingUser = $version->getUser();
 print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($version->getDate())."</li>";
 print "</ul></td>\n";
@@ -153,6 +163,7 @@ if (($document->getAccessMode($user) >= M_READWRITE)) {
 			print "<li><a href='../out/out.OverrideContentStatus.php?documentid=".$documentid."&version=".$version->getVersion()."'>".getMLText("change_status")."</a></li>";
 		}
 	}
+	print "<li><a href=\"out.EditComment.php?documentid=".$documentid."&version=".$version->getVersion()."\">".getMLText("edit_comment")."</a></li>";
 	print "</ul>";
 }
 else {

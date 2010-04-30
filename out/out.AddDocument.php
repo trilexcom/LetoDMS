@@ -64,13 +64,11 @@ function checkForm()
 <?php
 	}
 ?>
-	if (msg != "")
-	{
+	if (msg != ""){
 		alert(msg);
 		return false;
 	}
-	else
-		return true;
+	else return true;
 }
 </script>
 <script language="JavaScript" src="../js/displayFunctions.js"></script>

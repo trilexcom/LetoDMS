@@ -60,6 +60,9 @@ $status = $latestContent->getStatus();
 $reviewStatus = $latestContent->getReviewStatus();
 $approvalStatus = $latestContent->getApprovalStatus();
 
+// verify if file exists
+$file_exists=file_exists($settings->_contentDir . $latestContent->getPath());
+
 UI::htmlStartPage(getMLText("document_title", array("documentname" => $document->getName())));
 UI::globalNavigation($folder);
 UI::pageNavigation($docPathHTML, "view_document");
@@ -117,15 +120,23 @@ print "<th></th>\n";
 print "</tr></thead><tbody>\n";
 print "<tr>\n";
 print "<td><ul class=\"actions\">";
-print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\">".getMLText("download")."</a></li>";
-if ($latestContent->viewOnline())
-	print "<li><a target=\"_blank\" href=\"../op/viewonline" . $latestContent->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a></li>";
+
+if ($file_exists){
+	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\">".getMLText("download")."</a></li>";
+	if ($latestContent->viewOnline())
+		print "<li><a target=\"_blank\" href=\"../op/viewonline" . $latestContent->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a></li>";
+}else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></li>";
+
 print "</ul></td>\n";
 print "<td>".$latestContent->getVersion()."</td>\n";
 
 print "<td><ul class=\"documentDetail\">\n";
 print "<li>".$latestContent->getOriginalFileName() ."</li>\n";
-print "<li>". filesize($settings->_contentDir . $latestContent->getPath()) ." bytes ".$latestContent->getMimeType()."</li>";
+
+if ($file_exists)
+	print "<li>". formatted_size(filesize($settings->_contentDir . $latestContent->getPath())) ." ".$latestContent->getMimeType()."</li>";
+else print "<li>".$latestContent->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+
 $updatingUser = $latestContent->getUser();
 print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($latestContent->getDate())."</li>";
 
@@ -152,6 +163,15 @@ if ($document->getAccessMode($user) == M_ALL) {
 		print "<li><a href='../out/out.SetExpires.php?documentid=".$documentid."'>".getMLText("set_expiry")."</a></li>";
 	}
 }
+if ($document->getAccessMode($user) >= M_READWRITE) {
+	print "<li><a href=\"out.EditComment.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit_comment")."</a></li>";
+}
+
+$vfile=$settings->_contentDir . $document->getDir() .$settings-> _versioningFileName;
+if (file_exists($vfile)){
+	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&vfile=1\">".getMLText("versioning_info")."</a></li>";	
+}
+
 
 //
 // Display a link if the user is a reviewer or approver for this document.
@@ -326,17 +346,24 @@ if (count($versions)>1) {
 		$version = $versions[$i];
 		$vstat = $version->getStatus();
 		$comment = $version->getComment();
-		//if (strlen($comment) > 25) $comment = substr($comment, 0, 22) . "...";
+		
+		// verify if file exists
+		$file_exists=file_exists($settings->_contentDir . $version->getPath());
+		
 		print "<tr>\n";
 		print "<td><ul class=\"actions\">";
-		print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">".getMLText("download")."</a>";
-		if ($version->viewOnline())
-			print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+		if ($file_exists){
+			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">".getMLText("download")."</a>";
+			if ($version->viewOnline())
+				print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+		}else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">";
+		
 		print "</ul></td>\n";
 		print "<td>".$version->getVersion()."</td>\n";
 		print "<td><ul class=\"documentDetail\">\n";
 		print "<li>".$version->getOriginalFileName()."</li>\n";
-		print "<li>". filesize($settings->_contentDir . $version->getPath()) ." bytes ".$version->getMimeType()."</li>";
+		if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
+		else print "<li>". $version->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 		$updatingUser = $version->getUser();
 		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($version->getDate())."</li>";
 		print "</ul>\n";
@@ -356,6 +383,65 @@ if (count($versions)>1) {
 else printMLText("empty_notify_list");
 
 UI::contentContainerEnd();
+
+UI::contentHeading(getMLText("linked_files"));
+UI::contentContainerStart();
+
+$files = $document->getDocumentFiles();
+
+if (count($files) > 0) {
+
+	print "<table class=\"folderView\">";
+	print "<thead>\n<tr>\n";
+	print "<th></th>\n";
+	print "<th>".getMLText("name")."</th>\n";
+	print "<th>".getMLText("file")."</th>\n";
+	print "<th>".getMLText("comment")."</th>\n";
+	print "<th></th>\n";
+	print "</tr>\n</thead>\n<tbody>\n";
+
+	foreach($files as $file) {
+	
+		$file_exists=file_exists($settings->_contentDir . $file->getPath());
+		
+		$responsibleUser = $file->getUser();
+
+		print "<tr>";
+		print "<td><ul class=\"actions\">";
+		if ($file_exists)
+			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&file=".$file->getID()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($file->getFileType())."\" title=\"".$file->getMimeType()."\">".getMLText("download")."</a>";
+		else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($file->getFileType())."\" title=\"".$file->getMimeType()."\">";
+		print "</ul></td>";
+
+		print "<td>".$file->getName()."</td>";
+		
+		print "<td><ul class=\"documentDetail\">\n";
+		print "<li>".$file->getOriginalFileName() ."</li>\n";
+		if ($file_exists)
+			print "<li>". filesize($settings->_contentDir . $file->getPath()) ." bytes ".$file->getMimeType()."</li>";
+		else print "<li>".$file->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+
+		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$responsibleUser->getEmail()."\">".$responsibleUser->getFullName()."</a> - ".getLongReadableDate($file->getDate())."</li>";
+
+		print "<td>".$file->getComment()."</td>";
+	
+		print "<td><span class=\"actions\">";
+		if (($document->getAccessMode($user) == M_ALL)||($file->getUserID()==$user->getID()))
+			print "<a href=\"../out/out.RemoveDocumentFile.php?documentid=".$documentid."&fileid=".$file->getID()."\">".getMLText("delete")."</a>";
+		print "</span></td>";		
+		
+		print "</tr>";
+	}
+	print "</tbody>\n</table>\n";	
+
+}
+else printMLText("empty_notify_list");
+
+if ($document->getAccessMode($user) >= M_READWRITE)
+	print "<ul class=\"actions\"><li><a href=\"../out/out.AddFile.php?documentid=".$documentid."\">".getMLText("add")."</a></ul>\n";
+
+UI::contentContainerEnd();
+
 
 UI::contentHeading(getMLText("linked_documents"));
 UI::contentContainerStart();
@@ -382,7 +468,7 @@ if (count($links) > 0) {
 		print "<td>".$responsibleUser->getFullName()."</td>";
 		print "<td>" . (($link->isPublic()) ? getMLText("yes") : getMLText("no")) . "</td>";
 		print "<td><span class=\"actions\">";
-		if (($user->getID() == $responsibleUser->getID()) || ($user->getID() == $settings->_adminID) || ($link->isPublic() && ($document->getAccessMode($user) >= M_READWRITE )))
+		if (($user->getID() == $responsibleUser->getID()) || ($document->getAccessMode($user) == M_ALL ))
 			print "<a href=\"../op/op.RemoveDocumentLink.php?documentid=".$documentid."&linkid=".$link->getID()."\">".getMLText("delete")."</a>";
 		print "</span></td>";
 		print "</tr>";
@@ -391,8 +477,7 @@ if (count($links) > 0) {
 }
 else printMLText("empty_notify_list");
 
-if ($user->getID() != $settings->_guestID) {
-
+if ($user->getID() != $settings->_guestID) 
 ?>
 	<form action="../op/op.AddDocumentLink.php" name="form1">
 	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
@@ -416,7 +501,8 @@ if ($user->getID() != $settings->_guestID) {
 	</table>
 	</form>
 <?php
-}
+//}
 UI::contentContainerEnd();
+
 UI::htmlEndPage();
 ?>
