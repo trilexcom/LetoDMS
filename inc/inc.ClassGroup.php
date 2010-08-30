@@ -163,14 +163,14 @@ class Group
 		return $this->_users;
 	}
 
-	function addUser($user)
+	function addUser($user,$asManager=false)
 	{
 		global $db;
 
-		$queryStr = "INSERT INTO tblGroupMembers (groupID, userID) VALUES (".$this->_id.", ".$user->getID().")";
+		$queryStr = "INSERT INTO tblGroupMembers (groupID, userID, manager) VALUES (".$this->_id.", ".$user->getID(). ", " . ($asManager?"1":"0") ." )";
 		$res = $db->getResult($queryStr);
-		if ($res)
-			return false;
+		
+		if ($res) return false;
 
 		unset($this->_users);
 		return true;
@@ -180,19 +180,19 @@ class Group
 	{
 		global $db;
 
-		$queryStr = "DELETE FROM tblGroupMembers WHERE  groupID = ".$this->_id." AND userID = ".$user->getID();
+		$queryStr = "DELETE FROM tblGroupMembers WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
 		$res = $db->getResult($queryStr);
-		if ($res)
-			return false;
 		
+		if ($res) return false;
 		unset($this->_users);
 		return true;
 	}
 
-	function isMember($user)
+	// $asManager=false: verify if user is in group
+	// $asManager=true : verify if user is in group as manager
+	function isMember($user,$asManager=false)
 	{
-		//Wenn die User bereits abgefragt wurden, geht's so schneller:
-		if (isset($this->_users))
+		if (isset($this->_users)&&!$asManager)
 		{
 			foreach ($this->_users as $usr)
 				if ($usr->getID() == $user->getID())
@@ -200,17 +200,29 @@ class Group
 			return false;
 		}
 		
-		//Ansonsten: DB-Abfrage
 		global $db;
-		$queryStr = "SELECT * FROM tblGroupMembers WHERE groupID = " . $this->_id . " AND userID = " . $user->getID();
+		if ($asManager) $queryStr = "SELECT * FROM tblGroupMembers WHERE groupID = " . $this->_id . " AND userID = " . $user->getID() . " AND manager = 1";
+		else $queryStr = "SELECT * FROM tblGroupMembers WHERE groupID = " . $this->_id . " AND userID = " . $user->getID();
+
 		$resArr = $db->getResultArray($queryStr);
-		if (is_bool($resArr) && $resArr == false)
-			return false;
 		
-		if (count($resArr) != 1)
-			return false;
-		else
-			return true;
+		if (is_bool($resArr) && $resArr == false) return false;
+		if (count($resArr) != 1) return false;
+		
+		return true;
+	}
+	
+	function toggleManager($user)
+	{
+		global $db;
+		
+		if (!$this->isMember($user)) return false;
+		
+		if ($this->isMember($user,true)) $queryStr = "UPDATE tblGroupMembers SET manager = 0 WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
+		else $queryStr = "UPDATE tblGroupMembers SET manager = 1 WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
+		
+		if (!$db->getResult($queryStr)) return false;
+		return true;
 	}
 
 	/**
@@ -235,6 +247,15 @@ class Group
 		$queryStr = "DELETE FROM tblNotify WHERE groupID = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
+		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE reviewerGroupID = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE approverGroupID = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+			
+		// TODO : update document status if reviewer/approver has been deleted
+
 
 		$reviewStatus = $this->getReviewStatus();
 		foreach ($reviewStatus as $r) {

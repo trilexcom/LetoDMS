@@ -1,7 +1,6 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -52,7 +51,7 @@ echo "<thead>\n<tr>\n";
 echo "<th>".getMLText("name")."</th>\n";
 echo "<th>".getMLText("email")."</th>\n";
 echo "<th>".getMLText("comment")."</th>\n";
-echo "<th>".getMLText("user_image")."</th>\n";
+if ($settings->_enableUserImage) echo "<th>".getMLText("user_image")."</th>\n";
 echo "</tr>\n</thead>\n";
 
 foreach ($users as $currUser) {
@@ -60,16 +59,21 @@ foreach ($users as $currUser) {
 	if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID))
 		continue;
 		
+	if ($currUser->isHidden()=="1") continue;
+		
 	echo "<tr>\n";
 	
 	print "<td>".$currUser->getFullName()."</td>";
 	
 	print "<td><a href=\"mailto:".$currUser->getEmail()."\">".$currUser->getEmail()."</a></td>";
 	print "<td>".$currUser->getComment()."</td>";
-	print "<td>";
-	if ($currUser->hasImage()) print "<img src=\"".$currUser->getImageURL()."\">";
-	else printMLText("no_user_image");
-	print "</td>";	
+	
+	if ($settings->_enableUserImage){
+		print "<td>";
+		if ($currUser->hasImage()) print "<img src=\"".$currUser->getImageURL()."\">";
+		else printMLText("no_user_image");
+		print "</td>";	
+	}
 	
 	echo "</tr>\n";
 }

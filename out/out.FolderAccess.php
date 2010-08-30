@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -81,18 +82,17 @@ function checkForm()
 <?php
 $allUsers = getAllUsers();
 
+UI::contentHeading(getMLText("edit_folder_access"));
+UI::contentContainerStart();
+
 if ($user->isAdmin()) {
-	UI::contentHeading(getMLText("set_owner"));
-	UI::contentContainerStart();
+
+	UI::contentSubHeading(getMLText("set_owner"));
 ?>
 	<form action="../op/op.FolderAccess.php">
 	<input type="Hidden" name="action" value="setowner">
 	<input type="Hidden" name="folderid" value="<?php print $folderid;?>">
-	<table>
-	<tr>
-	<td><?php printMLText("owner");?></td>
-	<td>
-	<select name="ownerid">
+	<?php printMLText("owner");?> : <select name="ownerid">
 	<?php
 	$owner = $folder->getOwner();
 	foreach ($allUsers as $currUser) {
@@ -105,21 +105,15 @@ if ($user->isAdmin()) {
 	}
 	?>
 	</select>
-	</td>
-	</tr>
-	<tr>
-	<td colspan="2"><input type="Submit" value="<?php printMLText("set_owner")?>"></td>
-	</tr>
-	</table>
+	<input type="Submit" value="<?php printMLText("save")?>">
 	</form>
 	<?php
-	UI::contentContainerEnd();
 }
 
 if ($folderid != $settings->_rootFolderID && $folder->getParent()){
 
-	UI::contentHeading(getMLText("access_inheritance"));
-	UI::contentContainerStart();
+	UI::contentSubHeading(getMLText("access_inheritance"));
+	
 	if ($folder->inheritsAccess()) {
 		printMLText("inherits_access_msg", array(
 			"copyurl" => "../op/op.FolderAccess.php?folderid=".$folderid."&action=notinherit&mode=copy", 
@@ -129,26 +123,22 @@ if ($folderid != $settings->_rootFolderID && $folder->getParent()){
 		exit();
 	}
 	printMLText("does_not_inherit_access_msg", array("inheriturl" => "../op/op.FolderAccess.php?folderid=".$folderid."&action=inherit"));
-	UI::contentContainerEnd();
-
 }
 
 $accessList = $folder->getAccessList();
 
-UI::contentHeading(getMLText("default_access"));
-UI::contentContainerStart();
+UI::contentSubHeading(getMLText("default_access"));
 ?>
 <form action="../op/op.FolderAccess.php">
 	<input type="Hidden" name="folderid" value="<?php print $folderid;?>">
 	<input type="Hidden" name="action" value="setdefault">
 	<?php printAccessModeSelection($folder->getDefaultAccess()); ?>
-	<p><input type="Submit" value="<?php printMLText("set_default_access");?>"></p>
+	<input type="Submit" value="<?php printMLText("save");?>">
 </form>
 
 <?php
-UI::contentContainerEnd();
-UI::contentHeading(getMLText("edit_existing_access"));
-UI::contentContainerStart();
+
+UI::contentSubHeading(getMLText("edit_existing_access"));
 
 if ((count($accessList["users"]) != 0) || (count($accessList["groups"]) != 0)) {
 
@@ -194,7 +184,6 @@ if ((count($accessList["users"]) != 0) || (count($accessList["groups"]) != 0)) {
 	}
 	
 	print "</table><br>";
-
 }
 ?>
 <form action="../op/op.FolderAccess.php" name="form1" onsubmit="return checkForm();">
@@ -206,7 +195,6 @@ if ((count($accessList["users"]) != 0) || (count($accessList["groups"]) != 0)) {
 <td>
 <select name="userid">
 <option value="-1"><?php printMLText("select_one");?>
-<option value="-1">-------------------------------
 <?php
 foreach ($allUsers as $userObj) {
 	if ($userObj->getID() == $settings->_guestID) {
@@ -223,7 +211,6 @@ foreach ($allUsers as $userObj) {
 <td>
 <select name="groupid">
 <option value="-1"><?php printMLText("select_one");?>
-<option value="-1">-------------------------------
 <?php
 $allGroups = getAllGroups();
 foreach ($allGroups as $groupObj) {

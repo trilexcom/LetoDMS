@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@ include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
+include("../inc/inc.FileUtils.php");
 include("../inc/inc.Authentication.php");
 
 if (isset($_GET["version"])){
@@ -61,12 +63,12 @@ if (isset($_GET["version"])){
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
 	}
 	
-	header("Content-Type: application/force-download; name=\"" . mydmsDecodeString($content->getOriginalFileName()) . "\"");
+	//header("Content-Type: application/force-download; name=\"" . mydmsDecodeString($content->getOriginalFileName()) . "\"");
 	header("Content-Transfer-Encoding: binary");
 	header("Content-Length: " . filesize($settings->_contentDir . $content->getPath() ));
 	header("Content-Disposition: attachment; filename=\"" . mydmsDecodeString($content->getOriginalFileName()) . "\"");
 	//header("Expires: 0");
-	//header("Content-Type: " . $content->getMimeType());
+	header("Content-Type: " . $content->getMimeType());
 	//header("Cache-Control: no-cache, must-revalidate");
 	header("Cache-Control: must-revalidate");
 	//header("Pragma: no-cache");
@@ -129,17 +131,41 @@ if (isset($_GET["version"])){
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_id"));
 	}
 
-	header("Content-Type: application/force-download; name=\"" . $_GET["arkname"] . "\"");
+	header('Content-Description: File Transfer');
+	//header("Content-Type: application/force-download; name=\"" . $_GET["arkname"] . "\"");
+	//header("Content-Type: application/octet-stream");
+	header("Content-Type: application/zip");
 	header("Content-Transfer-Encoding: binary");
 	header("Content-Length: " . filesize($settings->_contentDir . $_GET["arkname"] ));
 	header("Content-Disposition: attachment; filename=\"" .$_GET["arkname"] . "\"");
-	//header("Expires: 0");
+//	header("Expires: 0");
 	//header("Content-Type: " . $content->getMimeType());
 	//header("Cache-Control: no-cache, must-revalidate");
-	header("Cache-Control: must-revalidate");
+//	header("Cache-Control: must-revalidate");
+	header("Cache-Control: public");
 	//header("Pragma: no-cache");	
 	
 	readfile($settings->_contentDir .$_GET["arkname"] );
+	
+}else if (isset($_GET["logname"])){
+
+	// log download
+	
+	if (!$user->isAdmin()) {
+		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
+	}
+
+	if (!isset($_GET["logname"]) || !file_exists($settings->_contentDir.$_GET["arkname"]) ) {
+		UI::exitError(getMLText("admin_tools"),getMLText("unknown_id"));
+	}
+
+	header("Content-Type: text/plain; name=\"" . $_GET["logname"] . "\"");
+	header("Content-Transfer-Encoding: binary");
+	header("Content-Length: " . filesize($settings->_contentDir . $_GET["logname"] ));
+	header("Content-Disposition: attachment; filename=\"" .$_GET["logname"] . "\"");
+	header("Cache-Control: must-revalidate");
+	
+	readfile($settings->_contentDir .$_GET["logname"] );
 	
 }else if (isset($_GET["vfile"])){
 
@@ -153,7 +179,11 @@ if (isset($_GET["version"])){
 
 	}	
 	
-	header("Content-Type: application/force-download; name=\"" . $settings->_versioningFileName . "\"");
+	// update infos
+	createVersionigFile($document);
+	
+	header("Content-Type: text/plain; name=\"" . $_GET["logname"] . "\"");
+	//header("Content-Type: application/force-download; name=\"" . $settings->_versioningFileName . "\"");
 	header("Content-Transfer-Encoding: binary");
 	header("Content-Length: " . filesize($settings->_contentDir.$document->getDir().$settings->_versioningFileName )."\"");
 	header("Content-Disposition: attachment; filename=\"". $settings->_versioningFileName . "\"");
@@ -164,7 +194,33 @@ if (isset($_GET["version"])){
 	//header("Pragma: no-cache");	
 	
 	readfile($settings->_contentDir . $document->getDir() .$settings->_versioningFileName);
+	
+}else if (isset($_GET["dumpname"])){
+
+	// dump file download
+	
+	if (!$user->isAdmin()) {
+		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
+	}
+
+	if (!isset($_GET["dumpname"]) || !file_exists($settings->_contentDir.$_GET["dumpname"]) ) {
+		UI::exitError(getMLText("admin_tools"),getMLText("unknown_id"));
+	}
+
+	header("Content-Type: application/zip; name=\"" . $_GET["dumpname"] . "\"");
+	//header("Content-Type: application/force-download; name=\"" . $_GET["dumpname"] . "\"");
+	header("Content-Transfer-Encoding: binary");
+	header("Content-Length: " . filesize($settings->_contentDir . $_GET["dumpname"] ));
+	header("Content-Disposition: attachment; filename=\"" .$_GET["dumpname"] . "\"");
+	//header("Expires: 0");
+	//header("Content-Type: " . $content->getMimeType());
+	//header("Cache-Control: no-cache, must-revalidate");
+	header("Cache-Control: must-revalidate");
+	//header("Pragma: no-cache");	
+	
+	readfile($settings->_contentDir .$_GET["dumpname"] );
 }
 
+add_log_line();
 exit();
 ?>

@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -99,7 +100,7 @@ if ($_POST["reviewType"] == "ind") {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("review_update_failed"));
 	}
 	else {
-		// Send an email notification to the document owner.
+		// Send an email notification to the document updater.
 		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
 		$message = getMLText("review_submit_email")."\r\n";
 		$message .= 
@@ -113,7 +114,7 @@ if ($_POST["reviewType"] == "ind") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $document->getOwner(), $subject, $message);
+		Email::toIndividual($user, $content->getUser(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
@@ -150,7 +151,7 @@ else if ($_POST["reviewType"] == "grp") {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("review_update_failed"));
 	}
 	else {
-		// Send an email notification to the document owner.
+		// Send an email notification to the document updater.
 		$grp = getGroup($grpStatus["required"]);
 		
 		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
@@ -166,7 +167,7 @@ else if ($_POST["reviewType"] == "grp") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $document->getOwner(), $subject, $message);
+		Email::toIndividual($user, $content->getUser(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
@@ -240,7 +241,7 @@ if ($_POST["reviewStatus"]==-1){
 					getMLText("name").": ".$content->getOriginalFileName()."\r\n".
 					getMLText("version").": ".$version."\r\n".
 					getMLText("comment").": ".$content->getComment()."\r\n".
-					"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$documentid."&version=".$version."\r\n";
+					"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."&version=".$version."\r\n";
 
 				$subject=mydmsDecodeString($subject);
 				$message=mydmsDecodeString($message);

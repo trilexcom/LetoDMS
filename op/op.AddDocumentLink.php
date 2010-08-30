@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -54,11 +55,11 @@ if ($public && ($document->getAccessMode($user) == M_READ)) {
 	$public = false;
 }
 
-if (!isset($_GET["docid"]) || !is_numeric($_GET["docid"]) || intval($_GET["docid"])<1) {
+if (!isset($_GET["docidform1"]) || !is_numeric($_GET["docidform1"]) || intval($_GET["docidform1"])<1) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_target_doc_id"));
 }
 
-$docid = $_GET["docid"];
+$docid = $_GET["docidform1"];
 $doc = getDocument($docid);
 
 if (!is_object($doc)) {

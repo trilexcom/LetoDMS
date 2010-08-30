@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -33,8 +34,6 @@ include("../inc/inc.Authentication.php");
 
 $categories = getAllKeywordCategories($user->getID());
 
-//printHTMLHead( getMLText("use_default_keywords") );
-
 UI::htmlStartPage(getMLText("use_default_keywords"));
 
 ?>
@@ -54,12 +53,12 @@ function insertKeywords(keywords) {
 	else {
 		selStart = myTA.selectionStart;
 		
-		myTA.value = myTA.value.substring(0,myTA.selectionStart)
-	    	          + keywords
-					  + myTA.value.substring(myTA.selectionStart,myTA.value.length);
+		myTA.value = myTA.value.substring(0,myTA.selectionStart) + " " 
+			+ keywords
+			+ myTA.value.substring(myTA.selectionStart,myTA.value.length);
 		
-		myTA.selectionStart = selStart + keywords.length;
-		myTA.selectionEnd = selStart + keywords.length;
+		myTA.selectionStart = selStart + keywords.length+1;
+		myTA.selectionEnd = selStart + keywords.length+1;
 	}				  
 	myTA.focus();
 }
@@ -74,8 +73,6 @@ function acceptKeywords() {
 	window.close();
 	return true;
 }
-
-
 
 obj = new Array();
 obj[0] = -1;
@@ -95,12 +92,26 @@ function showKeywords(which) {
 }
 </script>
 
-<div style="margin-left: 10pt; margin-top: 10pt">
+<div>
 <?php
 UI::contentHeading(getMLText("use_default_keywords"));
 UI::contentContainerStart();
 ?>
+
+
+
 <table>
+
+	<tr>
+		<td valign="top" class="inputDescription"><?php echo getMLText("keywords")?>:</td>
+		<td><textarea id="keywordta" rows="5" cols="30"></textarea></td>
+	</tr>
+	
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	
+
 	<tr>
 		<td class="inputDescription"><?php echo getMLText("global_default_keywords")?>:</td>
 		<td>
@@ -126,11 +137,17 @@ UI::contentContainerStart();
 ?>
 	<tr id="keywords<?php echo $category->getID()?>" style="display : none;">
 		<td valign="top" class="inputDescription"><?php echo getMLText("default_keywords")?>:</td>
-		<td class="standardText">
+		<td>
 			<?php
 				$lists = $category->getKeywordLists();
-				foreach ($lists as $list) {
-					print "<li><a href='javascript:insertKeywords(\"$list[keywords]\");'>$list[keywords]</a></li>";
+				
+				if (count($lists) == 0) print getMLText("no_default_keywords");
+				else {	
+					print "<ul>";
+					foreach ($lists as $list) {
+						print "<li><a href='javascript:insertKeywords(\"$list[keywords]\");'>$list[keywords]</a></li>";
+					}
+					print "</ul>";
 				}
 			?>
 		</td>
@@ -166,9 +183,14 @@ UI::contentContainerStart();
 		<td valign="top" class="inputDescription"><?php echo getMLText("default_keywords")?>:</td>
 		<td class="standardText">
 			<?php
-				$lists = $category->getKeywordLists();
-				foreach ($lists as $list) {
-					print "<li><a href='javascript:insertKeywords(\"$list[keywords]\");'>$list[keywords]</a></li>";
+				$lists = $category->getKeywordLists();				
+				if (count($lists) == 0) print getMLText("no_default_keywords");
+				else {	
+					print "<ul>";
+					foreach ($lists as $list) {
+						print "<li><a href='javascript:insertKeywords(\"$list[keywords]\");'>$list[keywords]</a></li>";
+					}
+					print "</ul>";
 				}
 			?>
 		</td>
@@ -176,10 +198,6 @@ UI::contentContainerStart();
 <?php } ?>
 	<tr>
 		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td valign="top" class="inputDescription"><?php echo getMLText("keywords")?>:</td>
-		<td><textarea id="keywordta" rows="5" cols="30"></textarea></td>
 	</tr>
 	<tr>
 		<td colspan="2">

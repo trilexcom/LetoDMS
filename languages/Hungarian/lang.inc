@@ -369,9 +369,9 @@ $text["search_in_current"] = "csak ([foldername]) -ban âs alk˜nyvtﬂraiban";
 $text["search_mode"] = "Md";
 $text["search_mode_and"] = "egyezâs minden szra";
 $text["search_mode_or"] = "egyezâs legalﬂbb egy szra";
-$text["search_no_results"] = "Nincs talﬂlat (\"[query]\").";
+$text["search_no_results"] = "Nincs talﬂlat";
 $text["search_query"] = "Kulcssz";
-$text["search_report"] = "Talﬂlatok szﬂma [count] erre a lekârdezâsre \"[query]\".";
+$text["search_report"] = "Talﬂlatok szﬂma [count] erre a lekârdezâsre";
 $text["search_result_pending_approval"] = "status 'pending approval'";
 $text["search_result_pending_review"] = "status 'pending review'";
 $text["search_results"] = "Talﬂlatok";
@@ -482,5 +482,94 @@ $text["change_status"] = "Change Status";
 $text["change_assignments"] = "Change Assignments";
 $text["no_user_docs"] = "There are currently no documents owned by the user";
 $text["disclaimer"] = "This is a classified area. Access is permitted only to authorized personnel. Any violation will be prosecuted according to the english and international laws.";
+
+$text["backup_tools"] = "Backup tools"; 
+$text["versioning_file_creation"] = "Versioning file creation"; 
+$text["archive_creation"] = "Archive creation"; 
+$text["files_deletion"] = "Files deletion"; 
+$text["folder"] = "Folder"; 
+
+$text["unknown_id"] = "unknown id";
+$text["help"] = "Help";
+
+$text["versioning_info"] = "Versioning info";
+$text["versioning_file_creation_warning"] = "With this operation you can create a file containing the versioning information of an entire DMS folder. After the creation every file will be saved inside the document folder.";
+$text["archive_creation_warning"] = "With this operation you can create achive containing the files of entire DMS folders. After the creation the archive will be saved in the data folder of your server.<br>WARNING: an archive created as human readable will be unusable as server backup.";
+$text["files_deletion_warning"] = "With this option you can delete all files of entire DMS folders. The versioning information will remain visible."; 
+
+$text["backup_list"] = "Existings backup list";
+$text["backup_remove"] = "Remove backup file";
+$text["confirm_rm_backup"] = "Do you really want to remove the file \"[arkname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["document_deleted"] = "Document deleted"; 
+$text["linked_files"] = "Attachments"; 
+$text["invalid_file_id"] = "Invalid file ID";
+$text["rm_file"] = "Remove file"; 
+$text["confirm_rm_file"] = "Do you really want to remove file \"[name]\" of document \"[documentname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["edit_comment"] = "Edit comment";
+
+
+// new from 1.9
+
+$text["is_hidden"] = "Hide from users list";
+$text["log_management"] = "Log files management";
+$text["confirm_rm_log"] = "Do you really want to remove log file \"[logname]\"?<br>Be careful: This action cannot be undone.";
+$text["include_subdirectories"] = "Include subdirectories";
+$text["include_documents"] = "Include documents";
+$text["manager"] = "Manager";
+$text["toggle_manager"] = "Toggle manager";
+
+// new from 1.10
+
+$text["calendar"] = "Calendar";
+$text["week_view"] = "Week view";
+$text["month_view"] = "Month view";
+$text["year_view"] = "Year View";
+$text["add_event"] = "Add event";
+$text["edit_event"] = "Edit event";
+
+$text["january"] = "January";
+$text["february"] = "February";
+$text["march"] = "March";
+$text["april"] = "April";
+$text["may"] = "May";
+$text["june"] = "June";
+$text["july"] = "July";
+$text["august"] = "August";
+$text["september"] = "September";
+$text["october"] = "October";
+$text["november"] = "November";
+$text["december"] = "December";
+
+$text["sunday"] = "Sunday";
+$text["monday"] = "Monday";
+$text["tuesday"] = "Tuesday";
+$text["wednesday"] = "Wednesday";
+$text["thursday"] = "Thursday";
+$text["friday"] = "Friday";
+$text["saturday"] = "Saturday";
+
+$text["from"] = "From";
+$text["to"] = "To";
+
+$text["event_details"] = "Event details";
+$text["confirm_rm_event"] = "Do you really want to remove event \"[name]\"?<br>Be careful: This action cannot be undone.";
+
+$text["dump_creation"] = "DB dump creation"; 
+$text["dump_creation_warning"] = "With this operation you can create a dump file of your database content. After the creation the dump file will be saved in the data folder of your server.";
+$text["dump_list"] = "Existings dump files";
+$text["dump_remove"] = "Remove dump file";
+$text["confirm_rm_dump"] = "Do you really want to remove the file \"[dumpname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["confirm_rm_user"] = "Do you really want to remove the user \"[username]\"?<br>Be careful: This action cannot be undone.";
+$text["confirm_rm_group"] = "Do you really want to remove the group \"[groupname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["human_readable"] = "Human readable archive"; 
+
+$text["email_header"] = "This is an automatic message from the DMS server."; 
+$text["email_footer"] = "You can always change your e-mail settings using 'My Account' functions"; 
+
+$text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
 
 ?>

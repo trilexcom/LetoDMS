@@ -57,120 +57,119 @@ UI::contentContainerStart();
 ?>
 	<table>
 	<tr>
-		<td><?php echo getMLText("default_keyword_category")?>:</td>
+		<td><?php echo getMLText("selection")?>:</td>
 		<td>
-			<select onchange="showKeywords(this)">
+			<select onchange="showKeywords(this)" id="selector">
 				<option value="-1"><?php echo getMLText("choose_category")?>
+				<option value="0"><?php echo getMLText("new_default_keyword_category")?>
 				<?php
+				
+				$selected=0;
+				$count=2;								
 				foreach ($categories as $category) {
+				
 					$owner = $category->getOwner();
-					if ($owner->getID() != $user->getID())
-						continue;
-					
+					if ($owner->getID() != $user->getID()) continue;
+						
+					if ($category->getID()==$_GET["categoryid"]) $selected=$count;									
 					print "<option value=\"".$category->getID()."\">" . $category->getName();
+					$count++;					
 				}
 				?>
 			</select>
+			&nbsp;&nbsp;
 		</td>
-	</tr>
-	<?php
+		
+		<td id="keywords0" style="display : none;">
+			<form action="../op/op.UserDefaultKeywords.php" method="post" name="addcategory">
+			<input type="Hidden" name="action" value="addcategory">
+			<?php printMLText("name");?> : <input name="name">
+			<input type="Submit" value="<?php printMLText("new_default_keyword_category"); ?>">
+			</form>
+		<td>
+		<?php
+		
 	foreach ($categories as $category) {
+	
 		$owner = $category->getOwner();
-		if ($owner->getID() != $user->getID())
-			continue;
+		if ($owner->getID() != $user->getID()) continue;
+		
+		print "<td id=\"keywords".$category->getID()."\" style=\"display : none;\">";
 	?>
-		<tr id="keywords<?php echo $category->getID()?>" style="display : none;">
-		<td colspan="2">
 			<table>
 				<tr>
-					<td colspan="2"><hr size="1" width="100%" color="#000080" noshade></td>
+					<td colspan="2">
+						<a href="../op/op.UserDefaultKeywords.php?categoryid=<?php print $category->getID();?>&action=removecategory"><img src="images/del.gif" border="0"><?php printMLText("rm_default_keyword_category");?></a>
+					</td>
 				</tr>
+				<tr>
+					<td colspan="2">
+						<?php UI::contentSubHeading("");?>
+					</td>
+				</tr>				
 				<tr>
 					<td><?php echo getMLText("name")?>:</td>
 					<td>
-					<form action="../op/op.UserDefaultKeywords.php" method="post">
-					<input type="Hidden" name="action" value="editcategory">
-					<input type="Hidden" name="categoryid" value="<?php echo $category->getID()?>">
-					<table><tr>
-					<td><input name="name" value="<?php echo $category->getName()?>"></td>
-					<td><input type="Image" src="images/save.gif" title="<?php echo getMLText("save")?>"></td>
-					</tr></table>
-					</form>
-					</td>
-				</tr>
-				<tr>
-					<td><?php echo getMLText("default_keywords")?>:</td>
-					<td>
-						<table>
-						<?php
-							$lists = $category->getKeywordLists();
-							if (count($lists) == 0)
-								print "<tr><td>" . getMLText("no_default_keywords") . "</td></tr>";
-							else
-								foreach ($lists as $list) {
-						?>
-									<tr>
-										<form action="../op/op.UserDefaultKeywords.php" method="post">
-										<input type="Hidden" name="categoryid" value="<?php echo $category->getID()?>">
-										<input type="Hidden" name="keywordsid" value="<?php echo $list["id"]?>">
-										<input type="Hidden" name="action" value="editkeywords">
-										<td>
-											<input name="keywords" value="<?php echo $list["keywords"]?>">
-										</td>
-										<td>
-											 <input name="action" value="editkeywords" type="Image" src="images/save.gif" title="<?php echo getMLText("save")?>" border="0"> &nbsp;
-										<!--	 <input name="action" value="removekeywords" type="Image" src="images/del.gif" title="<?php echo getMLText("delete")?>" border="0"> &nbsp; -->
-											<a href="../op/op.UserDefaultKeywords.php?categoryid=<?php echo $category->getID()?>&keywordsid=<?php echo $list["id"]?>&action=removekeywords"><img src="images/del.gif" title="<?php echo getMLText("delete")?>" border=0></a>
-										</td>
-										</form>
-									</tr>
-						<?php }  ?>
-						</table>
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><?php echo getMLText("new_default_keywords")?>:</td>
-					<td>
-						<form action="../op/op.UserDefaultKeywords.php" method="post">
-							<input type="Hidden" name="action" value="newkeywords">
+						<form action="../op/op.UserDefaultKeywords.php" method="post" name="<?php echo "category".$category->getID()?>">
+							<input type="Hidden" name="action" value="editcategory">
 							<input type="Hidden" name="categoryid" value="<?php echo $category->getID()?>">
-							<table><tr>
-							<td><input name="keywords"></td>
-							<td><input type="Image" src="images/save.gif" title="<?php echo getMLText("save")?>"></td>
-							</tr></table>
+							<input name="name" value="<?php echo $category->getName()?>">
+							<input type="Submit" value="<?php printMLText("save");?>">
 						</form>
 					</td>
 				</tr>
 				<tr>
 					<td colspan="2">
-						<a href="../op/op.UserDefaultKeywords.php?categoryid=<?php print $category->getID();?>&action=removecategory"><img src="images/del.gif" width="15" height="15" border="0" align="absmiddle" alt=""> <?php printMLText("rm_default_keyword_category");?></a>
+						<?php UI::contentSubHeading("");?>
+					</td>
+				</tr>							
+				<tr>
+					<td><?php echo getMLText("default_keywords")?>:</td>
+					<td>
+						<?php
+							$lists = $category->getKeywordLists();
+							if (count($lists) == 0)
+								print getMLText("no_default_keywords");
+							else
+								foreach ($lists as $list) {
+						?>
+									<form action="../op/op.UserDefaultKeywords.php" method="post" name="<?php echo "cat".$category->getID().".".$list["id"]?>">
+									<input type="Hidden" name="categoryid" value="<?php echo $category->getID()?>">
+									<input type="Hidden" name="keywordsid" value="<?php echo $list["id"]?>">
+									<input type="Hidden" name="action" value="editkeywords">
+									<input name="keywords" value="<?php echo $list["keywords"]?>">
+									<input name="action" value="editkeywords" type="Image" src="images/save.gif" title="<?php echo getMLText("save")?>" border="0">
+									<!--	 <input name="action" value="removekeywords" type="Image" src="images/del.gif" title="<?php echo getMLText("delete")?>" border="0"> &nbsp; -->
+									<a href="../op/op.UserDefaultKeywords.php?categoryid=<?php echo $category->getID()?>&keywordsid=<?php echo $list["id"]?>&action=removekeywords"><img src="images/del.gif" title="<?php echo getMLText("delete")?>" border=0></a>
+									</form>
+									<br>
+						<?php }  ?>
 					</td>
 				</tr>
+				<tr>
+					<form action="../op/op.UserDefaultKeywords.php" method="post" name="<?php echo $category->getID().".add"?>">
+					<td><input type="Submit" value="<?php printMLText("new_default_keywords");?>"></td>
+					<td>
+						<input type="Hidden" name="action" value="newkeywords">
+						<input type="Hidden" name="categoryid" value="<?php echo $category->getID()?>">
+						<input name="keywords">
+					</td>
+					</form>
+				</tr>
 			</table>
-		</td>
-		</tr>
+		</td>		
+		
 <?php } ?>
-	</table>
-<?php
-UI::contentContainerEnd();
+	</tr></table>
 
-UI::contentHeading(getMLText("new_default_keyword_category"));
-UI::contentContainerStart();
-?>
+<script language="JavaScript">
 
-<form action="../op/op.UserDefaultKeywords.php" method="post">
-	<input type="Hidden" name="action" value="addcategory">
-	<table>
-		<tr>
-			<td><?php printMLText("name");?>:</td>
-			<td><input name="name"></td>
-		</tr>
-		<tr>
-			<td colspan="2"><input type="Submit" value="<?php printMLText("add"); ?>"></td>
-		</tr>
-	</table>
-</form>
+sel = document.getElementById("selector");
+sel.selectedIndex=<?php print $selected ?>;
+showKeywords(sel);
+
+</script>
+
 
 <?php
 UI::contentContainerEnd();

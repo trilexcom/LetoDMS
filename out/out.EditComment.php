@@ -84,7 +84,7 @@ UI::contentContainerStart();
 	<table cellpadding="3">
 		<tr>
 			<td valign="top" class="inputDescription"><?php printMLText("comment");?>:</td>
-			<td><textarea name="comment" rows="4" cols="30"><?php print $version->getComment();?></textarea></td>
+			<td><textarea name="comment" rows="4" cols="80"><?php print $version->getComment();?></textarea></td>
 		</tr>
 		<tr>
 			<td colspan="2"><br><input type="Submit" value="<?php printMLText("save") ?>"></td>

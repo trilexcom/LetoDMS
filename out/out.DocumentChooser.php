@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -65,7 +66,7 @@ function printTree($path, $level = 0)
 	else if (count($subFolders) + count($documents) > 0) UI::printImgPath("minus.png");
 	else UI::printImgPath("blank.png");
 	print "\" border=0>\n";
-	if ($folder->getAccessMode($user) >= $accessMode) {
+	if ($folder->getAccessMode($user) >= M_READ) {
 		print "<a class=\"foldertree_selectable\" href=\"javascript:folderSelected(" . $folder->getID() . ", '" . sanitizeString($folder->getName()) . "')\">";
 		print "<img src=\"".UI::getImgPath("folder_opened.gif")."\" border=0>".$folder->getName()."</a>\n";
 	}
@@ -148,8 +149,8 @@ function documentSelected(id, name) {
 ?>
 
 <script language="JavaScript">
-targetName = opener.document.<?php echo $form?>.docname;
-targetID   = opener.document.<?php echo $form?>.docid;
+targetName = opener.document.<?php echo $form?>.docname<?php print $form ?>;
+targetID   = opener.document.<?php echo $form?>.docid<?php print $form ?>;
 </script>
 
 <?php

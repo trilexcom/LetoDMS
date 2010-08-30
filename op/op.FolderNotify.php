@@ -57,6 +57,12 @@ if (isset($_GET["groupid"]) && (!is_numeric($_GET["groupid"]) || $_GET["groupid"
 }
 $groupid = $_GET["groupid"];
 
+if (isset($_GET["groupid"])&&$_GET["groupid"]!=-1){
+	$group=getGroup($groupid);
+	if (!$group->isMember($user,true) && !$user->isAdmin())
+		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));
+}
+
 $folderPathHTML = getFolderPathHTML($folder, true);
 
 if ($folder->getAccessMode($user) < M_READ) {

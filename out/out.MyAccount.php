@@ -35,22 +35,30 @@ UI::globalNavigation();
 UI::pageNavigation(getMLText("my_account"), "my_account");
 
 UI::contentHeading(getMLText("user_info"));
-UI::contentContainer("<table>\n<tr>\n".
-			"<td rowspan=5 id=\"userImage\">".($user->hasImage() ? "<img class=\"userImage\" src=\"".$user->getImageURL()."\">" : getMLText("no_user_image"))."</td>\n".
-			"</tr>\n<tr>\n".
-			"<td>".getMLText("name").":</td>\n".
-			"<td>".$user->getFullName().($user->isAdmin() ? " (".getMLText("admin").")" : "")."</td>\n".
-			"</tr>\n<tr>\n".
-			"<td>".getMLText("user_login").":</td>\n".
-			"<td>".$user->getLogin()."</td>\n".
-			"</tr>\n<tr>\n".
-			"<td>".getMLText("email").":</td>\n".
-			"<td>".$user->getEmail()."</td>\n".
-			"</tr>\n<tr>\n".
-			"<td>".getMLText("comment").":</td>\n".
-			"<td>".$user->getComment()."</td>\n".
-			"</tr>\n</table>\n");
+UI::contentContainerStart();
 
+print "<table>\n";
 
+if ($settings->_enableUserImage){
+	print "<tr>\n";
+	print "<td rowspan=5 id=\"userImage\">".($user->hasImage() ? "<img class=\"userImage\" src=\"".$user->getImageURL()."\">" : getMLText("no_user_image"))."</td>\n";
+	print "</tr>\n";
+}
+
+print "<tr>\n";
+print "<td>".getMLText("name")." : </td>\n";
+print "<td>".$user->getFullName().($user->isAdmin() ? " (".getMLText("admin").")" : "")."</td>\n";
+print "</tr>\n<tr>\n";
+print "<td>".getMLText("user_login")." : </td>\n";
+print "<td>".$user->getLogin()."</td>\n";
+print "</tr>\n<tr>\n";
+print "<td>".getMLText("email")." : </td>\n";
+print "<td>".$user->getEmail()."</td>\n";
+print "</tr>\n<tr>\n";
+print "<td>".getMLText("comment")." : </td>\n";
+print "<td>".$user->getComment()."</td>\n";
+print"</tr>\n</table>\n";
+
+UI::contentContainerEnd();
 UI::htmlEndPage();
 ?>

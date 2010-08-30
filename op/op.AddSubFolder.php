@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -60,6 +61,8 @@ $subFolder = $folder->addSubFolder($name, $comment, $user, $sequence);
 if (!is_object($subFolder)) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 }
+
+add_log_line("?name=".$name."&folderid=".$folderid);
 
 header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
 

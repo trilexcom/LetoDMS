@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -51,6 +52,8 @@ $expires = ($_POST["expires"] == "true") ? mktime(0,0,0, sanitizeString($_POST["
 }
 
 $document->verifyLastestContentExpriry();
+
+add_log_line("?documentid=".$documentid);
 
 header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 

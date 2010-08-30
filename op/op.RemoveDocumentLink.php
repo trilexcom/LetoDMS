@@ -1,7 +1,6 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -67,6 +66,8 @@ if (
 if (!$document->removeDocumentLink($linkid)) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 }
+
+add_log_line("?documentid=".$documentid."&linkid=".$linkid);
 
 header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 

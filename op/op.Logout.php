@@ -45,7 +45,7 @@ setcookie("mydms_session", $_COOKIE["mydms_session"], time()-3600, $settings->_h
 
 //Forward to Login-page
 header("Location: ../out/out.Login.php");
-print "Logout successful";
+
 
 
 ?>

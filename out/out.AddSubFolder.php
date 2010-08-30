@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -80,11 +81,11 @@ function checkForm()
 	<table>
 		<tr>
 			<td class="inputDescription"><?php printMLText("name");?>:</td>
-			<td><input name="name"></td>
+			<td><input name="name" size="60"></td>
 		</tr>
 		<tr>
 			<td valign="top" class="inputDescription"><?php printMLText("comment");?>:</td>
-			<td><textarea name="comment" rows="4" cols="30"></textarea></td>
+			<td><textarea name="comment" rows="4" cols="80"></textarea></td>
 		</tr>
 		<tr>
 			<td class="inputDescription"><?php printMLText("sequence");?>:</td>

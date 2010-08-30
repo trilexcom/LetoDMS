@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -83,18 +84,17 @@ function checkForm()
 <?php
 $allUsers = getAllUsers();
 
+UI::contentHeading(getMLText("edit_document_access"));
+UI::contentContainerStart();
+
 if ($user->isAdmin()) {
-	UI::contentHeading(getMLText("set_owner"));
-	UI::contentContainerStart();
+
+	UI::contentSubHeading(getMLText("set_owner"));
 ?>
 	<form action="../op/op.DocumentAccess.php">
 	<input type="Hidden" name="action" value="setowner">
 	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
-	<table>
-	<tr>
-	<td><?php printMLText("owner");?></td>
-	<td>
-	<select name="ownerid">
+	<?php printMLText("owner");?> : <select name="ownerid">
 	<?php
 	$owner = $document->getOwner();
 	foreach ($allUsers as $currUser) {
@@ -107,19 +107,13 @@ if ($user->isAdmin()) {
 	}
 	?>
 	</select>
-	</td>
-	</tr>
-	<tr>
-	<td colspan="2"><input type="Submit" value="<?php printMLText("set_owner")?>"></td>
-	</tr>
-	</table>
+	<input type="Submit" value="<?php printMLText("save")?>">
 	</form>
 <?php
-	UI::contentContainerEnd();
-}
 
-UI::contentHeading(getMLText("access_inheritance"));
-UI::contentContainerStart();
+}
+UI::contentSubHeading(getMLText("access_inheritance"));
+
 if ($document->inheritsAccess()) {
 	printMLText("inherits_access_msg", array(
 		"copyurl" => "../op/op.DocumentAccess.php?documentid=".$documentid."&action=notinherit&mode=copy", 
@@ -129,24 +123,22 @@ if ($document->inheritsAccess()) {
 	exit();
 }
 printMLText("does_not_inherit_access_msg", array("inheriturl" => "../op/op.DocumentAccess.php?documentid=".$documentid."&action=inherit"));
-UI::contentContainerEnd();
 
 $accessList = $document->getAccessList();
 
-UI::contentHeading(getMLText("default_access"));
-UI::contentContainerStart();
+UI::contentSubHeading(getMLText("default_access"));
+
 ?>
 <form action="../op/op.DocumentAccess.php">
 	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
 	<input type="Hidden" name="action" value="setdefault">
 	<?php printAccessModeSelection($document->getDefaultAccess()); ?>
-	<p><input type="Submit" value="<?php printMLText("set_default_access");?>"></p>
+	<input type="Submit" value="<?php printMLText("save");?>">
 </form>
 
 <?php
-UI::contentContainerEnd();
-UI::contentHeading(getMLText("edit_existing_access"));
-UI::contentContainerStart();
+
+UI::contentSubHeading(getMLText("edit_existing_access"));
 
 if (count($accessList["users"]) != 0 || count($accessList["groups"]) != 0) {
 
@@ -203,7 +195,6 @@ if (count($accessList["users"]) != 0 || count($accessList["groups"]) != 0) {
 <td>
 <select name="userid">
 <option value="-1"><?php printMLText("select_one");?></option>
-<option value="-1">-------------------------------</option>
 <?php
 foreach ($allUsers as $userObj) {
 	if ($userObj->getID() == $settings->_guestID) {
@@ -220,7 +211,6 @@ foreach ($allUsers as $userObj) {
 <td>
 <select name="groupid">
 <option value="-1"><?php printMLText("select_one");?></option>
-<option value="-1">-------------------------------</option>
 <?php
 $allGroups = getAllGroups();
 foreach ($allGroups as $groupObj) {

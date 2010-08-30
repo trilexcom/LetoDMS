@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -89,7 +90,6 @@ function checkForm2(num) {
 		return true;
 }
 
-
 obj = -1;
 function showUser(selectObj) {
 	if (obj != -1)
@@ -105,104 +105,33 @@ function showUser(selectObj) {
 
 </script>
 <?php
-
-UI::contentHeading(getMLText("edit_group"));
+UI::contentHeading(getMLText("group_management"));
 UI::contentContainerStart();
 ?>
-	<table>
-	<tr>
-		<td><?php echo getMLText("selection")?>:</td>
-		<td>
-			<select onchange="showUser(this)">
-				<option value="-1"><?php echo getMLText("choose_group")?>
-				<?php
-				foreach ($groups as $group) {
-					print "<option value=\"".$group->getID()."\">" . $group->getName();
-				}
-				?>
-			</select>
-		</td>
-	</tr>
-	<?php
-	foreach ($groups as $group) {
-	?>
-	<tr id="keywords<?php echo $group->getID()?>" style="display : none;">
-	<td colspan=2>
-	
-	<form action="../op/op.GroupMgr.php" name="form<?php print $group->getID();?>_1" onsubmit="return checkForm1('<?php print $group->getID();?>');">
-	<input type="Hidden" name="groupid" value="<?php print $group->getID();?>">
-	<input type="Hidden" name="action" value="editgroup">
-	<table border="0">
-		<tr>
-			<td><?php printMLText("name");?>:</td>
-			<td><input name="name" value="<?php print $group->getName();?>"></td>
-		</tr>
-		<tr>
-			<td><?php printMLText("comment");?>:</td>
-			<td><textarea name="comment" rows="4" cols="30"><?php print $group->getComment();?></textarea></td>
-		</tr>
-		<tr>
-			<td colspan="2"><input type="Submit" value="<?php printMLText("edit_group");?>"></td>
-		</tr>
-	</table>
-	</form>
-	<?php
-		UI::contentSubHeading(getMLText("group_members"));
-		?>
-		<table class="defaultView" width="100%">
-		<?php
-			$members = $group->getUsers();
-			if (count($members) == 0)
-				print "<tr><td>".getMLText("no_group_members")."</td></tr>";
-			else {
-				foreach ($members as $member) {
-					print "<tr>";
-					print "<td><img src=\"images/usericon.gif\" width=16 height=16></td>";
-					print "<td>" . $member->getFullName() . "</td>";
-					print "<td align=\"right\"><a href=\"../op/op.GroupMgr.php?groupid=". $group->getID() . "&userid=".$member->getID()."&action=rmmember\">".getMLText("delete")."</a>";
-					print "</tr>";
-				}
-			}
-		?>
-		</table>
-		<form action="../op/op.GroupMgr.php" name="form<?php print $group->getID();?>_2" onsubmit="return checkForm2('<?php print $group->getID();?>');">
-		<input type="Hidden" name="action" value="addmember">
-		<input type="Hidden" name="groupid" value="<?php print $group->getID();?>">
-		<table>
-			<tr>
-				<td ><?php printMLText("add_member");?>:</td>
-				<td>
-					<select name="userid">
-						<option value="-1"><?php printMLText("select_one");?>
-						<option value="-1">-------------------------------
-						<?php
-							foreach ($allUsers as $currUser)
-								if (!$group->isMember($currUser))
-									print "<option value=\"".$currUser->getID()."\">" . $currUser->getFullName() . "\n";
-						?>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2"><input type="Submit" value="<?php printMLText("add");?>"></td>
-			</tr>
-		</table>
-		</form>
-	</div>
-	<hr size="1" width="100%" color="#000080" noshade>
-	<a class="standardText" href="../op/op.GroupMgr.php?groupid=<?php print $group->getID();?>&action=removegroup"><img src="images/del.gif" width="15" height="15" border="0" align="absmiddle" alt=""> <?php printMLText("rm_group");?></a>
-	
-	</td>
-	</tr>
-<?php  } ?>
-</table>
 
+<table>
+<tr>
+<td>
+
+<?php echo getMLText("selection")?>:<select onchange="showUser(this)" id="selector">
+<option value="-1"><?php echo getMLText("choose_group")?>
+<option value="0"><?php echo getMLText("add_group")?>
 <?php
-UI::contentContainerEnd();
-
-UI::contentHeading(getMLText("add_group"));
-UI::contentContainerStart();
+	$selected=0;
+	$count=2;
+	foreach ($groups as $group) {
+		
+		if (isset($_GET["groupid"]) && $group->getID()==$_GET["groupid"]) $selected=$count;
+		print "<option value=\"".$group->getID()."\">" . $group->getName();
+		$count++;
+	}
 ?>
+</select>
+&nbsp;&nbsp;
+</td>
+
+	<td id="keywords0" style="display : none;">
+	
 	<form action="../op/op.GroupMgr.php" name="form0_1" onsubmit="return checkForm1('0');">
 	<input type="Hidden" name="action" value="addgroup">
 	<table>
@@ -212,13 +141,118 @@ UI::contentContainerStart();
 		</tr>
 		<tr>
 			<td><?php printMLText("comment");?>:</td>
-			<td><textarea name="comment" rows="4" cols="30"></textarea></td>
+			<td><textarea name="comment" rows="4" cols="50"></textarea></td>
 		</tr>
 		<tr>
 			<td colspan="2"><input type="Submit" value="<?php printMLText("add_group");?>"></td>
 		</tr>
 	</table>
+	</form>	
+	
+	</td>
+	
+	<?php	
+
+	foreach ($groups as $group) {
+	
+		print "<td id=\"keywords".$group->getID()."\" style=\"display : none;\">";
+		
+		UI::contentSubHeading(getMLText("group")." : ".$group->getName());
+		
+	?>
+	
+	<a href="../out/out.RemoveGroup.php?groupid=<?php print $group->getID();?>"><img src="images/del.gif" width="15" height="15" border="0" align="absmiddle" alt=""> <?php printMLText("rm_group");?></a>
+
+
+	<?php	UI::contentSubHeading(getMLText("edit_group"));?>
+		
+	
+	<form action="../op/op.GroupMgr.php" name="form<?php print $group->getID();?>_1" onsubmit="return checkForm1('<?php print $group->getID();?>');">
+	<input type="Hidden" name="groupid" value="<?php print $group->getID();?>">
+	<input type="Hidden" name="action" value="editgroup">
+	<table>
+		<tr>
+			<td><?php printMLText("name");?>:</td>
+			<td><input name="name" value="<?php print $group->getName();?>"></td>
+		</tr>
+		<tr>
+			<td><?php printMLText("comment");?>:</td>
+			<td><textarea name="comment" rows="4" cols="50"><?php print $group->getComment();?></textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="Submit" value="<?php printMLText("save");?>"></td>
+		</tr>
+	</table>
 	</form>
+	<?php
+		UI::contentSubHeading(getMLText("group_members"));
+		?>
+		<table class="folderView">
+		<?php
+			$members = $group->getUsers();
+			if (count($members) == 0)
+				print "<tr><td>".getMLText("no_group_members")."</td></tr>";
+			else {
+			
+				foreach ($members as $member) {
+				
+					print "<tr>";
+					print "<td><img src=\"images/usericon.gif\" width=16 height=16></td>";
+					print "<td>" . $member->getFullName() . "</td>";
+					print "<td>" . ($group->isMember($member,true)?getMLText("manager"):"&nbsp;") . "</td>";
+					print "<td align=\"right\"><ul class=\"actions\">";
+					print "<li><a href=\"../op/op.GroupMgr.php?groupid=". $group->getID() . "&userid=".$member->getID()."&action=rmmember\">".getMLText("delete")."</a>";
+					print "<li><a href=\"../op/op.GroupMgr.php?groupid=". $group->getID() . "&userid=".$member->getID()."&action=tmanager\">".getMLText("toggle_manager")."</a>";
+					print "</td></tr>";
+				}
+			}
+		?>
+		</table>
+		
+		
+		<?php
+		
+		UI::contentSubHeading(getMLText("add_member"));
+		
+		?>
+		
+		<form action="../op/op.GroupMgr.php" method=POST name="form<?php print $group->getID();?>_2" onsubmit="return checkForm2('<?php print $group->getID();?>');">
+		<input type="Hidden" name="action" value="addmember">
+		<input type="Hidden" name="groupid" value="<?php print $group->getID();?>">
+		<table width="100%">
+			<tr>
+				<td>
+					<select name="userid">
+						<option value="-1"><?php printMLText("select_one");?>
+						<?php
+							foreach ($allUsers as $currUser)
+								if (!$group->isMember($currUser))
+									print "<option value=\"".$currUser->getID()."\">" . $currUser->getFullName() . "\n";
+						?>
+					</select>
+				</td>
+				<td>
+					<input type="checkbox" name="manager" value="1"><?php printMLText("manager");?>
+				</td>
+				<td align="right">
+					<input type="Submit" value="<?php printMLText("add");?>">
+				</td>
+			</tr>
+		</table>
+		</form>
+	</td>
+<?php  } ?>
+
+</tr>
+</table>
+
+<script language="JavaScript">
+
+sel = document.getElementById("selector");
+sel.selectedIndex=<?php print $selected ?>;
+showUser(sel);
+
+</script>
 
 <?php
 UI::contentContainerEnd();

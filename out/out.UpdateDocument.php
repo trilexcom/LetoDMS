@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -75,14 +76,15 @@ function checkForm()
 		return true;
 }
 </script>
-<script language="JavaScript" src="../js/displayFunctions.js"></script>
 
 <?php
 UI::contentHeading(getMLText("update_document") . ": " . $document->getName());
 UI::contentContainerStart();
 
 if ($document->isLocked()) {
+
 	$lockingUser = $document->getLockingUser();
+	print "<span class=\"warning\">";
 	
 	printMLText("update_locked_msg", array("username" => $lockingUser->getFullName(), "email" => $lockingUser->getEmail()));
 	
@@ -93,10 +95,12 @@ if ($document->isLocked()) {
 	else
 	{
 		printMLText("no_update_cause_locked");
+		print "</span>";
 		UI::contentContainerEnd();
 		UI::htmlEndPage();
 		exit;
 	}
+	print "</span>";
 }
 
 // Retrieve a list of all users and groups that have review / approve
@@ -109,12 +113,12 @@ $docAccess = $document->getApproversList();
 	<table>
 		<tr>
 			<td><?php printMLText("local_file");?>:</td>
-			<td><input type="File" name="userfile"></td>
+			<td><input type="File" name="userfile" size="60"></td>
 		</tr>
 		<tr>
 			<td><?php printMLText("comment");?>:</td>
 			<td class="standardText">
-				<textarea name="comment" rows="4" cols="30"></textarea>
+				<textarea name="comment" rows="4" cols="80"></textarea>
 			</td>
 		</tr>
 		<tr>
@@ -126,65 +130,82 @@ $docAccess = $document->getApproversList();
 		</tr>
 		<tr>
 			<td colspan=2>
-				<dl>
-					<dt><label for="assignDocReviewers"><input onChange="showBlock('docReviewers')" id="assignDocReviewers" type="checkbox" name="assignDocReviewers" value="1"><?php printMLText("assign_reviewers");?></label></dt>
-					<dd id="docReviewers">
-					<div class="cbSelectTitle"><?php printMLText("groups");?>:</div>
-					<div class="cbSelectContainer">
-					<ul class="cbSelectList">
-<?php
-					foreach ($docAccess["groups"] as $group) {
-?>
-						<li class="cbSelectItem"><?php echo "<label for='revGrp".$group->getID()."'><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
-<?php
-					}
-?>
-					</ul>
-					</div>
-					<div class="cbSelectTitle cbSelectMargin"><?php printMLText("individuals");?>:</div>
-					<div class="cbSelectContainer cbSelectMargin">
-					<ul class="cbSelectList">
-<?php
-					foreach ($docAccess["users"] as $user) {
-?>
-						<li class="cbSelectItem"><?php echo "<label for='revInd".$user->getID()."'><input id='revInd".$user->getID()."' type='checkbox' name='indReviewers[]' value='". $user->getID() ."'>". $user->getFullName()." &lt;".$user->getEmail().">"; ?></li>
-<?php
-					}
-?>
-					</ul>
-					</div>
-					<script language="JavaScript">if (!document.getElementById('assignDocReviewers').checked) hideBlock('docReviewers');</script>
-					</dd>
+			
+				<?php UI::contentSubHeading(getMLText("assign_reviewers")); ?>
 
-					<dt><label for="assignDocApprovers"><input onChange="showBlock('docApprovers')" id="assignDocApprovers" type="checkbox" name="assignDocApprovers" value="1"><?php printMLText("assign_approvers");?></label></dt>
-					<dd id="docApprovers">
-					<div class="cbSelectTitle"><?php printMLText("groups");?>:</div>
-					<div class="cbSelectContainer">
-					<ul class="cbSelectList">
+				<div class="cbSelectTitle"><?php printMLText("individuals");?>:</div>
+				<div class="cbSelectContainer cbSelectMargin">
+				<ul class="cbSelectList">
 <?php
-					foreach ($docAccess["groups"] as $group) {
+				$res=$user->getMandatoryReviewers();
+
+				foreach ($docAccess["users"] as $usr) {
+
+					if ($usr->getID()==$user->getID()) continue; 
+
+					$mandatory=false;
+					foreach ($res as $r) if ($r['reviewerUserID']==$usr->getID()) $mandatory=true;
+
+					if ($mandatory) print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>". $usr->getFullName();
+					else print "<li class=\"cbSelectItem\"><input id='revInd".$usr->getID()."' type='checkbox' name='indReviewers[]' value='". $usr->getID() ."'>". $usr->getFullName();
+				}
 ?>
-						<li class="cbSelectItem"><?php echo "<label for='appGrp".$group->getID()."'><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
+				</ul>
+				</div>
+				<div class="cbSelectTitle"><?php printMLText("groups");?>:</div>
+				<div class="cbSelectContainer">
+				<ul class="cbSelectList">
 <?php
-					}
+				foreach ($docAccess["groups"] as $grp) {
+				
+					$mandatory=false;
+					foreach ($res as $r) if ($r['reviewerGroupID']==$grp->getID()) $mandatory=true;	
+
+					if ($mandatory) print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>".$grp->getName();
+					else print "<li class=\"cbSelectItem\"><input id='revGrp".$grp->getID()."' type='checkbox' name='grpReviewers[]' value='". $grp->getID() ."'>".$grp->getName();
+				}
 ?>
-					</ul>
-					</div>
-					<div class="cbSelectTitle cbSelectMargin"><?php printMLText("individuals");?>:</div>
-					<div class="cbSelectContainer cbSelectMargin">
-					<ul class="cbSelectList">
+				</ul>
+				</div>
+					
+				<?php UI::contentSubHeading(getMLText("assign_approvers")); ?>	
+				
+				<div class="cbSelectTitle"><?php printMLText("individuals");?>:</div>
+				<div class="cbSelectContainer cbSelectMargin">
+				<ul class="cbSelectList">
 <?php
-					foreach ($docAccess["users"] as $user) {
+				$res=$user->getMandatoryApprovers();
+
+				foreach ($docAccess["users"] as $usr) {
+				
+					if ($usr->getID()==$user->getID()) continue; 
+
+					$mandatory=false;
+					foreach ($res as $r) if ($r['approverUserID']==$usr->getID()) $mandatory=true;
+					
+					if ($mandatory) print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>". $usr->getFullName();
+					else print "<li class=\"cbSelectItem\"><input id='appInd".$usr->getID()."' type='checkbox' name='indApprovers[]' value='". $usr->getID() ."'>". $usr->getFullName();
+				}
 ?>
-						<li class="cbSelectItem"><?php echo "<label for='appInd".$user->getID()."'><input id='appInd".$user->getID()."' type='checkbox' name='indApprovers[]' value='". $user->getID() ."'>". $user->getFullName()." &lt;".$user->getEmail().">"; ?></li>
+				</ul>
+				</div>
+				<div class="cbSelectTitle"><?php printMLText("groups");?>:</div>
+				<div class="cbSelectContainer">
+				<ul class="cbSelectList">
 <?php
-					}
+				foreach ($docAccess["groups"] as $grp) {
+				
+					$mandatory=false;
+					foreach ($res as $r) if ($r['approverGroupID']==$grp->getID()) $mandatory=true;	
+
+					if ($mandatory) print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>".$grp->getName();
+					else print "<li class=\"cbSelectItem\"><input id='appGrp".$grp->getID()."' type='checkbox' name='grpApprovers[]' value='". $grp->getID() ."'>".$grp->getName();
+
+				}
 ?>
-					</ul>
-					</div>
-					<script language="JavaScript">if (!document.getElementById('assignDocApprovers').checked) hideBlock('docApprovers');</script>
-					</dd>
-				</dl>
+				</ul>
+				</div>
+			</td>
 			</tr>
 		<tr>
 			<td colspan="2"><?php printMLText("add_doc_reviewer_approver_warning")?></td>

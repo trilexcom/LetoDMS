@@ -1,7 +1,5 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -35,11 +33,11 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-if (!isset($_POST["folderid"]) || !is_numeric($_POST["folderid"]) || intval($_POST["folderid"])<1) {
+if (!isset($_GET["targetidform3"]) || !is_numeric($_GET["targetidform3"]) || intval($_GET["targetidform3"])<1) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
 }
 
-$folderid = $_POST["folderid"];
+$folderid = $_GET["targetidform3"];
 $folder = getFolder($folderid);
 
 if (!is_object($folder)) {

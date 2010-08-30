@@ -88,8 +88,8 @@ function getTime() {
 }
 
 function markQuery($str, $tag = "b") {
+
 	GLOBAL $query;
-	
 	$querywords = split(" ", $query);
 	
 	foreach ($querywords as $queryword)
@@ -165,8 +165,8 @@ if (strlen($concatFunction)>0 && count($tkeys)>0) {
 // Check to see if the search has been restricted to a particular sub-tree in
 // the folder hierarchy.
 $searchFolder = "";
-if (isset($_GET["targetid"]) && is_numeric($_GET["targetid"]) && $_GET["targetid"]>0) {
-	$targetid = $_GET["targetid"];
+if (isset($_GET["targetidform1"]) && is_numeric($_GET["targetidform1"]) && $_GET["targetidform1"]>0) {
+	$targetid = $_GET["targetidform1"];
 	$startFolder = getFolder($targetid);
 }
 else {
@@ -174,12 +174,9 @@ else {
 	$startFolder = getFolder($targetid);
 }
 if (!is_object($startFolder)) {
-	UI::htmlStartPage(getMLText("search_results"));
-	UI::globalNavigation();
-	UI::pageNavigation(getMLText("invalid_folder_id"));
-	UI::htmlEndPage();
-	exit;
+	UI::exitError(getMLText("search_results"),getMLText("invalid_folder_id"));
 }
+
 if ($targetid != $settings->_rootFolderID) {
 	$searchFolder = "`tblDocuments`.`folderList` LIKE '%:".$targetid.":%'";
 }
@@ -189,9 +186,8 @@ if ($targetid != $settings->_rootFolderID) {
 $folderPathHTML = getFolderPathHTML($startFolder, true);
 UI::htmlStartPage(getMLText("search_results"));
 UI::globalNavigation($startFolder);
-UI::pageNavigation($folderPathHTML, "view_folder", $startFolder);
+UI::pageNavigation($folderPathHTML, "", $startFolder);
 UI::contentHeading(getMLText("search_results"));
-
 
 // Check to see if the search has been restricted to a particular
 // document owner.
@@ -308,14 +304,36 @@ if (strlen($searchOwner)>0) {
 if (strlen($searchCreateDate)>0) {
 	$searchQuery .= " AND (".$searchCreateDate.")";
 }
-if (isset($_GET["pendingReview"]) && isset($_GET["pendingApproval"])) {
-	$searchQuery .= " AND `tblDocumentStatusLog`.`status` IN (0, 1)";
+
+// status
+$stlist = "(";
+if (isset($_GET["pendingReview"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_DRAFT_REV;
 }
-else if (isset($_GET["pendingReview"])) {
-	$searchQuery .= " AND `tblDocumentStatusLog`.`status` = 0";
+if (isset($_GET["pendingApproval"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_DRAFT_APP;
 }
-else if (isset($_GET["pendingApproval"])) {
-	$searchQuery .= " AND `tblDocumentStatusLog`.`status` = 1";
+if (isset($_GET["released"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_RELEASED;
+}
+if (isset($_GET["rejected"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_REJECTED;
+}
+if (isset($_GET["obsolete"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_OBSOLETE;
+}
+if (isset($_GET["expired"])){
+	if ($stlist != "(") $stlist .= ",";
+	$stlist .= S_EXPIRED;
+}
+if ($stlist != "("){
+	$stlist .= ")";
+	$searchQuery .= " AND `tblDocumentStatusLog`.`status` IN ".$stlist;
 }
 
 // Count the number of rows that the search will produce.
@@ -363,10 +381,10 @@ UI::contentContainerStart();
 <?php
 $numResults = count($resArr);
 if ($numResults == 0) {
-	printMLText("search_no_results", array("query" => $query, "pending_review" => (isset($_GET["pendingReview"]) ? ", ".getMLText("search_result_pending_review") : ""), "pending_approval" => (isset($_GET["pendingApproval"]) ? ", ".getMLText("search_result_pending_approval") : "")));
+	printMLText("search_no_results");
 }
 else {
-	printMLText("search_report", array("query" => $query, "count" => $totalDocs, "pending_review" => (isset($_GET["pendingReview"]) ? ", ".getMLText("search_result_pending_review") : ""), "pending_approval" => (isset($_GET["pendingApproval"]) ? ", ".getMLText("search_result_pending_approval") : "")));
+	printMLText("search_report", array("count" => $totalDocs));
 }
 ?>
 </td>
@@ -381,17 +399,18 @@ if ($numResults == 0) {
 	exit;
 }
 
-// UI::pageList($pageNumber, $totalPages, "../op/op.Search.php", $_GET);
+UI::pageList($pageNumber, $totalPages, "../op/op.Search.php", $_GET);
 
 print "<table class=\"folderView\">";
 print "<thead>\n<tr>\n";
-print "<th></th>\n";
+//print "<th></th>\n";
 print "<th>".getMLText("name")."</th>\n";
-print "<th>".getMLText("latest_version")."</th>\n";
-print "<th>".getMLText("comment")."</th>\n";
+print "<th>".getMLText("owner")."</th>\n";
 print "<th>".getMLText("status")."</th>\n";
-print "<th>".getMLText("reviewers")."</th>\n";
-print "<th>".getMLText("approvers")."</th>\n";
+print "<th>".getMLText("version")."</th>\n";
+print "<th>".getMLText("comment")."</th>\n";
+//print "<th>".getMLText("reviewers")."</th>\n";
+//print "<th>".getMLText("approvers")."</th>\n";
 print "</tr>\n</thead>\n<tbody>\n";
 
 $resultsFilteredByAccess = false;
@@ -410,32 +429,34 @@ foreach ($resArr as $docArr) {
 	}
 	else {
 		print "<tr>";
-		print "<td><img src=\"../out/images/file.gif\" class=\"mimeicon\"></td>";
+		//print "<td><img src=\"../out/images/file.gif\" class=\"mimeicon\"></td>";
 		if (in_array(2, $searchin)) {
 			$docName = markQuery($docArr["name"], "i");
 		}
 		else {
 			$docName = $docArr["name"];
 		}
-		print "<td>". "<a class=\"standardText\" href=\"../out/out.ViewDocument.php?documentid=".$docArr["id"]."\">" . $docName . "</a><br/>";
+		print "<td><a class=\"standardText\" href=\"../out/out.ViewDocument.php?documentid=".$docArr["id"]."\">/";
 		$folder = getFolder($docArr["folder"]);
 		$path = $folder->getPath();
-		for ($i = 0; $i  < count($path); $i++) {
-			print $path[$i]->getName();
-			if ($i +1 < count($path))
-				print " / ";
+		for ($i = 1; $i  < count($path); $i++) {
+			print $path[$i]->getName()."/";
 		}
-		print "</td><td class=\"center\">".$docArr["version"]."</td>";
-		print "<td>";
-		if (in_array(3, $searchin)) {
-			print markQuery($docArr["comment"]);
-		}
-		else {
-			print $docArr["comment"];
-		}
-		print "</td>";
+		print $docName;
+		print "</a></td>";
+		
+		$owner = $document->getOwner();
+		print "<td>".$owner->getFullName()."</td>";
 		print "<td>".getOverallStatusText($docArr["status"]). "</td>";
-		print "<td>";
+
+		print "<td class=\"center\">".$docArr["version"]."</td>";
+		
+		if (in_array(3, $searchin)) $comment = markQuery($docArr["comment"]);
+		else $comment = $docArr["comment"];
+		if (strlen($comment) > 50) $comment = substr($comment, 0, 47) . "...";
+		print "<td>".$comment."</td>";
+		
+		/*print "<td>";
 		if (!$db->createTemporaryTable("ttreviewid")) {
 			print "-";
 		}
@@ -543,7 +564,9 @@ foreach ($resArr as $docArr) {
 				print "-";
 			}
 		}
-		print "</td></tr>\n";
+		print "</td>";
+		*/
+		print "</tr>\n";
 	}
 }
 if ($resultsFilteredByAccess) {

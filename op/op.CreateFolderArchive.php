@@ -1,7 +1,5 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -32,13 +30,9 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-// TODO: test if zLib is available
-
 if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
-
-
 
 // Adds file header to the tar file, it is used before adding file content.
 // f: file resource (provided by eg. fopen)
@@ -116,26 +110,58 @@ function TarAddFooter($f)
     fwrite($f,pack('a1024',''));
 }
 
+// thanks to Doudoux 
+function getFolderPathPlainAST($folder) {
+    $path="";
+    $folderPath = $folder->getPath();
+    for ($i = 0; $i  < count($folderPath); $i++) {
+        $path .= $folderPath[$i]->getName();
+        if ($i+1 < count($folderPath)) $path .= "/";
+    }
+    return $path;
+}
+
 function createFolderTar($folder,$ark)
 {
-	global $settings;
+	global $settings,$human_readable;
 
 	$documents=$folder->getDocuments();
 	foreach ($documents as $document){
 		
 		if (file_exists($settings->_contentDir.$document->getDir())){
 
-			$handle = opendir($settings->_contentDir.$document->getDir());
-			while ($entry = readdir($handle) )
-			{
-				if (!is_dir($settings->_contentDir.$document->getDir().$entry)){
-				
-					TarAddHeader($ark,$settings->_contentDir.$document->getDir().$entry,$document->getDir().$entry);
-					TarWriteContents($ark,$settings->_contentDir.$document->getDir().$entry);
-				}
+			if ($human_readable){
+			
+				// create an archive containing the files with original names and DMS path 
+				// thanks to Doudoux 
 
+				$latestContent = $document->getLatestContent();
+				if (is_object($latestContent))
+				{
+					TarAddHeader(
+						$ark,
+						$settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType(),
+						getFolderPathPlainAST($folder)."/".$document->getID()."_".mydmsDecodeString($latestContent->getOriginalFileName()));
+						
+				        TarWriteContents($ark, $settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());			        
+				}
+			
+			}else{
+
+				// create a server backup archive
+
+				$handle = opendir($settings->_contentDir.$document->getDir());
+				while ($entry = readdir($handle) )
+				{
+					if (!is_dir($settings->_contentDir.$document->getDir().$entry)){
+					
+						TarAddHeader($ark,$settings->_contentDir.$document->getDir().$entry,$document->getDir().$entry);
+						TarWriteContents($ark,$settings->_contentDir.$document->getDir().$entry);
+					}
+
+				}
+				closedir($handle);
 			}
-			closedir($handle);
 		}	
 	}
 
@@ -147,18 +173,20 @@ function createFolderTar($folder,$ark)
 	return true;
 }
 
-
-if (!isset($_POST["folderid"]) || !is_numeric($_POST["folderid"]) || intval($_POST["folderid"])<1) {
+if (!isset($_GET["targetidform2"]) || !is_numeric($_GET["targetidform2"]) || intval($_GET["targetidform2"])<1) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
 }
-$folderid = $_POST["folderid"];
+$folderid = $_GET["targetidform2"];
 $folder = getFolder($folderid);
 
 if (!is_object($folder)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
 }
 
-$ark_name = $settings->_contentDir.time()."_".$folderid.".tar";
+$human_readable = (isset($_GET["human_readable"]) && $_GET["human_readable"]==1 ? true : false);
+
+if ($human_readable)$ark_name = $settings->_contentDir.time()."_".$folderid."_HR.tar";
+else $ark_name = $settings->_contentDir.time()."_".$folderid.".tar";
 
 $ark = fopen($ark_name,"w");
 
@@ -171,15 +199,10 @@ if (!createFolderTar($folder,$ark)) {
 TarAddFooter($ark);
 fclose($ark);
 
-// compression
-$fp = fopen($ark_name, "r");
-$data = fread ($fp, filesize($ark_name));
-fclose($fp);
+if (gzcompressfile($ark_name,9)) unlink($ark_name);
+else UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 
-$zp = gzopen($ark_name.".gz", "w9");
-gzwrite($zp, $data);
-gzclose($zp);
-unlink($ark_name);
+add_log_line();
 
 header("Location:../out/out.BackupTools.php");
 

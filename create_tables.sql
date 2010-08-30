@@ -63,31 +63,6 @@ CREATE TABLE `tblDocumentContent` (
   PRIMARY KEY  (`document`,`version`)
 ) ;
 
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tblDocumentFiles`
---
-
-CREATE TABLE IF NOT EXISTS `tblDocumentFiles` (
-  `id` int(11) NOT NULL auto_increment,
-  `document` int(11) NOT NULL default '0',
-  `userID` int(11) NOT NULL default '0',
-  `comment` text,
-  `name` varchar(150) default NULL,
-  `date` int(12) default NULL,
-  `dir` varchar(255) NOT NULL default '',
-  `orgFileName` varchar(150) NOT NULL default '',
-  `fileType` varchar(10) NOT NULL default '',
-  `mimeType` varchar(70) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `tblDocumentFiles`
---
-
 -- --------------------------------------------------------
 
 -- 
@@ -102,6 +77,28 @@ CREATE TABLE `tblDocumentLinks` (
   `public` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `tblDocumentFiles`
+-- 
+
+CREATE TABLE `tblDocumentFiles` (
+  `id` int(11) NOT NULL auto_increment,
+  `document` int(11) NOT NULL default '0',
+  `userID` int(11) NOT NULL default '0',
+  `comment` text,
+  `name` varchar(150) default NULL,
+  `date` int(12) default NULL,
+  `dir` varchar(255) NOT NULL default '',
+  `orgFileName` varchar(150) NOT NULL default '',
+  `fileType` varchar(10) NOT NULL default '',
+  `mimeType` varchar(70) NOT NULL default '',  
+  PRIMARY KEY  (`id`)
+) ;
+
+
 
 -- --------------------------------------------------------
 
@@ -229,6 +226,7 @@ CREATE TABLE `tblFolders` (
 CREATE TABLE `tblGroupMembers` (
   `groupID` int(11) NOT NULL default '0',
   `userID` int(11) NOT NULL default '0',
+  `manager` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`groupID`,`userID`)
 ) ;
 
@@ -330,6 +328,7 @@ CREATE TABLE `tblUsers` (
   `theme` varchar(32) NOT NULL,
   `comment` text NOT NULL,
   `isAdmin` smallint(1) NOT NULL default '0',
+  `hidden` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ;
 
@@ -360,10 +359,48 @@ CREATE TABLE `tblPathList` (
 
 -- --------------------------------------------------------
 
+-- 
+-- Table structure for mandatory reviewers
+-- 
+
+CREATE TABLE `tblMandatoryReviewers` (
+  `userID` int(11) NOT NULL default '0',
+  `reviewerUserID` int(11) NOT NULL default '0',
+  `reviewerGroupID` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`userID`,`reviewerUserID`,`reviewerGroupID`)
+) ;
+
+-- 
+-- Table structure for mandatory approvers
+-- 
+
+CREATE TABLE `tblMandatoryApprovers` (
+  `userID` int(11) NOT NULL default '0',
+  `approverUserID` int(11) NOT NULL default '0',
+  `approverGroupID` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`userID`,`approverUserID`,`approverGroupID`)
+) ;
+
+-- 
+-- Table structure for events (calendar)
+-- 
+
+CREATE TABLE `tblEvents` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(150) default NULL,
+  `comment` text,
+  `start` int(12) default NULL,
+  `stop` int(12) default NULL,
+  `date` int(12) default NULL,
+  `userID` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ;
+
+
 --
 -- Initial content for database
 --
 
-INSERT INTO tblFolders VALUES (1, 'Root-Folder', 0, '', 1, 0, 2, 0);
-INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1);
-INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 0);
+INSERT INTO tblFolders VALUES (1, 'DMS', 0, 'DMS root', 1, 0, 2, 0);
+INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1, 0);
+INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 0, 0);

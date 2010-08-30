@@ -31,14 +31,12 @@ function getUser($id)
 	$queryStr = "SELECT * FROM tblUsers WHERE id = " . $id;
 	$resArr = $db->getResultArray($queryStr);
 	
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	else if (count($resArr) != 1)
-		return false;
+	if (is_bool($resArr) && $resArr == false) return false;
+	if (count($resArr) != 1) return false;
 	
 	$resArr = $resArr[0];
 	
-	return new User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"]);
+	return new User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
 }
 
 
@@ -56,7 +54,7 @@ function getUserByLogin($login)
 		
 	$resArr = $resArr[0];
 	
-	return new User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"]);
+	return new User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
 }
 
 
@@ -73,19 +71,19 @@ function getAllUsers()
 	$users = array();
 	
 	for ($i = 0; $i < count($resArr); $i++)
-		$users[$i] = new User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], $resArr["language"], $resArr["theme"], $resArr[$i]["comment"], $resArr[$i]["isAdmin"]);
+		$users[$i] = new User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
 	
 	return $users;
 }
 
 
-function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0) {
+function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isHidden=0) {
 	global $db;
 
 	if (is_object(getUserByLogin($login))) {
 		return false;
 	}
-	$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, isAdmin) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$isAdmin."')";
+	$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, isAdmin, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$isAdmin."', '".$isHidden."')";
 	$res = $db->getResult($queryStr);
 	if (!$res)
 		return false;
@@ -109,8 +107,9 @@ class User
 	var $_theme;
 	var $_comment;
 	var $_isAdmin;
+	var $_isHidden;
 
-	function User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin)
+	function User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isHidden=0)
 	{
 		$this->_id = $id;
 		$this->_login = $login;
@@ -121,6 +120,7 @@ class User
 		$this->_theme = $theme;
 		$this->_comment = $comment;
 		$this->_isAdmin = $isAdmin;
+		$this->_isHidden = $isHidden;		
 	}
 
 	function getID() { return $this->_id; }
@@ -244,6 +244,23 @@ class User
 		$this->_isAdmin = $isAdmin;
 		return true;
 	}
+	
+	function isHidden() { return $this->_isHidden; }
+
+	function setHidden($isHidden)
+	{
+		GLOBAL $db;
+		
+		$isHidden = ($isHidden) ? "1" : "0";
+		$queryStr = "UPDATE tblUsers SET hidden = " . $isHidden . " WHERE id = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+		
+		$this->_isHidden = $isAdmin;
+		return true;
+	}
+	
+	
 
 	/**
 	 * Entfernt den Benutzer aus dem System.
@@ -268,51 +285,80 @@ class User
 				if ($i + 1 < count($resultArr))
 					$queryStr .= " OR ";
 			}
-			if (!$db->getResult($queryStr))
-				return false;
+			if (!$db->getResult($queryStr))	return false;
 		}
+		
 		$queryStr = "DELETE FROM tblKeywordCategories WHERE owner = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr))	return false;	
 		
 		//Benachrichtigungen entfernen
 		$queryStr = "DELETE FROM tblNotify WHERE userID = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
 		//Der Besitz von Dokumenten oder Ordnern, deren bisheriger Besitzer der zu löschende war, geht an den Admin über
 		$queryStr = "UPDATE tblFolders SET owner = " . $settings->_adminID . " WHERE owner = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
 		$queryStr = "UPDATE tblDocuments SET owner = " . $settings->_adminID . " WHERE owner = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
 		$queryStr = "UPDATE tblDocumentContent SET createdBy = " . $settings->_adminID . " WHERE createdBy = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+			
 		//Verweise auf Dokumente: Private löschen...
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE userID = " . $this->_id . " AND public = 0";
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+			
 		//... und öffentliche an Admin übergeben
 		$queryStr = "UPDATE tblDocumentLinks SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
+		// set administrator for deleted user's attachments
+		$queryStr = "UPDATE tblDocumentFiles SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
 		//Evtl. von diesem Benutzer gelockte Dokumente werden freigegeben
 		$queryStr = "DELETE FROM tblDocumentLocks WHERE userID = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
 		//User aus allen Gruppen löschen
 		$queryStr = "DELETE FROM tblGroupMembers WHERE userID = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
 		//User aus allen ACLs streichen
 		$queryStr = "DELETE FROM tblACLs WHERE userID = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
+		//Eintrag aus tblUsers löschen
+		$queryStr = "DELETE FROM tblUserImages WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
 		//Eintrag aus tblUsers löschen
 		$queryStr = "DELETE FROM tblUsers WHERE id = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
+		if (!$db->getResult($queryStr)) return false;
+		
+		// mandatory review/approve
+		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE reviewerUserID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
+		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE approverUserID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
+		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
+		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+		
+		// set administrator for deleted user's events
+		$queryStr = "UPDATE tblEvents SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+
+			
+		// TODO : update document status if reviewer/approver has been deleted
+		// "DELETE FROM tblDocumentApproveLog WHERE userID = " . $this->_id;
+		// "DELETE FROM tblDocumentReviewLog WHERE userID = " . $this->_id;
+		
 
 		$reviewStatus = $this->getReviewStatus();
 		foreach ($reviewStatus["indstatus"] as $ri) {
@@ -555,6 +601,93 @@ class User
 			}
 		}
 		return $this->_documents;
+	}
+	
+	function getMandatoryReviewers()
+	{
+		GLOBAL $db;
+		
+		$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
+		$resArr = $db->getResultArray($queryStr);
+
+		return $resArr;
+	}
+	
+	function getMandatoryApprovers()
+	{
+		GLOBAL $db;
+		
+		$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
+		$resArr = $db->getResultArray($queryStr);
+
+		return $resArr;
+	}
+	
+	function setMandatoryReviewer($id, $isgroup=false)
+	{
+		GLOBAL $db;
+		
+		if ($isgroup){
+		
+			$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id . " AND reviewerGroupID = " . $id;
+			$resArr = $db->getResultArray($queryStr);
+			if (count($resArr)!=0) return;
+		
+			$queryStr = "INSERT INTO tblMandatoryReviewers (userID, reviewerGroupID) VALUES (" . $this->_id . ", " . $id .")";
+			$resArr = $db->getResult($queryStr);
+			if (is_bool($resArr) && !$resArr) return false;
+
+		}else{
+		
+			$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id . " AND reviewerUserID = " . $id;
+			$resArr = $db->getResultArray($queryStr);
+			if (count($resArr)!=0) return;
+		
+			$queryStr = "INSERT INTO tblMandatoryReviewers (userID, reviewerUserID) VALUES (" . $this->_id . ", " . $id .")";
+			$resArr = $db->getResult($queryStr);			
+			if (is_bool($resArr) && !$resArr) return false;
+		}		
+		
+	}
+	
+	function setMandatoryApprover($id, $isgroup=false)
+	{
+		GLOBAL $db;
+		
+		if ($isgroup){
+		
+			$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id . " AND approverGroupID = " . $id;
+			$resArr = $db->getResultArray($queryStr);
+			if (count($resArr)!=0) return;
+		
+			$queryStr = "INSERT INTO tblMandatoryApprovers (userID, approverGroupID) VALUES (" . $this->_id . ", " . $id .")";
+			$resArr = $db->getResult($queryStr);
+			if (is_bool($resArr) && !$resArr) return false;
+
+		}else{
+		
+			$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id . " AND approverUserID = " . $id;
+			$resArr = $db->getResultArray($queryStr);
+			if (count($resArr)!=0) return;
+		
+			$queryStr = "INSERT INTO tblMandatoryApprovers (userID, approverUserID) VALUES (" . $this->_id . ", " . $id .")";
+			$resArr = $db->getResult($queryStr);
+			if (is_bool($resArr) && !$resArr) return false;
+		}
+	}
+	
+	function delMandatoryReviewers()
+	{
+		GLOBAL $db;
+		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
+	}
+	
+	function delMandatoryApprovers()
+	{
+		GLOBAL $db;
+		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
+		if (!$db->getResult($queryStr)) return false;
 	}
 }
 ?>

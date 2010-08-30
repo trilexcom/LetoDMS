@@ -66,6 +66,8 @@ else {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 }
 
+add_log_line("?documentid=".$documentid);
+
 header("Location:../out/out.DocumentVersionDetail.php?documentid=".$documentid."&version=".$versionid);
 
 ?>

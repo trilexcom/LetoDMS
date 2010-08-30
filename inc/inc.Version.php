@@ -19,7 +19,7 @@
 
 class Version {
 
-	var $_number = "v1.8.1";
+	var $_number = "v1.10";
 	var $_string = "LetoDMS";
 
 	function Version() {

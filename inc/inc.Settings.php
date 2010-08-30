@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,16 +21,16 @@
 class Settings
 {
 	// Name of site -- used in the page titles. Default: MyDMS
-	var $_siteName = "";
+	var $_siteName = "letoDMS";
 
 	// Message to display at the bottom of every page.
-	var $_footNote = "";
+	var $_footNote = "letoDMS free document management system - www.letodms.com";
 	
 	// if true the disclaimer message the lang.inc files will be print on the bottom of the page
 	var $_printDisclaimer = true;	
 
 	// Default page on login. Defaults to out/out.ViewFolder.php
-	var $_siteDefaultPage = "out/out.MyDocuments.php?inProcess=1";
+	var $_siteDefaultPage = "";
 
 	// IDs of admin-user, guest-user and root-folder (no need to change)
 	var $_adminID = 1;
@@ -48,44 +49,40 @@ class Settings
 	// be checked for a value. If set to false, then (most) comments and
 	// keyword fields become optional. Comments are always required when
 	// submitting a review or overriding document status.
-	var $_strictFormCheck = true;
+	var $_strictFormCheck = false;
 
 	// path to where mydms is located
-	var $_rootDir = "/var/www/...";
+	var $_rootDir = "/var/www/letoDMS-1.10/";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
 	// http://www.example.com/mydms/, set $_httpRoot = "/mydms/".
 	// If the URL is http://www.example.com/, set $_httpRoot = "/".
-	var $_httpRoot = "";
+	var $_httpRoot = "/letoDMS-1.10/";
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "/var/www/...";
+	var $_contentDir = "/var/www/letoDMS-1.10/data/";
 
-	// To work around limitations in the underlying file system, and to
-	// preserve backwards compatibility, a new directory structure has been
-	// devised that exists within the content directory ($_contentDir). This
-	// requires a base directory from which to begin. Usually leave this to the
-	// default setting, 1048576, but can be any number or string that does not
-	// already exist within $_contentDir.
-	//
-	// To continue using the old directory structure, set $_useLegacyDir = true;
-	var $_useLegacyDir=false;
+	// To work around limitations in the underlying file system, a new 
+	// directory structure has been devised that exists within the content 
+	// directory ($_contentDir). This requires a base directory from which 
+	// to begin. Usually leave this to the default setting, 1048576, but can 
+	// be any number or string that does not already exist within $_contentDir.	
 	var $_contentOffsetDir = "1048576";
 
 	// Maximum number of sub-directories per parent directory. Default: 32700.
 	var $_maxDirID = 32700;
 
-	//default language (name of a subfolder in folder "languages")
+	// default language (name of a subfolder in folder "languages")
 	var $_language = "English";
 
 	// users are notified about document-changes that took place within the last $_updateNotifyTime seconds
 	var $_updateNotifyTime = 86400; //means 24 hours
 
-	// files with one of the following endings can be viewed online
-	/*var $_viewOnlineFileTypes = array(".txt", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg");*/
-	var $_viewOnlineFileTypes = array();
+	// files with one of the following endings can be viewed online (USE ONLY LOWER CASE CHARACTERS)
+	// to disable: var $_viewOnlineFileTypes = array();
+	var $_viewOnlineFileTypes = array(".txt", ".text", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg", ".jpeg");
 
 	// enable/disable converting of files
 	var $_enableConverting = true;
@@ -101,11 +98,35 @@ class Settings
 	
 	// enable/disable group and user view for all users
 	var $_enableUsersView = true;
+	
+	// false to don't list administrator as reviewer/approver
+	var $_enableAdminRevApp = false;
+	
+	// the name of the versioning info file created by the backup tool
+	var $_versioningFileName = "versioning_info.txt";
+	
+	// set false to disable log system
+	var $_logFileEnable = true;
+	
+	// the log file rotation (h=hourly, d=daily, m=monthly)
+	var $_logFileRotation = "d";
+	
+	// enable users images
+	var $_enableUserImage = false;
+	
+	// enable calendar
+	var $_enableCalendar = true;
+	
+	// first day of the week (0=sunday, 6=saturday)
+	var $_firstDayOfWeek = 0;
+	
+	// false to don't show the folder tree
+	var $_enableFolderTree = true;
 
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb
-	var $_ADOdbPath = "";
+	var $_ADOdbPath = "/var/www/letoDMS-1.10/adodb/";
 
 	//DB-Driver used by adodb (see adodb-readme)
 	var $_dbDriver = "mysql";
@@ -114,13 +135,13 @@ class Settings
 	var $_dbHostname = "localhost";
 
 	//database where the tables for mydms are stored (optional - see adodb-readme)
-	var $_dbDatabase = "mydms";
+	var $_dbDatabase = "letodms";
 
 	//username for database-access
-	var $_dbUser = "mydms";
+	var $_dbUser = "letodms";
 
 	//password for database-access
-	var $_dbPass = "mydms";
+	var $_dbPass = "letodms";
 
 	// -------------------------------- LDAP Authentication Setup --------------------------------------------
 

@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -104,7 +105,7 @@ if ($_POST["approvalType"] == "ind") {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("approval_update_failed"));
 	}
 	else {
-		// Send an email notification to the document owner.
+		// Send an email notification to the document updater.
 		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
 		$message = getMLText("approval_submit_email")."\r\n";
 		$message .= 
@@ -118,7 +119,7 @@ if ($_POST["approvalType"] == "ind") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $document->getOwner(), $subject, $message);
+		Email::toIndividual($user, $content->getUser(), $subject, $message);
 
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
@@ -129,6 +130,7 @@ if ($_POST["approvalType"] == "ind") {
 	}
 }
 else if ($_POST["approvalType"] == "grp") {
+
 	$grpApprover=false;
 	foreach ($approvalStatus["grpstatus"] as $gs) {
 		if ($_POST["approvalGroup"] == $gs["required"]) {
@@ -155,7 +157,7 @@ else if ($_POST["approvalType"] == "grp") {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("approval_update_failed"));
 	}
 	else {
-		// Send an email notification to the document owner.
+		// Send an email notification to the document updater.
 		$grp = getGroup($grpStatus["required"]);
 		
 		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
@@ -171,7 +173,7 @@ else if ($_POST["approvalType"] == "grp") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $document->getOwner(), $subject, $message);
+		Email::toIndividual($user, $content->getUser(), $subject, $message);
 
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();

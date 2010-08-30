@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -33,6 +34,9 @@ class Email {
 
 		$header = "From: ". $sender->getFullName() ." <". $sender->getEmail() .">\r\n" .
 			"Reply-To: ". $sender->getFullName() ." <". $sender->getEmail() .">\r\n";
+			
+		$message = getMLText("email_header")."\r\n\r\n".$message;
+		$message .= "\r\n\r\n".getMLText("email_footer");
 
 		return (mail($recipient->getEmail(), $subject, $message, $header) ? 0 : -1);
 	}
@@ -60,6 +64,9 @@ class Email {
 		if (strlen($toList)==0) {
 			return -1;
 		}
+		
+		$message = getMLText("email_header")."\r\n\r\n".$message;
+		$message .= "\r\n\r\n".getMLText("email_footer");
 
 		return (mail($toList, $subject, $message, $header) ? 0 : -1);
 	}
@@ -89,6 +96,9 @@ class Email {
 		if (strlen($toList)==0) {
 			return -1;
 		}
+
+		$message = getMLText("email_header")."\r\n\r\n".$message;
+		$message .= "\r\n\r\n".getMLText("email_footer");
 
 		return (mail($toList, $subject, $message, $header) ? 0 : -1);
 	}

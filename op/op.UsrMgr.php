@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -35,23 +36,28 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
+if (isset($_POST["action"])) $action=$_POST["action"];
+else if (isset($_GET["action"])) $action=$_GET["action"];
+else $action=NULL;
+
 //Neuen Benutzer anlegen --------------------------------------------------------------------------
-if ($_POST["action"] == "adduser") {
+if ($action == "adduser") {
 	
 	$login   = sanitizeString($_POST["login"]);
 	$name    = sanitizeString($_POST["name"]);
 	$email   = sanitizeString($_POST["email"]);
 	$comment = sanitizeString($_POST["comment"]);
 	$isAdmin = (isset($_POST["isadmin"]) && $_POST["isadmin"]==1 ? 1 : 0);
+	$isHidden = (isset($_POST["ishidden"]) && $_POST["ishidden"]==1 ? 1 : 0);
 
 	if (is_object(getUserByLogin($login))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("user_exists"));
 	}
 
-	$newUser = addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin);
+	$newUser = addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin, $isHidden);
 	if ($newUser) {
 
-		if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
+		if (isset($_FILES["userfile"]) && is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
 		{
 			$userfiletype = sanitizeString($_FILES["userfile"]["type"]);
 			$userfilename = sanitizeString($_FILES["userfile"]["name"]);
@@ -69,10 +75,34 @@ if ($_POST["action"] == "adduser") {
 		}
 	}
 	else UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
+	
+	if (isset($_POST["usrReviewers"])){
+		foreach ($_POST["usrReviewers"] as $revID) 
+			$newUser->setMandatoryReviewer($revID,false);
+	}
+	
+	if (isset($_POST["grpReviewers"])){
+		foreach ($_POST["grpReviewers"] as $revID) 
+			$newUser->setMandatoryReviewer($revID,true);
+	}
+		
+	if (isset($_POST["usrApprovers"])){
+		foreach ($_POST["usrApprovers"] as $appID) 
+			$newUser->setMandatoryApprover($appID,false);
+	}
+			
+	if (isset($_POST["grpApprovers"])){
+		foreach ($_POST["grpApprovers"] as $appID) 
+			$newUser->setMandatoryApprover($appID,true);
+	}
+	
+	$userid=$newUser->getID();
+	
+	add_log_line(".php&action=adduser&login=".$login);
 }
 
 //Benutzer löschen --------------------------------------------------------------------------------
-else if (($_POST["action"] == "removeuser") || ($_GET["action"] == "removeuser")) {
+else if ($action == "removeuser") {
 
 	if (isset($_POST["userid"])) {
 		$userid = $_POST["userid"];
@@ -96,15 +126,22 @@ else if (($_POST["action"] == "removeuser") || ($_GET["action"] == "removeuser")
 	if (!$userToRemove->remove()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
+		
+	add_log_line(".php&action=removeuser&userid=".$userid);
+	
+	$userid=-1;
 }
 
 //Benutzer bearbeiten -----------------------------------------------------------------------------
-else if ($_POST["action"] == "edituser") {
+else if ($action == "edituser") {
 
 	if (!isset($_POST["userid"]) || !is_numeric($_POST["userid"]) || intval($_POST["userid"])<1) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
-	$editedUser = getUser($_POST["userid"]);
+	
+	$userid=$_POST["userid"];
+	$editedUser = getUser($userid);
+	
 	if (!is_object($editedUser)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
@@ -115,6 +152,7 @@ else if ($_POST["action"] == "edituser") {
 	$email   = sanitizeString($_POST["email"]);
 	$comment = sanitizeString($_POST["comment"]);
 	$isAdmin = (isset($_POST["isadmin"]) && $_POST["isadmin"]==1 ? 1 : 0);
+	$isHidden = (isset($_POST["ishidden"]) && $_POST["ishidden"]==1 ? 1 : 0);
 	
 	if ($editedUser->getLogin() != $login)
 		$editedUser->setLogin($login);
@@ -128,8 +166,10 @@ else if ($_POST["action"] == "edituser") {
 		$editedUser->setComment($comment);
 	if ($editedUser->isAdmin() != $isAdmin && $editedUser->getID()!=$settings->_adminID)
 		$editedUser->setAdmin($isAdmin);
+	if ($editedUser->isHidden() != $isHidden)
+		$editedUser->setHidden($isHidden);
 
-	if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
+	if (isset($_FILES['userfile']) && is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
 	{
 		$userfiletype = sanitizeString($_FILES["userfile"]["type"]);
 		$userfilename = sanitizeString($_FILES["userfile"]["name"]);
@@ -143,11 +183,31 @@ else if ($_POST["action"] == "edituser") {
 			$editedUser->setImage($_FILES["userfile"]["tmp_name"], $userfiletype);
 		}
 	}
+	
+	$editedUser->delMandatoryReviewers();
+	
+	foreach ($_POST["usrReviewers"] as $revID) 
+		$editedUser->setMandatoryReviewer($revID,false);
+			
+	foreach ($_POST["grpReviewers"] as $revID) 
+		$editedUser->setMandatoryReviewer($revID,true);
+
+	$editedUser->delMandatoryApprovers();
+	
+	foreach ($_POST["usrApprovers"] as $appID) 
+		$editedUser->setMandatoryApprover($appID,false);
+			
+	foreach ($_POST["grpApprovers"] as $appID) 
+		$editedUser->setMandatoryApprover($appID,true);
+	
+	add_log_line(".php&action=edituser&userid=".$userid);
+
 }
 else UI::exitError(getMLText("admin_tools"),getMLText("unknown_command"));
 
 
 function resizeImage($imageFile) {
+
 	// Not perfect. Creates a new image even if the old one is acceptable,
 	// and the output quality is low. Now uses the function imagecreatetruecolor(),
 	// though, so at least the pictures are in colour.
@@ -171,6 +231,6 @@ function resizeImage($imageFile) {
 	return true;
 }
 
-header("Location:../out/out.UsrMgr.php");
+header("Location:../out/out.UsrMgr.php?userid=".$userid);
 
 ?>

@@ -1,7 +1,5 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -41,19 +39,13 @@ function removeFolderFiles($folder)
 	global $settings;
 
 	$documents = $folder->getDocuments();
-	foreach ($documents as $document){
-	
-		// TODO :controllare $document->getDir()
-		
-		if (!removeDir($settings->_contentDir . $document->getDir()))
-			return false;
-	}
+	foreach ($documents as $document)
+		removeDir($settings->_contentDir . $document->getDir());
 
 	$subFolders = $folder->getSubFolders();
 	
 	foreach ($subFolders as $folder)
-		if (!removeFolderFiles($folder))
-			return false;
+		removeFolderFiles($folder);
 	
 
 	return true;
@@ -73,6 +65,8 @@ if (!is_object($folder)) {
 if (!removeFolderFiles($folder)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 }
+
+add_log_line();
 
 header("Location:../out/out.BackupTools.php");
 

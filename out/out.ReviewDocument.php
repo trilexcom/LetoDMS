@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -157,7 +158,7 @@ if ($indReviewer) {
 	<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkIndForm();">
 	<table>
 	<tr><td class='infos' valign='top'><?php printMLText("comment")?>:</td>
-	<td class='infos' valign='top'><textarea name="comment" cols="40" rows="4"></textarea>
+	<td class='infos' valign='top'><textarea name="comment" cols="80" rows="4"></textarea>
 	</td></tr>
 	<tr><td><?php printMLText("review_status")?></td>
 	<td><select name="reviewStatus">
@@ -210,7 +211,7 @@ else if ($grpReviewer) {
 		<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkGrpForm();">
 		<table>
 		<tr><td><?php printMLText("comment")?>:</td>
-		<td><textarea name="comment" cols="40" rows="4"></textarea>
+		<td><textarea name="comment" cols="80" rows="4"></textarea>
 		</td></tr>
 		<tr><td><?php printMLText("review_group")?>:</td>
 		<td><select name="reviewGroup"><?php print $grpSelectBox; ?></select>

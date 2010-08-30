@@ -37,6 +37,7 @@ if (!isset($_POST["documentid"]) || !is_numeric($_POST["documentid"]) || intval(
 
 $documentid = $_POST["documentid"];
 $document = getDocument($documentid);
+$folder = $document->getFolder();
 
 if (!is_object($document)) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));
@@ -70,38 +71,76 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 	// Get the list of reviewers and approvers for this document.
 	$reviewers = array();
 	$approvers = array();
-	if (isset($_POST["assignDocReviewers"])) {
-		// Retrieve the list of individual reviewers from the form.
-		$reviewers["i"] = array();
-		if (isset($_POST["indReviewers"])) {
-			foreach ($_POST["indReviewers"] as $ind) {
-				$reviewers["i"][] = $ind;
-			}
-		}
-		// Retrieve the list of reviewer groups from the form.
-		$reviewers["g"] = array();
-		if (isset($_POST["grpReviewers"])) {
-			foreach ($_POST["grpReviewers"] as $grp) {
-				$reviewers["g"][] = $grp;
-			}
+	
+	// Retrieve the list of individual reviewers from the form.
+	$reviewers["i"] = array();
+	if (isset($_POST["indReviewers"])) {
+		foreach ($_POST["indReviewers"] as $ind) {
+			$reviewers["i"][] = $ind;
 		}
 	}
-	if (isset($_POST["assignDocApprovers"])) {
-		// Retrieve the list of individual approvers from the form.
-		$approvers["i"] = array();
-		if (isset($_POST["indApprovers"])) {
-			foreach ($_POST["indApprovers"] as $ind) {
-				$approvers["i"][] = $ind;
-			}
-		}
-		// Retrieve the list of approver groups from the form.
-		$approvers["g"] = array();
-		if (isset($_POST["grpApprovers"])) {
-			foreach ($_POST["grpApprovers"] as $grp) {
-				$approvers["g"][] = $grp;
-			}
+	// Retrieve the list of reviewer groups from the form.
+	$reviewers["g"] = array();
+	if (isset($_POST["grpReviewers"])) {
+		foreach ($_POST["grpReviewers"] as $grp) {
+			$reviewers["g"][] = $grp;
 		}
 	}
+
+	// Retrieve the list of individual approvers from the form.
+	$approvers["i"] = array();
+	if (isset($_POST["indApprovers"])) {
+		foreach ($_POST["indApprovers"] as $ind) {
+			$approvers["i"][] = $ind;
+		}
+	}
+	// Retrieve the list of approver groups from the form.
+	$approvers["g"] = array();
+	if (isset($_POST["grpApprovers"])) {
+		foreach ($_POST["grpApprovers"] as $grp) {
+			$approvers["g"][] = $grp;
+		}
+	}
+	
+	// add mandatory reviewers/approvers
+	$docAccess = $folder->getApproversList();
+	$res=$user->getMandatoryReviewers();
+	foreach ($res as $r){
+
+		if ($r['reviewerUserID']!=0){
+			foreach ($docAccess["users"] as $usr)
+				if ($usr->getID()==$r['reviewerUserID']){
+					$reviewers["i"][] = $r['reviewerUserID'];
+					break;
+				}
+		}
+		else if ($r['reviewerGroupID']!=0){
+			foreach ($docAccess["groups"] as $grp)
+				if ($grp->getID()==$r['reviewerGroupID']){
+					$reviewers["g"][] = $r['reviewerGroupID'];
+					break;
+				}
+		}
+	}
+	$res=$user->getMandatoryApprovers();
+	foreach ($res as $r){
+
+		if ($r['approverUserID']!=0){
+			foreach ($docAccess["users"] as $usr)
+				if ($usr->getID()==$r['approverUserID']){
+					$approvers["i"][] = $r['approverUserID'];
+					break;
+				}
+		}
+		else if ($r['approverGroupID']!=0){
+			foreach ($docAccess["groups"] as $grp)
+				if ($grp->getID()==$r['approverGroupID']){
+					$approvers["g"][] = $r['approverGroupID'];
+					break;
+				}
+		}
+	}
+	
 
 	$contentResult=$document->addContent($comment, $user, $userfiletmp, basename($userfilename), $fileType, $userfiletype, $reviewers, $approvers);
 	if (is_bool($contentResult) && !$contentResult) {
@@ -120,6 +159,7 @@ else {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 }
 
+add_log_line("?documentid=".$documentid);
 header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 
 ?>

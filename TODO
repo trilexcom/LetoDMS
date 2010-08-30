@@ -1,0 +1,40 @@
+installation script:
+- user simply unpack the tar.gz in a server folder and access that folder
+- on startup if there are installation problems php automatically run the configuration script
+- the data folder creation can be automatic (user/password for server) or manual (yet ready folder)
+- same for the db and the db user
+- db creation (run of create table.sql) shoul control if db is yet filled and control for update to do
+- the inc/inc.Setting.php is filled asking user entry
+- the script can be used to test installation problem without affecting the current installation
+
+The document state is currently not updated when a user is deleted from users list. 
+For example user A is the only pending approver for a document, then the document is in draft state.
+When A is deleted the document should pass automatically in release status.
+This could be done with a new function controlling the existance of all the pending approver/reviewer
+and eventually updating the status of the document. This function will be called by user-remove function.
+
+Sometimes in the DB are written messages strings in plain language whose 
+language depends on the current user and will never be translated.
+ This can be avoided using only coded messages
+
+In the translation files there are a lot of string not used and the newer ones are non ordered
+This require a mass revision of all the lang.inc files. (English and Italian are the most updated)
+This revisione should be done when all the translation will be updated to last version (never?)
+
+In my Documents->all documents there should be two lists: one (the current) with 
+the user's document, and another with the user's updated document (that's because 
+one user could have updated a document not owned by himself)
+
+The include list in every file could be reordered in a single include file 
+with "require_once" (actually every file include everithing)
+
+Not everywhere in the sources every object (like $document, $folder, ecc)
+is tested as valid before using it (this can cause new php error)
+
+Security on user permission for all the op/ files is not completely tested
+Try to access direclty to the op file and control.
+
+The mail language is translated using the current user language but should use 
+the receiver language (not easy).
+
+Search function could be completed with: update date, update user, document type, ecc.

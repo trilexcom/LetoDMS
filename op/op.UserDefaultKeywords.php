@@ -52,11 +52,13 @@ if ($action == "addcategory") {
 	if (!$newCategory) {
 		UI::exitError(getMLText("personal_default_keywords"),getMLText("error_occured"));
 	}
+	$categoryid=$newCategory->getID();
 }
 
 
 //Kategorie löschen ----------------------------------------------------------------------------------
 else if ($action == "removecategory") {
+
 	if (isset($_POST["categoryid"])) {
 		$categoryid = sanitizeString($_POST["categoryid"]);
 	}
@@ -74,10 +76,12 @@ else if ($action == "removecategory") {
 		}
 	}
 	else UI::exitError(getMLText("personal_default_keywords"),getMLText("error_occured"));
+	$categoryid=-1;
 }
 
 //Kategorie bearbeiten: Neuer Name --------------------------------------------------------------------
 else if ($action == "editcategory") {
+
 	if (isset($_POST["categoryid"])) {
 		$categoryid = sanitizeString($_POST["categoryid"]);
 	}
@@ -106,6 +110,7 @@ else if ($action == "editcategory") {
 
 //Kategorie bearbeiten: Neue Stichwortliste  ----------------------------------------------------------
 else if ($action == "newkeywords") {
+
 	if (isset($_POST["categoryid"])) {
 		$categoryid = sanitizeString($_POST["categoryid"]);
 	}
@@ -134,6 +139,7 @@ else if ($action == "newkeywords") {
 
 //Kategorie bearbeiten: Stichwortliste bearbeiten ----------------------------------------------------------
 else if ($action == "editkeywords") {
+
 	if (isset($_POST["categoryid"])) {
 		$categoryid = sanitizeString($_POST["categoryid"]);
 	}
@@ -156,7 +162,8 @@ else if ($action == "editkeywords") {
 		if (!is_numeric($keywordsid)) {
 			UI::exitError(getMLText("personal_default_keywords"),getMLText("unknown_keyword_category"));
 		}
-		if (!$category->editKeywordList($keywordsid, $keywords)) {
+		
+		if (!$category->editKeywordList($keywordsid, $_POST["keywords"])) {
 			UI::exitError(getMLText("personal_default_keywords"),getMLText("error_occured"));
 		}
 	}
@@ -165,6 +172,7 @@ else if ($action == "editkeywords") {
 
 //Kategorie bearbeiten: Neue Stichwortliste löschen ----------------------------------------------------------
 else if ($action == "removekeywords") {
+
 	if (isset($_POST["categoryid"])) {
 		$categoryid = sanitizeString($_POST["categoryid"]);
 	}
@@ -193,6 +201,6 @@ else if ($action == "removekeywords") {
 	else UI::exitError(getMLText("personal_default_keywords"),getMLText("error_occured"));
 }
 
-header("Location:../out/out.UserDefaultKeywords.php");
+header("Location:../out/out.UserDefaultKeywords.php?categoryid=".$categoryid);
 
 ?>

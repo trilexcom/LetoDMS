@@ -121,6 +121,10 @@ class Document
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
 		}
+		
+		// if user is not owner send notification to owner
+		if ($user->getID()!= $this->_ownerID) 
+			Email::toIndividual($user, $this->getOwner(), $subject, $message);		
 
 		$this->_name = $newName;
 		return true;
@@ -223,6 +227,10 @@ class Document
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
 		}
+		
+		// if user is not owner send notification to owner
+		if ($user->getID()!= $this->_ownerID) 
+			Email::toIndividual($user, $this->getOwner(), $subject, $message);		
 
 		return true;
 	}
@@ -294,7 +302,6 @@ class Document
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
 		$subject=mydmsDecodeString($subject);
@@ -341,7 +348,6 @@ class Document
 		$message .= 
 			getMLText("document").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
-			getMLText("comment").": ".$newComment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
 		$subject=mydmsDecodeString($subject);
@@ -937,9 +943,8 @@ class Document
 		unset($this->_notifyList);
 		return 0;
 	}
-
-
-	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$send_email=TRUE)
+	
+	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$version=0,$send_email=TRUE)
 	{
 		GLOBAL $db, $settings;
 		
@@ -948,12 +953,21 @@ class Document
 
 		//Eintrag in tblDocumentContent
 		$date = mktime();
-		$queryStr = "INSERT INTO tblDocumentContent (document, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
-					"(".$this->_id.", '".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
-		if (!$db->getResult($queryStr)) return false;
-
-		$version = $db->getInsertID();
 		
+		if ((int)$version<1){
+
+			$queryStr = "INSERT INTO tblDocumentContent (document, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
+						"(".$this->_id.", '".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
+			if (!$db->getResult($queryStr)) return false;
+
+			$version = $db->getInsertID();
+		
+		}else{		
+			$queryStr = "INSERT INTO tblDocumentContent (document, version, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
+						"(".$this->_id.", ".(int)$version.",'".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
+			if (!$db->getResult($queryStr)) return false;
+		}
+
 		// copy file
 		if (!makeDir($settings->_contentDir . $dir)) return false;
 		if (!copyFile($tmpFile, $settings->_contentDir . $dir . $version . $fileType)) return false;
@@ -1049,6 +1063,10 @@ class Document
 				Email::toGroup($user, $grp, $subject, $message);
 			}
 		}
+		
+		// if user is not owner send notification to owner
+		if ($user->getID()!= $this->_ownerID) 
+			Email::toIndividual($user, $this->getOwner(), $subject, $message);
 
 		return $docResultSet;
 	}
@@ -1212,7 +1230,7 @@ class Document
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
 		}
-			
+		
 		return true;
 	}
 	
@@ -1228,6 +1246,9 @@ class Document
 				return false;
 		}
 		
+		$name=$file->getName();
+		$comment=$file->getcomment();
+		
 		$file->remove();
 			
 		unset ($this->_documentFiles);
@@ -1237,8 +1258,8 @@ class Document
 		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("removed_file_email");
 		$message = getMLText("removed_file_email")."\r\n";
 		$message .= 
-			getMLText("name").": ".$this->name."\r\n".
-			getMLText("comment").": ".$this->comment."\r\n".
+			getMLText("name").": ".$name."\r\n".
+			getMLText("comment").": ".$comment."\r\n".
 			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->getID()."\r\n";
 
@@ -1249,8 +1270,7 @@ class Document
 		foreach ($this->_notifyList["groups"] as $grp) {
 			Email::toGroup($user, $grp, $subject, $message);
 		}
-
-		
+	
 		return true;
 	}
 
@@ -1295,6 +1315,7 @@ class Document
 		if (!$db->getResult($queryStr))
 			return false;
 
+		$path = "";
 		$folder = $this->getFolder();
 		$folderPath = $folder->getPath();
 		for ($i = 0; $i  < count($folderPath); $i++) {
@@ -1316,8 +1337,6 @@ class Document
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			Email::toIndividual($user, $this->getOwner(), $subject, $message);
-			
 			// Send notification to subscribers.
 			$this->getNotifyList();
 			Email::toList($user, $this->_notifyList["users"], $subject, $message);
@@ -1335,9 +1354,11 @@ class Document
 	}
 
 	function getApproversList() {
+
 		GLOBAL $db, $settings;
 
 		if (!isset($this->_approversList)) {
+		
 			$this->_approversList = array("groups" => array(), "users" => array());
 			$userIDs = "";
 			$groupIDs = "";
@@ -1356,10 +1377,10 @@ class Document
 			foreach ($tmpList["groups"] as $group) {
 				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
 			}
-			foreach ($tmpList["users"] as $user) {
+			foreach ($tmpList["users"] as $c_user) {
 			
-				if (!$settings->enableAdminRevApp && $user->getUserID()==1) continue;
-				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
+				if (!$settings->_enableAdminRevApp && $c_user->getUserID()==$settings->_adminID) continue;
+				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $c_user->getUserID();
 			}
 
 			// Construct a query against the users table to identify those users
@@ -1403,7 +1424,7 @@ class Document
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$settings->enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
+					if ((!$settings->_enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
 					$this->_approversList["users"][] = new User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}
@@ -1595,11 +1616,10 @@ class DocumentContent
 			return false;
 		}
 
-		if (in_array($this->_fileType, $settings->_viewOnlineFileTypes))
-			return true;
+		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes)) return true;
+		
 		if ($settings->_enableConverting && in_array($this->_fileType, array_keys($settings->_convertFileTypes)))
-			if ($this->wasConverted())
-				return true;
+			if ($this->wasConverted()) return true;
 		
 		return false;
 	}
@@ -1615,10 +1635,9 @@ class DocumentContent
 	{
 		GLOBAL $settings;
 		
-		if (!$this->viewOnline())
-			return false;
+		if (!$this->viewOnline())return false;
 		
-		if (in_array($this->_fileType, $settings->_viewOnlineFileTypes))
+		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes))
 			return "/" . $this->_documentID . "/" . $this->_version . "/" . $this->getOriginalFileName();
 		else
 			return "/" . $this->_documentID . "/" . $this->_version . "/index.html";
@@ -1782,7 +1801,7 @@ class DocumentContent
 		$message = getMLText("document_status_changed_email")."\r\n";
 		$message .= 
 			getMLText("document").": ".$this->_document->_name."\r\n".
-			getMLText("status").": ".getOverallStatusText($status).
+			getMLText("status").": ".getOverallStatusText($status)."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this->_document->getFolder())."\r\n".
 			getMLText("comment").": ".$this->_document->getComment()."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
@@ -1796,6 +1815,8 @@ class DocumentContent
 		foreach ($nl["groups"] as $grp) {
 			Email::toGroup($uu, $grp, $subject, $message);
 		}
+		
+		// TODO: if user os not owner send notification to owner
 
 		return true;
 	}
@@ -1893,7 +1914,7 @@ class DocumentContent
 		}
 
 		// Add the user into the review database.
-		if ($reviewStatus["indstatus"][0]["status"]!=-2) {
+		if (! isset($reviewStatus["indstatus"][0]["status"])|| (isset($reviewStatus["indstatus"][0]["status"]) && $reviewStatus["indstatus"][0]["status"]!=-2)) {
 			$queryStr = "INSERT INTO `tblDocumentReviewers` (`documentID`, `version`, `type`, `required`) ".
 				"VALUES ('". $this->_documentID ."', '". $this->_version ."', '0', '". $userID ."')";
 			$res = $db->getResult($queryStr);
@@ -1903,7 +1924,7 @@ class DocumentContent
 			$reviewID = $db->getInsertID();
 		}
 		else {
-			$reviewID = $reviewStatus["indstatus"][0]["reviewID"];
+			$reviewID = isset($reviewStatus["indstatus"][0]["reviewID"])?$reviewStatus["indstatus"][0]["reviewID"]:NULL;
 		}
 		
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
@@ -1925,7 +1946,7 @@ class DocumentContent
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ReviewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
@@ -1970,7 +1991,7 @@ class DocumentContent
 		}
 
 		// Add the group into the review database.
-		if ($reviewStatus[0]["status"]!=-2) {
+		if (!isset($reviewStatus[0]["status"]) || (isset($reviewStatus[0]["status"]) && $reviewStatus[0]["status"]!=-2)) {
 			$queryStr = "INSERT INTO `tblDocumentReviewers` (`documentID`, `version`, `type`, `required`) ".
 				"VALUES ('". $this->_documentID ."', '". $this->_version ."', '1', '". $groupID ."')";
 			$res = $db->getResult($queryStr);
@@ -1980,7 +2001,7 @@ class DocumentContent
 			$reviewID = $db->getInsertID();
 		}
 		else {
-			$reviewID = $reviewStatus[0]["reviewID"];
+			$reviewID = isset($reviewStatus[0]["reviewID"])?$reviewStatus[0]["reviewID"]:NULL;
 		}
 		
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
@@ -2002,7 +2023,7 @@ class DocumentContent
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ReviewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
@@ -2046,7 +2067,7 @@ class DocumentContent
 			return -3;
 		}
 
-		if ($approvalStatus["indstatus"][0]["status"]!=-2) {
+		if ( !isset($approvalStatus["indstatus"][0]["status"]) || (isset($approvalStatus["indstatus"][0]["status"]) && $approvalStatus["indstatus"][0]["status"]!=-2)) {
 			// Add the user into the approvers database.
 			$queryStr = "INSERT INTO `tblDocumentApprovers` (`documentID`, `version`, `type`, `required`) ".
 				"VALUES ('". $this->_documentID ."', '". $this->_version ."', '0', '". $userID ."')";
@@ -2057,7 +2078,7 @@ class DocumentContent
 			$approveID = $db->getInsertID();
 		}
 		else {
-			$approveID = $approvalStatus["indstatus"][0]["approveID"];
+			$approveID = isset($approvalStatus["indstatus"][0]["approveID"]) ? $approvalStatus["indstatus"][0]["approveID"] : NULL;
 		}
 
 		$queryStr = "INSERT INTO `tblDocumentApproveLog` (`approveID`, `status`, `comment`, `date`, `userID`) ".
@@ -2076,7 +2097,7 @@ class DocumentContent
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
@@ -2121,7 +2142,7 @@ class DocumentContent
 		}
 
 		// Add the group into the approver database.
-		if ($approvalStatus[0]["status"]!=-2) {
+		if (!isset($approvalStatus[0]["status"]) || (isset($approvalStatus[0]["status"]) && $approvalStatus[0]["status"]!=-2)) {
 			$queryStr = "INSERT INTO `tblDocumentApprovers` (`documentID`, `version`, `type`, `required`) ".
 				"VALUES ('". $this->_documentID ."', '". $this->_version ."', '1', '". $groupID ."')";
 			$res = $db->getResult($queryStr);
@@ -2131,7 +2152,7 @@ class DocumentContent
 			$approveID = $db->getInsertID();
 		}
 		else {
-			$approveID = $approvalStatus[0]["approveID"];
+			$approveID = isset($approvalStatus[0]["approveID"])?$approvalStatus[0]["approveID"]:NULL;
 		}
 		
 		$queryStr = "INSERT INTO `tblDocumentApproveLog` (`approveID`, `status`, `comment`, `date`, `userID`) ".
@@ -2153,7 +2174,7 @@ class DocumentContent
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ApproveDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$this->_documentID."&version=".$this->_version."\r\n";
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);

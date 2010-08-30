@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -64,39 +65,44 @@ UI::contentContainerStart();
 <table>
 	<tr>
 		<td><?php printMLText("password");?>:</td>
-		<td><input type="Password" name="pwd"></td>
+		<td><input type="Password" name="pwd" size="30"></td>
 	</tr>
 	<tr>
 		<td><?php printMLText("confirm_pwd");?>:</td>
-		<td><input type="Password" name="pwdconf"></td>
+		<td><input type="Password" name="pwdconf" size="30"></td>
 	</tr>
 	<tr>
 		<td><?php printMLText("name");?>:</td>
-		<td><input name="fullname" value="<?php print $user->getFullName();?>"></td>
+		<td><input name="fullname" value="<?php print $user->getFullName();?>" size="30"></td>
 	</tr>
 	<tr>
 		<td><?php printMLText("email");?>:</td>
-		<td><input name="email" value="<?php print $user->getEmail();?>"></td>
+		<td><input name="email" value="<?php print $user->getEmail();?>" size="30"></td>
 	</tr>
 	<tr>
 		<td><?php printMLText("comment");?>:</td>
-		<td><textarea name="comment" rows="4" cols="30"><?php print $user->getComment();?></textarea></td>
+		<td><textarea name="comment" rows="4" cols="80"><?php print $user->getComment();?></textarea></td>
 	</tr>
+
+<?php	
+if ($settings->_enableUserImage){	
+?>	
 	<tr>
 		<td><?php printMLText("user_image");?>:</td>
 		<td>
-<?php
-if ($user->hasImage())
-	print "<img src=\"".$user->getImageURL()."\">";
-else
-	printMLText("no_user_image");
-?>
+	<?php
+	if ($user->hasImage())
+		print "<img src=\"".$user->getImageURL()."\">";
+	else printMLText("no_user_image");
+	?>
 		</td>
 	</tr>
 	<tr>
 		<td><?php printMLText("new_user_image");?>:</td>
-		<td><input type="file" name="userfile" accept="image/jpeg"></td>
+		<td><input type="file" name="userfile" accept="image/jpeg" size="30"></td>
 	</tr>
+<?php	} ?>
+
 	<tr>
 		<td colspan="2"><input type="Submit" value="<?php printMLText("update_info") ?>"></td>
 	</tr>

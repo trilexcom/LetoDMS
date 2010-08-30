@@ -45,11 +45,11 @@ if ($folderid == $settings->_rootFolderID || !$folder->getParent()) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("cannot_move_root"));
 }
 
-if (!isset($_GET["targetid"]) || !is_numeric($_GET["targetid"]) || intval($_GET["targetid"])<1) {
+if (!isset($_GET["targetidform1"]) || !is_numeric($_GET["targetidform1"]) || intval($_GET["targetidform1"])<1) {
 	UI::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
 }
 
-$targetid = $_GET["targetid"];
+$targetid = $_GET["targetidform1"];
 $targetFolder = getFolder($targetid);
 
 if (!is_object($targetFolder)) {
@@ -64,6 +64,7 @@ if (!$folder->setParent($targetFolder)) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 }
 
+add_log_line();
 header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
 
 ?>

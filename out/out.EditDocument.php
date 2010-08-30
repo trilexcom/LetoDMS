@@ -84,16 +84,16 @@ UI::contentContainerStart();
 	<table cellpadding="3">
 		<tr>
 			<td class="inputDescription"><?php printMLText("name");?>:</td>
-			<td><input name="name" value="<?php print $document->getName();?>"></td>
+			<td><input name="name" value="<?php print $document->getName();?>" size="60"></td>
 		</tr>
 		<tr>
 			<td valign="top" class="inputDescription"><?php printMLText("comment");?>:</td>
-			<td><textarea name="comment" rows="4" cols="30"><?php print $document->getComment();?></textarea></td>
+			<td><textarea name="comment" rows="4" cols="80"><?php print $document->getComment();?></textarea></td>
 		</tr>
 		<tr>
 			<td valign="top" class="inputDescription"><?php printMLText("keywords");?>:</td>
 			<td class="standardText">
-				<textarea name="keywords" rows="4" cols="30"><?php print $document->getKeywords();?></textarea><br>
+				<textarea name="keywords" rows="2" cols="80"><?php print $document->getKeywords();?></textarea><br>
 				<a href="javascript:chooseKeywords();"><?php printMLText("use_default_keywords");?></a>
 				<script language="JavaScript">
 					var openDlg;

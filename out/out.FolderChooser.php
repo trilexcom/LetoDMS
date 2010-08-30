@@ -33,72 +33,6 @@ include("../inc/inc.Authentication.php");
 $form = sanitizeString($_GET["form"]);
 $mode = sanitizeString($_GET["mode"]);
 $exclude = sanitizeString($_GET["exclude"]);
-$folderid = sanitizeString($_GET["folderid"]);
-
-function printTree($path, $accessMode, $exclude, $level = 0)
-{
-	GLOBAL $user, $form;
-	
-	$folder = $path[$level];
-	$subFolders = $folder->getSubFolders();
-	$subFolders = filterAccess($subFolders, $user, M_READ);
-	
-	if ($level+1 < count($path))
-		$nextFolderID = $path[$level+1]->getID();
-	else
-		$nextFolderID = -1;
-	
-	if ($level == 0) {
-		print "<ul style='list-style-type: none;'>\n";
-	}
-	print "  <li>\n";
-	print "<img class='treeicon' src=\"";
-	if ($level == 0) UI::printImgPath("minus.png");
-	else if (count($subFolders) > 0) UI::printImgPath("minus.png");
-	else UI::printImgPath("blank.png");
-	print "\" border=0>\n";
-	if ($folder->getAccessMode($user) >= $accessMode) {
-		print "<a class=\"foldertree_selectable\" href=\"javascript:folderSelected(" . $folder->getID() . ", '" . sanitizeString($folder->getName()) . "')\">";
-		print "<img src=\"".UI::getImgPath("folder_opened.gif")."\" border=0>".$folder->getName()."</a>\n";
-	}
-	else
-		print "<img src=\"".UI::getImgPath("folder_opened.gif")."\" width=18 height=18 border=0>".$folder->getName()."\n";
-	print "  </li>\n";
-
-	print "<ul style='list-style-type: none;'>\n";
-	
-	for ($i = 0; $i < count($subFolders); $i++) {
-		if ($subFolders[$i]->getID() == $exclude)
-			continue;
-		
-		if ($subFolders[$i]->getID() == $nextFolderID)
-			printTree($path, $accessMode, $exclude, $level+1);
-		else {
-			print "<li>\n";
-			$subFolders_ = $subFolders[$i]->getSubFolders();
-			$subFolders_ = filterAccess($subFolders_, $user, M_READ);
-			
-			if (count($subFolders_) > 0)
-				print "<a href=\"out.FolderChooser.php?form=$form&mode=$accessMode&exclude=$exclude&folderid=".$subFolders[$i]->getID()."\"><img class='treeicon' src=\"".UI::getImgPath("plus.png")."\" border=0></a>";
-			else
-				print "<img class='treeicon' src=\"".UI::getImgPath("blank.png")."\">";
-			if ($subFolders[$i]->getAccessMode($user) >= $accessMode) {
-				print "<a class=\"foldertree_selectable\" href=\"javascript:folderSelected(" . $subFolders[$i]->getID() . ", '" . sanitizeString($subFolders[$i]->getName()) . "')\">";
-				print "<img src=\"".UI::getImgPath("folder_closed.gif")."\" border=0>".$subFolders[$i]->getName()."</a>\n";
-			}
-			else
-				print "<img src=\"".UI::getImgPath("folder_closed.gif")."\" border=0>".$subFolders[$i]->getName();
-			print "</li>\n";
-		}
-	}
-
-	print "</ul>\n";
-	if ($level == 0) {
-		print "</ul>\n";
-	}
-	
-
-}
 
 UI::htmlStartPage(getMLText("choose_target_folder"));
 UI::globalBanner();
@@ -106,6 +40,16 @@ UI::pageNavigation(getMLText("choose_target_folder"));
 ?>
 
 <script language="JavaScript">
+
+function toggleTree(id){
+	
+	obj = document.getElementById("tree" + id);
+	
+	if ( obj.style.display == "none" ) obj.style.display = "";
+	else obj.style.display = "none";
+	
+}
+
 function decodeString(s) {
 	s = new String(s);
 	s = s.replace(/&amp;/, "&");
@@ -137,16 +81,15 @@ function folderSelected(id, name) {
 
 
 <?php
-	$folder = getFolder($folderid);
 	UI::contentContainerStart();
-	printTree($folder->getPath(), $mode, $exclude);
+	UI::printFoldersTree($mode, $exclude, $settings->_rootFolderID);
 	UI::contentContainerEnd();
 ?>
 
 
 <script language="JavaScript">
-targetName = opener.document.<?php echo $form?>.targetname;
-targetID   = opener.document.<?php echo $form?>.targetid;
+targetName = opener.document.<?php echo $form?>.targetname<?php print $form ?>;
+targetID   = opener.document.<?php echo $form?>.targetid<?php print $form ?>;
 </script>
 
 <?php

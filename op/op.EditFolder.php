@@ -66,6 +66,8 @@ else {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));	
 }
 
+add_log_line("?folderid=".$folderid);
+
 header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
 
 ?>

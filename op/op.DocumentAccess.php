@@ -181,6 +181,8 @@ else if ($action == "addaccess") {
 	}
 }
 
+add_log_line("");
+
 header("Location:../out/out.DocumentAccess.php?documentid=".$documentid);
 
 ?>

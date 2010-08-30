@@ -49,6 +49,7 @@ if ($action == "addcategory") {
 	if (!$newCategory) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
+	$categoryid=$newCategory->getID();
 }
 
 //Kategorie löschen ----------------------------------------------------------------------------------
@@ -70,6 +71,7 @@ else if ($action == "removecategory") {
 	if (!$category->remove()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
+	$categoryid=-1;
 }
 
 //Kategorie bearbeiten: Neuer Name --------------------------------------------------------------------
@@ -171,6 +173,6 @@ else {
 	UI::exitError(getMLText("admin_tools"),getMLText("unknown_command"));
 }
 
-header("Location:../out/out.DefaultKeywords.php");
+header("Location:../out/out.DefaultKeywords.php?categoryid=".$categoryid);
 
 ?>

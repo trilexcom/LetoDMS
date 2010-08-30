@@ -67,6 +67,8 @@ else {
 	}
 }
 
+add_log_line("?documentid=".$documentid."&version".$version);
+
 header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 
 ?>

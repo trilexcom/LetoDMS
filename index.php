@@ -1,5 +1,5 @@
 <?php
-//    MyDMS. Document Management System
+//    LetoDMS (Formerly MyDMS) Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //
@@ -23,7 +23,7 @@ header("Location: ". (isset($settings->_siteDefaultPage) && strlen($settings->_s
 ?>
 <html>
 <head>
-	<title>MyDMS</title>
+	<title>LetoDMS</title>
 </head>
 
 <body>

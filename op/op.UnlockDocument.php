@@ -62,7 +62,7 @@ if (($lockingUser->getID() == $user->getID()) || ($document->getAccessMode($user
 else {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
 }
-
+add_log_line();
 header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 
 ?>

@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@ $folderPathHTML = getFolderPathHTML($folder, true);
 
 UI::htmlStartPage(getMLText("search"));
 UI::globalNavigation($folder);
-UI::pageNavigation($folderPathHTML, "view_folder", $folder);
+UI::pageNavigation($folderPathHTML, "", $folder);
 
 ?>
 <script language="JavaScript">
@@ -73,7 +74,7 @@ UI::contentHeading(getMLText("search"));
 UI::contentContainerStart();
 ?>
 <form action="../op/op.Search.php" name="form1" onsubmit="return checkForm();">
-<table>
+<table class="searchform">
 <tr>
 <td><?php printMLText("search_query");?>:</td>
 <td>
@@ -85,20 +86,24 @@ UI::contentContainerStart();
 </td>
 </tr>
 <tr>
-<td></td>
-<td>
-<ul class="actions">
-<li class="first"><input type="checkbox" id="pendingReview" name="pendingReview" value="1"><label for='pendingReview'><?php printMLText("pending_review");?></label></li>
-<li><input type="checkbox" id="pendingApproval" name="pendingApproval" value="1"><label for='pendingApproval'><?php printMLText("pending_approval");?></label></li>
-</ul>
-</td>
-</tr>
-<tr>
 <td><?php printMLText("search_in");?>:</td>
 <td><ul class="actions">
 <li class="first"><input type="Checkbox" id="keywords" name="searchin[]" value="1" checked><label for="keywords"><?php printMLText("keywords");?></label></li>
 <li><input type="Checkbox" name="searchin[]" id="searchName" value="2"><label for="searchName"><?php printMLText("name");?></label></li>
 <li><input type="Checkbox" name="searchin[]" id="comment" value="3"><label for="comment"><?php printMLText("comment");?></label></li>
+</ul>
+</td>
+</tr>
+<tr>
+<td><?php printMLText("status");?>:</td>
+<td>
+<ul class="actions">
+<li class="first"><input type="checkbox" id="pendingReview" name="pendingReview" value="1"><label for='pendingReview'><?php printOverallStatusText(S_DRAFT_REV);?></label></li>
+<li><input type="checkbox" id="pendingApproval" name="pendingApproval" value="1"><label for='pendingApproval'><?php printOverallStatusText(S_DRAFT_APP);?></label></li>
+<li><input type="checkbox" id="released" name="released" value="1"><label for='released'><?php printOverallStatusText(S_RELEASED);?></label></li>
+<li><input type="checkbox" id="rejected" name="rejected" value="1"><label for='rejected'><?php printOverallStatusText(S_REJECTED);?></label></li>
+<li><input type="checkbox" id="obsolete" name="obsolete" value="1"><label for='obsolete'><?php printOverallStatusText(S_OBSOLETE);?></label></li>
+<li><input type="checkbox" id="expired" name="expired" value="1"><label for='expired'><?php printOverallStatusText(S_EXPIRED);?></label></li>
 </ul>
 </td>
 </tr>

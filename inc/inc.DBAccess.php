@@ -39,6 +39,15 @@ class DatabaseAccess
 	var $_ttapproveid;
 	var $_ttstatid;
 	var $_ttcontentid;
+	
+	/*
+	Backup functions
+	*/
+	
+	function TableList()
+	{
+		return $this->_conn->MetaTables("TABLES");
+	}	
 
 	/**
 	 * Konstruktor
@@ -105,7 +114,7 @@ class DatabaseAccess
 		
 		$res = $this->_conn->Execute($queryStr);
 		if (!$res) {
-			print "<br>" . $this->getErrorMsg() . ": " . $queryStr . "</br>";
+			print "<br>" . $this->getErrorMsg() . "<br>" . $queryStr . "</br>";
 			return false;
 		}
 		$resArr = $res->GetArray();
@@ -121,7 +130,7 @@ class DatabaseAccess
 	{
 		$res = $this->_conn->Execute($queryStr);
 		if (!$res && !$silent)
-			print "<br>" . $this->getErrorMsg() . ": " . $queryStr . "</br>";
+			print "<br>" . $this->getErrorMsg() . "<br>" . $queryStr . "</br>";
 		
 		return $res;
 	}

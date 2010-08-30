@@ -76,7 +76,6 @@ function checkForm()
 		return true;
 }
 </script>
-<script language="JavaScript" src="../js/displayFunctions.js"></script>
 <?php
 UI::contentHeading(getMLText("linked_files"));
 UI::contentContainerStart();
@@ -87,15 +86,15 @@ UI::contentContainerStart();
 <table>
 <tr>
 	<td><?php printMLText("local_file");?>:</td>
-	<td><input type="File" name="userfile"></td>
+	<td><input type="File" name="userfile" size="60"></td>
 </tr>
 <tr>
 	<td><?php printMLText("name");?>:</td>
-	<td><input name="name"></td>
+	<td><input name="name" size="60"></td>
 </tr>
 <tr>
 	<td><?php printMLText("comment");?>:</td>
-	<td><textarea name="comment" rows="4" cols="30"></textarea></td>
+	<td><textarea name="comment" rows="4" cols="80"></textarea></td>
 </tr>
 </table>
 

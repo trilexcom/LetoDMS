@@ -60,6 +60,12 @@ if (isset($_GET["groupid"]) && (!is_numeric($_GET["groupid"]) || $_GET["groupid"
 
 $groupid = $_GET["groupid"];
 
+if (isset($_GET["groupid"])&&$_GET["groupid"]!=-1){
+	$group=getGroup($groupid);
+	if (!$group->isMember($user,true) && !$user->isAdmin())
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
+}
+
 $folder = $document->getFolder();
 $docPathHTML = getFolderPathHTML($folder, true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
 

@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -135,7 +136,7 @@ print "<td><ul class=\"actions\">";
 if ($file_exists){
 	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\"> ".getMLText("download")."</a>";
 	if ($version->viewOnline())
-		print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+		print "<li><a target=\"_blank\" href=\"../op/op.ViewOnline.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
 }else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\"> ";
 
 print "</ul></td>\n";
@@ -172,17 +173,22 @@ else {
 
 echo "</td>";
 print "</tr></tbody>\n</table>\n";
-
+
+
+print "<table class=\"folderView\">\n";
+
 if (is_array($reviewStatus) && count($reviewStatus)>0) {
 
+	print "<tr><td colspan=4>\n";
 	UI::contentSubHeading(getMLText("reviewers"));
-	print "<table class=\"folderView\">\n";
-	print "<thead>\n<tr>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("status")."</th>\n";
-	print "<th>".getMLText("comment")."</th>";
-	print "<th>".getMLText("last_update")."</th>\n";
-	print "</tr>\n</thead>\n<tbody>\n";
+	print "</td></tr>\n";
+	
+	print "<tr>\n";
+	print "<td><b>".getMLText("name")."</b></td>\n";
+	print "<td><b>".getMLText("status")."</b></td>\n";
+	print "<td><b>".getMLText("comment")."</b></td>";
+	print "<td><b>".getMLText("last_update")."</b></td>\n";
+	print "</tr>\n";
 
 	foreach ($reviewStatus as $r) {
 		$required = null;
@@ -215,19 +221,20 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'");
 		print "</td>\n</tr>\n";
 	}
-	print	"</tbody>\n</table>\n";
 }
 
 if (is_array($approvalStatus) && count($approvalStatus)>0) {
 
+	print "<tr><td colspan=4>\n";
 	UI::contentSubHeading(getMLText("approvers"));
-	print "<table class=\"folderView\">\n";
-	print "<thead>\n<tr>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("status")."</th>\n";
-	print "<th>".getMLText("comment")."</th>";
-	print "<th>".getMLText("last_update")."</th>\n";
-	print "</tr>\n</thead>\n<tbody>\n";
+	print "</td></tr>\n";
+		
+	print "<tr>\n";
+	print "<td><b>".getMLText("name")."</b></td>\n";
+	print "<td><b>".getMLText("status")."</b></td>\n";
+	print "<td><b>".getMLText("comment")."</b></td>";
+	print "<td><b>".getMLText("last_update")."</b></td>\n";
+	print "</tr>\n";
 
 	foreach ($approvalStatus as $a) {
 		$required = null;
@@ -260,9 +267,9 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'");
 		print "</td>\n</tr>\n";
 	}
-	
-	print	"</tbody>\n</table>\n";
 }
+
+print "</table>\n";
 
 UI::contentContainerEnd();
 UI::htmlEndPage();

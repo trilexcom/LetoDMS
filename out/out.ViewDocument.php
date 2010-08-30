@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -124,7 +125,7 @@ print "<td><ul class=\"actions\">";
 if ($file_exists){
 	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\">".getMLText("download")."</a></li>";
 	if ($latestContent->viewOnline())
-		print "<li><a target=\"_blank\" href=\"../op/viewonline" . $latestContent->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a></li>";
+		print "<li><a target=\"_blank\" href=\"../op/op.ViewOnline.php?documentid=".$documentid."&version=". $latestContent->getVersion()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a></li>";
 }else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></li>";
 
 print "</ul></td>\n";
@@ -140,12 +141,15 @@ else print "<li>".$latestContent->getMimeType()." - <span class=\"warning\">".ge
 $updatingUser = $latestContent->getUser();
 print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($latestContent->getDate())."</li>";
 
+print "</ul>\n";
+print "<td>".$latestContent->getComment()."</td>";
+
+print "<td><ul class=\"actions\"><li>".getOverallStatusText($status["status"]);
 if ( $status["status"]==S_DRAFT_REV || $status["status"]==S_DRAFT_APP || $status["status"]==S_EXPIRED ){
 	print "<li".($document->hasExpired()?" class=\"warning\" ":"").">".(!$document->getExpires() ? getMLText("does_not_expire") : getMLText("expires").": ".getReadableDate($document->getExpires()))."</li>";
 }
-print "</ul>\n";
-print "<td>".$latestContent->getComment()."</td>";
-print "<td>".getOverallStatusText($status["status"])."</td>";
+print "</td>";
+
 print "<td>";
 
 print "<ul class=\"actions\">";
@@ -167,11 +171,7 @@ if ($document->getAccessMode($user) >= M_READWRITE) {
 	print "<li><a href=\"out.EditComment.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit_comment")."</a></li>";
 }
 
-$vfile=$settings->_contentDir . $document->getDir() .$settings-> _versioningFileName;
-if (file_exists($vfile)){
-	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&vfile=1\">".getMLText("versioning_info")."</a></li>";	
-}
-
+print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&vfile=1\">".getMLText("versioning_info")."</a></li>";	
 
 //
 // Display a link if the user is a reviewer or approver for this document.
@@ -223,18 +223,21 @@ print "</ul>";
 echo "</td>";
 print "</tr></tbody>\n</table>\n";
 
+print "<table class=\"folderView\">\n";
+
 if (is_array($reviewStatus) && count($reviewStatus)>0) {
 
+	print "<tr><td colspan=5>\n";
 	UI::contentSubHeading(getMLText("reviewers"));
+	print "</tr>";
 	
-	print "<table class=\"folderView\">\n";
-	print "<thead>\n<tr>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("status")."</th>\n";
-	print "<th>".getMLText("comment")."</th>";
-	print "<th>".getMLText("last_update")."</th>\n";
-	print "<th></th>\n";
-	print "</tr>\n</thead>\n<tbody>\n";
+	print "<tr>\n";
+	print "<td><b>".getMLText("name")."</b></td>\n";
+	print "<td><b>".getMLText("status")."</b></td>\n";
+	print "<td><b>".getMLText("comment")."</b></td>";
+	print "<td><b>".getMLText("last_update")."</b></td>\n";
+	print "<td></td>\n";
+	print "</tr>\n";
 
 	foreach ($reviewStatus as $r) {
 		$required = null;
@@ -271,21 +274,21 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
-	print	"</tbody>\n</table>\n";
 }
 
 if (is_array($approvalStatus) && count($approvalStatus)>0) {
 
+	print "<tr><td colspan=5>\n";
 	UI::contentSubHeading(getMLText("approvers"));
+	print "</tr>";
 
-	print "<table class=\"folderView\">\n";
-	print "<thead>\n<tr>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("status")."</th>\n";
-	print "<th>".getMLText("comment")."</th>";
-	print "<th>".getMLText("last_update")."</th>\n";	
-	print "<th></th>\n";
-	print "</tr>\n</thead>\n<tbody>\n";
+	print "<tr>\n";
+	print "<td><b>".getMLText("name")."</b></td>\n";
+	print "<td><b>".getMLText("status")."</b></td>\n";
+	print "<td><b>".getMLText("comment")."</b></td>";
+	print "<td><b>".getMLText("last_update")."</b></td>\n";	
+	print "<td></td>\n";
+	print "</tr>\n";
 
 	foreach ($approvalStatus as $a) {
 		$required = null;
@@ -322,8 +325,9 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
-	print	"</tbody>\n</table>\n";
 }
+
+print "</table>\n";
 
 UI::contentContainerEnd();
 
@@ -355,7 +359,7 @@ if (count($versions)>1) {
 		if ($file_exists){
 			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">".getMLText("download")."</a>";
 			if ($version->viewOnline())
-				print "<li><a target=\"_blank\" href=\"../op/viewonline" . $version->getURL()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
+				print "<li><a target=\"_blank\" href=\"../op/op.ViewOnline.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
 		}else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">";
 		
 		print "</ul></td>\n";
@@ -477,7 +481,7 @@ if (count($links) > 0) {
 }
 else printMLText("empty_notify_list");
 
-if ($user->getID() != $settings->_guestID) 
+if ($user->getID() != $settings->_guestID){
 ?>
 	<form action="../op/op.AddDocumentLink.php" name="form1">
 	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
@@ -501,7 +505,7 @@ if ($user->getID() != $settings->_guestID)
 	</table>
 	</form>
 <?php
-//}
+}
 UI::contentContainerEnd();
 
 UI::htmlEndPage();

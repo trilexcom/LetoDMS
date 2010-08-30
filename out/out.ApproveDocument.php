@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -154,7 +155,7 @@ if ($indApprover) {
 	<form method="POST" action="../op/op.ApproveDocument.php" name="form1" onsubmit="return checkIndForm();">
 	<table>
 	<tr><td><?php printMLText("comment")?>:</td>
-	<td><textarea name="comment" cols="40" rows="4"></textarea>
+	<td><textarea name="comment" cols="80" rows="4"></textarea>
 	</td></tr>
 	<tr><td><?php printMLText("approval_status")?>:</td>
 	<td><select name="approvalStatus">
@@ -206,7 +207,7 @@ else if ($grpApprover) {
 		<form method="POST" action="../op/op.ApproveDocument.php" name="form1" onsubmit="return checkGrpForm();">
 		<table>
 		<tr><td><?php printMLText("comment")?>:</td>
-		<td><textarea name="comment" cols="40" rows="4"></textarea>
+		<td><textarea name="comment" cols="80" rows="4"></textarea>
 		</td></tr>
 		<tr><td><?php printMLText("approval_group")?>:</td>
 		<td class='infos' valign='top'><select name="approvalGroup"><?php print $grpSelectBox; ?></select>

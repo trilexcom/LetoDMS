@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -98,7 +99,7 @@ else {
 		print "<tr>";
 		print "<td><img src=\"images/groupicon.gif\" width=16 height=16 border=0></td>";
 		print "<td>" . $groupNotify->getName() . "</td>";
-		if ($user->isAdmin() || $groupNotify->isMember($user)) {
+		if ($user->isAdmin() || $groupNotify->isMember($user,true)) {
 			print "<td><a href=\"../op/op.DocumentNotify.php?documentid=". $documentid . "&action=delnotify&groupid=".$groupNotify->getID()."\"><img src=\"images/del.gif\" class=\"mimeicon\"></a>".getMLText("delete")."</td>";
 		}else print "<td></td>";
 		print "</tr>";
@@ -119,7 +120,6 @@ print "</table>\n";
 		<td>
 			<select name="userid">
 				<option value="-1"><?php printMLText("select_one");?>
-				<option value="-1">-------------------------------
 				<?php
 					if ($user->isAdmin()) {
 						$allUsers = getAllUsers();
@@ -140,11 +140,10 @@ print "</table>\n";
 		<td>
 			<select name="groupid">
 				<option value="-1"><?php printMLText("select_one");?>
-				<option value="-1">-------------------------------
 				<?php
 					$allGroups = getAllGroups();
 					foreach ($allGroups as $groupObj) {
-						if (($user->isAdmin() || $groupObj->isMember($user)) && !in_array($groupObj->getID(), $groupNotifyIDs)) {
+						if (($user->isAdmin() || $groupObj->isMember($user,true)) && !in_array($groupObj->getID(), $groupNotifyIDs)) {
 							print "<option value=\"".$groupObj->getID()."\">" . $groupObj->getName() . "\n";
 						}
 					}

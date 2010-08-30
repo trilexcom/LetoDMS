@@ -72,6 +72,8 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 	$user->setImage($_FILES["userfile"]["tmp_name"], $_FILES["userfile"]["type"]);
 }
 
+add_log_line("?user=".$user->getLogin());
+
 header("Location:../out/out.MyAccount.php");
 
 ?>

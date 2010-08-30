@@ -53,7 +53,7 @@ a:active {
   position: relative;
 }
 .contentHeading {
-	background: #aaa;
+	background:  #7d8288;
 	color: white;
 	padding: 2px 4px 2px 4px;
 	margin-top: 10px;
@@ -109,7 +109,8 @@ a:active {
 	list-style-type: none;
 	margin: 0px;
 	text-align: right;
-	float:right;
+	float:right;	
+	/*font-variant: small-caps;*/
 }
 
 /* IE6 Hack */
@@ -189,13 +190,13 @@ a:active {
 	padding: 0.6em 1em;
 }
 .content input, .content select {
-	font-size: 0.8em;
+	font-size: 1em;
 }
 
 .content textarea {
 	border: 1px solid;
 	font-family: sans-serif;
-	font-size: 1.0em;
+	font-size: 1em;
 }
 td {
 	vertical-align: top;
@@ -243,7 +244,6 @@ table.folderView td {
 
 table.folderView tr.folder {
 	border-bottom: 1px solid rgb(224, 224, 224);
-	//background: rgb(240, 240, 240);
 }
 table.defaultView {
 	border-collapse: collapse;
@@ -265,7 +265,6 @@ table.defaultView td.center {
 }
 table.defaultView tr.folder {
 	border-bottom: 1px solid rgb(224, 224, 224);
-	//background: rgb(240, 240, 240);
 }
 td#userImage {
 	border: 1px solid rgb(189, 190, 192);
@@ -282,6 +281,10 @@ img.treeicon {
 	border: none;
 	padding-right: 0.1em;
 }
+span.selectedfoldertree{
+	font-weight: bold;
+}
+
 input.mimeicon {
 	height: 18px;
 	vertical-align: middle;
@@ -306,11 +309,14 @@ ul.actions {
 form ul.actions li {
 	list-style: none;
 	padding: 0 0 0.1em 0;
-	display: inline;
 }
 ul.actions li {
 	list-style: none;
 	padding: 0 0 0.1em 0;
+}
+
+ul.actions li img{
+	padding: 3px;
 }
 
 ul.documentDetail {
@@ -326,35 +332,35 @@ ul.documentDetail {
 }
 .cbSelectContainer {
 	overflow:auto;
-	height: 8em;
-	border: 1px solid;
-	padding: 0.2em 0;
-	margin: 0.2em 0;
+	height: 6em;
+	width: 30em;
+	border: 1px solid #777;
+	margin-bottom: 3px;
 }
 .cbSelectContainer.empty {
 	height: 1em;
 }
 .cbSelectList {
+	margin:0;
 	padding: 0.1em;
 }
 .cbSelectItem {
 	list-style-type: none;
 }
-ul.pageList {
-	list-style-type: none;
-	padding: 0px;
-	margin: 1.5em 0 0 0;
-	text-align: center;
+
+div.pageList{
+	border: 1px solid #ddd;
+	padding: 3px;
+	margin-top: 15px;
+	margin-bottom: 15px;
 }
-ul.pageList li {
-	display:inline;
-	margin: 0 0.2em;
+div.pageList span.selected{
 	font-weight: bold;
+	color: #fff;
+	background-color: #7d8288;
+	padding: 1px;
 }
-ul.pageList li#first {
-	margin-left: 0;
-	font-weight: normal;
-}
+
 /*
  * I rather foolishly decided to have the title of the page exist at the
  * bottom of the containing DIV element. This means using absolute
@@ -412,17 +418,100 @@ span.absSpacerTitle {
 	padding: 5px;
 }
 
+pre{
+	font-size: 140%;
+}
+
 /* these are used in help only */
 
 h1{
 	font-size: 140%;
 	font-weight: bold;
-	background: #999;
+	background: #7d8288;
 	color: #fff;
+	padding-left: 5px;
 }
 
 h2{
 	font-size: 110%;
 	font-weight: bold;
 	border-bottom: 1px solid #999;
+}
+
+/* these are used in calendar */
+
+table.calendaryear td.today{
+	border: 1px solid #7d8288;
+	font-weight: bold;
+}
+
+table.calendaryear td.header{
+	font-weight: bold;
+	color: #444;
+}
+
+table.calendaryear td{
+	border: 1px solid #000;
+	padding : 10px;
+}
+
+table.calendaryear table td{
+	border: 0;
+	padding : 1px;
+}
+
+table.calendarmonth , table.calendarweek {
+	margin-top: 1em;
+}
+
+table.calendarmonth td, table.calendarweek td{
+	border-bottom: 1px solid #ddd;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+table.calendarmonth td.separator, table.calendarweek td.separator{
+	border: 0;
+	padding: 0;
+	margin:0;	
+}
+
+table.calendarmonth td.header, table.calendarmonth td.todayHeader, table.calendarweek td.header, table.calendarweek td.todayHeader{
+	border: 1px solid #7d8288;
+	background: #eee;
+	font-weight: bold;
+	padding: 1px;
+	color: #222;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 1em;
+}
+
+table.calendarmonth td.header a, table.calendarmonth td.todayHeader a, table.calendarweek td.header a, table.calendarweek td.todayHeader a{
+	color: #000;
+}
+
+
+table.calendarmonth td.today, table.calendarweek td.today{
+	background: #eee;
+}
+
+table.calendarmonth td.todayHeader, table.calendarweek td.todayHeader,table.calendarmonth td.todayHeader a, table.calendarweek td.todayHeader a{
+	background: #7d8288;
+	color: #fff;
+}
+
+table.calendarweek td.header, table.calendarweek td.todayHeader{
+ 	padding-bottom: 2em;
+}
+
+table.searchform td{
+	padding-top: 5px;
+	padding-bottom: 10px;
+	padding-right: 5px;
+}
+
+div.logview{
+	overflow:auto;
+	font-size: 80%;
 }

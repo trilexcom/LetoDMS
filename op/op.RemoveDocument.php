@@ -51,6 +51,8 @@ if (!$document->remove()) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("error_occured"));
 }
 
+add_log_line("?documentid=".$documentid);
+
 header("Location:../out/out.ViewFolder.php?folderid=".$folder->getID());
 
 ?>

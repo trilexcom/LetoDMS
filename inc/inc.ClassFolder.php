@@ -36,15 +36,16 @@ function getFolder($id)
 }
 
 function getFolderPathHTML($folder, $tagAll=false) {
+
 	$path = $folder->getPath();
 	$txtpath = "";
 	for ($i = 0; $i < count($path); $i++) {
 		if ($i +1 < count($path)) {
-			$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."\">".
+			$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".(isset($_GET["showtree"])?$_GET["showtree"]:0)."\">".
 				$path[$i]->getName()."</a> / ";
 		}
 		else {
-			$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."\">".
+			$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".(isset($_GET["showtree"])?$_GET["showtree"]:0)."\">".
 									 $path[$i]->getName()."</a>" : $path[$i]->getName());
 		}
 	}
@@ -294,7 +295,6 @@ class Folder
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
 		$subject=mydmsDecodeString($subject);
@@ -343,7 +343,6 @@ class Folder
 		$message .= 
 			getMLText("name").": ".$this->_name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
 		$subject=mydmsDecodeString($subject);
@@ -384,12 +383,13 @@ class Folder
 		return true;
 	}
 
-	function getSubFolders() {
+	function getSubFolders($orderby="") {
 		GLOBAL $db;
 		
 		if (!isset($this->_subFolders))
 		{
-			$queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY sequence";
+			if ($orderby=="n") $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY name";
+			else $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY sequence";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && $resArr == false)
 				return false;
@@ -473,16 +473,15 @@ class Folder
 			return false;
 	}
 
-	function getDocuments()
+	function getDocuments($orderby="")
 	{
 		GLOBAL $db;
 		
 		if (!isset($this->_documents))
 		{
-			$queryStr = "SELECT tblDocuments.*, tblDocumentLocks.userID as lockUser ".
-				"FROM tblDocuments ".
-				"LEFT JOIN tblDocumentLocks ON tblDocuments.id=tblDocumentLocks.document ".
-				"WHERE folder = " . $this->_id . " ORDER BY sequence";
+				
+			if ($orderby=="n") $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY name";
+			else $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY sequence";
 
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr)
@@ -490,17 +489,18 @@ class Folder
 			
 			$this->_documents = array();
 			foreach ($resArr as $row) {
-				array_push($this->_documents, new Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]));
+				array_push($this->_documents, new Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
 			}
 		}
 		return $this->_documents;
 	}
 
-	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array()) {
+	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion) 
+	{
 		GLOBAL $db, $user, $settings;
 		
 		$expires = (!$expires) ? 0 : $expires;
-
+		
 		// Must also ensure that the document has a valid folderList.
 		$pathPrefix="";
 		$path = $this->getPath();
@@ -517,7 +517,7 @@ class Folder
 			return false;
 		
 		$document = getDocument($db->getInsertID());
-		$res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,FALSE);
+		$res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
 		if (is_bool($res) && !$res)
 		{
 			$queryStr = "DELETE FROM tblDocuments WHERE id = " . $document->getID();
@@ -1079,8 +1079,6 @@ class Folder
 					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
 				}
 			}
-			
-			print_r($userIDs);
 
 			// Construct a query against the users table to identify those users
 			// that have write access to this folder, either directly through an
@@ -1123,7 +1121,7 @@ class Folder
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$settings->enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
+					if ((!$settings->_enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
 					$this->_approversList["users"][] = new User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}

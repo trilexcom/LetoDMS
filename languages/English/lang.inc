@@ -2,13 +2,14 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation; either version 2 of the License, or
 //    (at your option) any later version.
 //
-//    This program is distributed in the hope that it will be useful,
+//    This program is distributed in the hope that it will be useful,application/force-download
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
@@ -74,11 +75,11 @@ $text["cannot_move_root"] = "Error: Cannot move root folder.";
 $text["cannot_retrieve_approval_snapshot"] = "Unable to retrieve approval status snapshot for this document version.";
 $text["cannot_retrieve_review_snapshot"] = "Unable to retrieve review status snapshot for this document version.";
 $text["cannot_rm_root"] = "Error: Cannot delete root folder.";
-$text["choose_category"] = "--Please choose--";
-$text["choose_group"] = "--Choose group--";
+$text["choose_category"] = "Please choose";
+$text["choose_group"] = "Choose group";
 $text["choose_target_document"] = "Choose document";
-$text["choose_target_folder"] = "Choose target-folder";
-$text["choose_user"] = "--Choose user--";
+$text["choose_target_folder"] = "Choose folder";
+$text["choose_user"] = "Choose user";
 $text["comment"] = "Comment";
 $text["comment_for_current_version"] = "Comment for current version";
 $text["confirm_pwd"] = "Confirm Password";
@@ -90,7 +91,7 @@ $text["continue"] = "Continue";
 $text["creation_date"] = "Created";
 $text["current_version"] = "Current version";
 $text["default_access"] = "Default Access Mode";
-$text["default_keyword_category"] = "Categories";
+$text["default_keyword_category"] = "Category";
 $text["default_keyword_category_name"] = "Name";
 $text["default_keywords"] = "Available keywords";
 $text["delete"] = "Delete";
@@ -120,19 +121,19 @@ $text["does_not_inherit_access_msg"] = "<a class=\"inheritAccess\" href=\"[inher
 $text["download"] = "Download";
 $text["draft_pending_approval"] = "Draft - pending approval";
 $text["draft_pending_review"] = "Draft - pending review";
-$text["edit"] = "edit";
+$text["edit"] = "Edit";
 $text["edit_default_keyword_category"] = "Edit categories";
 $text["edit_default_keywords"] = "Edit keywords";
 $text["edit_document"] = "Edit document";
 $text["edit_document_access"] = "Edit Access";
-$text["edit_document_notify"] = "Notification List";
+$text["edit_document_notify"] = "Document Notification List";
 $text["edit_document_props"] = "Edit document";
 $text["edit_document_props_again"] = "Edit document again";
 $text["edit_existing_access"] = "Edit Access List";
 $text["edit_existing_notify"] = "Edit notification list";
 $text["edit_folder"] = "Edit folder";
 $text["edit_folder_access"] = "Edit access";
-$text["edit_folder_notify"] = "Notification List";
+$text["edit_folder_notify"] = "Folder Notification List";
 $text["edit_folder_props"] = "Edit folder";
 $text["edit_folder_props_again"] = "Edit folder again";
 $text["edit_group"] = "Edit group";
@@ -176,7 +177,7 @@ $text["group_already_reviewed"] = "A review has already been submitted on behalf
 $text["group_approvers"] = "Group Approvers";
 $text["group_email_sent"] = "Email sent to group members";
 $text["group_exists"] = "Group already exists.";
-$text["group_management"] = "Groups";
+$text["group_management"] = "Groups management";
 $text["group_members"] = "Group members";
 $text["group_reviewers"] = "Group Reviewers";
 $text["group_unable_to_add"] = "Unable to add group";
@@ -328,9 +329,9 @@ $text["search_in_current"] = "only this ([foldername]) including subfolders";
 $text["search_mode"] = "Mode";
 $text["search_mode_and"] = "all words";
 $text["search_mode_or"] = "at least one word";
-$text["search_no_results"] = "There are no documents that match your search (\"[query]\"[pending_review][pending_approval]).";
+$text["search_no_results"] = "There are no documents that match your search";
 $text["search_query"] = "Search for";
-$text["search_report"] = "Found [count] documents for \"[query]\"[pending_review][pending_approval].";
+$text["search_report"] = "Found [count] documents";
 $text["search_result_pending_approval"] = "status 'pending approval'";
 $text["search_result_pending_review"] = "status 'pending review'";
 $text["search_results"] = "Search results";
@@ -377,8 +378,8 @@ $text["unknown_group"] = "Unknown group id";
 $text["unknown_keyword_category"] = "Unknown category";
 $text["unknown_owner"] = "Unknown owner id";
 $text["unknown_user"] = "Unknown user id";
-$text["unlock_cause_access_mode_all"] = "You can still update it, beacuse you have access-mode \"all\". Locking will automatically be removed.";
-$text["unlock_cause_locking_user"] = "You can still update it, because you are also the one that locked ist. Locking will automatically be removed.";
+$text["unlock_cause_access_mode_all"] = "You can still update it because you have access-mode \"all\". Locking will automatically be removed.";
+$text["unlock_cause_locking_user"] = "You can still update it because you are also the one that locked it. Locking will automatically be removed.";
 $text["unlock_document"] = "Unlock";
 $text["unlocking_denied"] = "You dont't have enough rights to unlock this document";
 $text["update"] = "Update";
@@ -403,7 +404,7 @@ $text["user_image"] = "Image";
 $text["user_info"] = "User Information";
 $text["user_list"] = "List of Users";
 $text["user_login"] = "User ID";
-$text["user_management"] = "Users";
+$text["user_management"] = "Users management";
 $text["user_name"] = "Full name";
 $text["user_removed_approver"] = "User has been removed from the list of individual approvers.";
 $text["user_removed_reviewer"] = "User has been removed from the list of individual reviewers.";
@@ -427,8 +428,9 @@ $text["override_status"] = "Override Status";
 $text["change_status"] = "Change Status";
 $text["change_assignments"] = "Change Assignments";
 $text["no_user_docs"] = "There are currently no documents owned by the user";
-$text["disclaimer"] = "This is a classified area. Access is permitted only to authorized personnel. Any violation will be prosecuted according to the nationa and international laws.";
+$text["disclaimer"] = "This is a classified area. Access is permitted only to authorized personnel. Any violation will be prosecuted according to the national and international laws.";
 $text["error_updating_status"] = "Errore during the status update";
+$text["unknown_id"] = "unknown id";
 $text["help"] = "Help";
 
 $text["group_approval_summary"] = "Group approval summary";
@@ -462,26 +464,97 @@ $text["automatic_status_update"] = "Automatic status change";
 $text["old"] = "Old"; 
 $text["new"] = "New"; 
 $text["folder"] = "Folder"; 
+
 $text["new_file_email"] = "New attachment";
 $text["removed_file_email"] = "Removed attachment";
+
 $text["document_deleted"] = "Document deleted"; 
 $text["linked_files"] = "Attachments"; 
 $text["invalid_file_id"] = "Invalid file ID";
-$text["rm_file"] = "Remove attachment"; 
+$text["rm_file"] = "Remove file"; 
 $text["confirm_rm_file"] = "Do you really want to remove file \"[name]\" of document \"[documentname]\"?<br>Be careful: This action cannot be undone.";
+
 $text["backup_tools"] = "Backup tools"; 
 $text["versioning_file_creation"] = "Versioning file creation"; 
 $text["archive_creation"] = "Archive creation"; 
 $text["files_deletion"] = "Files deletion"; 
-$text["versioning_info"] = "Versionig info";
+
+$text["versioning_info"] = "Versioning info";
 $text["versioning_file_creation_warning"] = "With this operation you can create a file containing the versioning information of an entire DMS folder. After the creation every file will be saved inside the document folder.";
-$text["archive_creation_warning"] = "With this operation you can create achive containing the files of entire DMS folders. After the creation the archive will be saved in the data folder of your server.";
+$text["archive_creation_warning"] = "With this operation you can create achive containing the files of entire DMS folders. After the creation the archive will be saved in the data folder of your server.<br>WARNING: an archive created as human readable will be unusable as server backup.";
 $text["files_deletion_warning"] = "With this option you can delete all files of entire DMS folders. The versioning information will remain visible."; 
+
 $text["confirm_rm_folder_files"] = "Do you really want to remove all the files of the folder \"[foldername]\" and of its subfolders?<br>Be careful: This action cannot be undone.";
+
 $text["files"] = "Files";
 $text["storage_size"] = "Storage size";
+
 $text["backup_list"] = "Existings backup list";
 $text["backup_remove"] = "Remove backup file";
 $text["confirm_rm_backup"] = "Do you really want to remove the file \"[arkname]\"?<br>Be careful: This action cannot be undone.";
+
 $text["edit_comment"] = "Edit comment";
+
+// new from 1.9
+
+$text["is_hidden"] = "Hide from users list";
+$text["log_management"] = "Log files management";
+$text["confirm_rm_log"] = "Do you really want to remove log file \"[logname]\"?<br>Be careful: This action cannot be undone.";
+$text["include_subdirectories"] = "Include subdirectories";
+$text["include_documents"] = "Include documents";
+$text["manager"] = "Manager";
+$text["toggle_manager"] = "Toggle manager";
+
+// new from 1.10
+
+$text["calendar"] = "Calendar";
+$text["week_view"] = "Week view";
+$text["month_view"] = "Month view";
+$text["year_view"] = "Year View";
+$text["add_event"] = "Add event";
+$text["edit_event"] = "Edit event";
+
+$text["january"] = "January";
+$text["february"] = "February";
+$text["march"] = "March";
+$text["april"] = "April";
+$text["may"] = "May";
+$text["june"] = "June";
+$text["july"] = "July";
+$text["august"] = "August";
+$text["september"] = "September";
+$text["october"] = "October";
+$text["november"] = "November";
+$text["december"] = "December";
+
+$text["sunday"] = "Sunday";
+$text["monday"] = "Monday";
+$text["tuesday"] = "Tuesday";
+$text["wednesday"] = "Wednesday";
+$text["thursday"] = "Thursday";
+$text["friday"] = "Friday";
+$text["saturday"] = "Saturday";
+
+$text["from"] = "From";
+$text["to"] = "To";
+
+$text["event_details"] = "Event details";
+$text["confirm_rm_event"] = "Do you really want to remove event \"[name]\"?<br>Be careful: This action cannot be undone.";
+
+$text["dump_creation"] = "DB dump creation"; 
+$text["dump_creation_warning"] = "With this operation you can create a dump file of your database content. After the creation the dump file will be saved in the data folder of your server.";
+$text["dump_list"] = "Existings dump files";
+$text["dump_remove"] = "Remove dump file";
+$text["confirm_rm_dump"] = "Do you really want to remove the file \"[dumpname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["confirm_rm_user"] = "Do you really want to remove the user \"[username]\"?<br>Be careful: This action cannot be undone.";
+$text["confirm_rm_group"] = "Do you really want to remove the group \"[groupname]\"?<br>Be careful: This action cannot be undone.";
+
+$text["human_readable"] = "Human readable archive"; 
+
+$text["email_header"] = "This is an automatic message from the DMS server."; 
+$text["email_footer"] = "You can always change your e-mail settings using 'My Account' functions"; 
+
+$text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
+
 ?>

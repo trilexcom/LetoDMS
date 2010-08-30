@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -70,14 +71,14 @@ UI::globalNavigation($folder);
 UI::pageNavigation($docPathHTML, "view_document");
 UI::contentHeading(getMLText("change_assignments"));
 
-// Retrieve a list of all users and groups that have review / approve
-// privileges.
+// Retrieve a list of all users and groups that have review / approve privileges.
 $docAccess = $document->getApproversList();
-// Retrieve overall status.
+
 // Retrieve list of currently assigned reviewers and approvers, along with
 // their latest status.
 $reviewStatus = $content->getReviewStatus();
 $approvalStatus = $content->getApprovalStatus();
+
 // Index the review results for easy cross-reference with the Approvers List.
 $reviewIndex = array("i"=>array(), "g"=>array());
 foreach ($reviewStatus as $i=>$rs) {
@@ -88,6 +89,7 @@ foreach ($reviewStatus as $i=>$rs) {
 		$reviewIndex["g"][$rs["required"]] = array("status"=>$rs["status"], "idx"=>$i);
 	}
 }
+
 // Index the approval results for easy cross-reference with the Approvers List.
 $approvalIndex = array("i"=>array(), "g"=>array());
 foreach ($approvalStatus as $i=>$rs) {
@@ -100,164 +102,162 @@ foreach ($approvalStatus as $i=>$rs) {
 }
 ?>
 
-<script language="JavaScript" src="../js/displayFunctions.js"></script>
-<?php
-UI::contentContainerStart();
+<?php UI::contentContainerStart(); ?>
 
-?>
 <form action="../op/op.SetReviewersApprovers.php" method="post" name="form1">
 
-<dl>
-<dt><label for="assignDocReviewers"><input onChange="showBlock('docReviewers')" id="assignDocReviewers" type="checkbox" name="assignDocReviewers" value="1"><?php printMLText("update_reviewers");?></label></dt>
-<dd id="docReviewers">
-<div class="cbSelectTitle"><?php printMLText("groups")?>:</div>
-<div class="cbSelectContainer">
-<ul class="cbSelectList">
-<?php
-foreach ($docAccess["groups"] as $group) {
-	if (isset($reviewIndex["g"][$group->getID()])) {
-		$st = $reviewIndex["g"][$group->getID()]["status"];
-		$idx = $reviewIndex["g"][$group->getID()]["idx"];
-		switch ($st) {
-			case 0:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revGrp".$group->getID()."'><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."' checked='checked'>".$group->getName()."</label>"; ?></li>
-				<?php
-				break;
-			case -2:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revGrp".$group->getID()."'><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
-				<?php
-				break;
-			default:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revGrp".$group->getID()."'><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."' disabled='disabled'>".$group->getName()."</label>"; ?></li>
-				<?php
-				break;
-		}
-	}
-	else {
-		?>
-		<li class="cbSelectItem"><?php echo "<label for='revGrp".$group->getID()."'><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
-		<?php
-	}
-}
-?>
-</ul>
-</div>
-<div class="cbSelectTitle cbSelectMargin"><?php printMLText("individuals")?>:</div>
-<div class="cbSelectContainer cbSelectMargin">
-<ul class="cbSelectList">
-<?php
-foreach ($docAccess["users"] as $user) {
-	if (isset($reviewIndex["i"][$user->getID()])) {
-		$st = $reviewIndex["i"][$user->getID()]["status"];
-		$idx = $reviewIndex["i"][$user->getID()]["idx"];
-		switch ($st) {
-			case 0:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revInd".$user->getID()."'><input id='revInd".$user->getID()."' type='checkbox' name='indReviewers[]' value='". $user->getID() ."' checked='checked'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
-				break;
-			case -2:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revInd".$user->getID()."'><input id='revInd".$user->getID()."' type='checkbox' name='indReviewers[]' value='". $user->getID() ."'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
-				break;
-			default:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='revInd".$user->getID()."'><input id='revInd".$user->getID()."' type='checkbox' name='indReviewers[]' value='". $user->getID() ."' disabled='disabled'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
-				break;
-		}
-	}
-	else {
-		?>
-		<li class="cbSelectItem"><?php echo "<label for='revInd".$user->getID()."'><input id='revInd".$user->getID()."' type='checkbox' name='indReviewers[]' value='". $user->getID() ."'>". $user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-		<?php
-	}
-}
-?>
-</ul>
-</div>
-<script language="JavaScript">if (!document.getElementById('assignDocReviewers').checked) hideBlock('docReviewers');</script>
-</dd>
+<?php UI::contentSubHeading(getMLText("update_reviewers"));?>
 
-<dt><label for="assignDocApprovers"><input onChange="showBlock('docApprovers')" id="assignDocApprovers" type="checkbox" name="assignDocApprovers" value="1"><?php printMLText("update_approvers")?></label></dt>
-<dd id="docApprovers">
+<div class="cbSelectTitle cbSelectMargin"><?php printMLText("individuals")?>:</div>
+<div class="cbSelectContainer cbSelectMargin">
+<ul class="cbSelectList">
+<?php
+
+$res=$user->getMandatoryReviewers();
+
+foreach ($docAccess["users"] as $usr) {
+
+	$mandatory=false;
+	foreach ($res as $r) if ($r['reviewerUserID']==$usr->getID()) $mandatory=true;
+	
+	if ($mandatory){
+
+		print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>". $usr->getFullName()." &lt;".$usr->getEmail()."&gt;";
+		print "<input id='revInd".$usr->getID()."' type='hidden' name='indReviewers[]' value='". $usr->getID() ."'>";
+
+	}else if (isset($reviewIndex["i"][$usr->getID()])) {
+
+		switch ($reviewIndex["i"][$usr->getID()]["status"]) {
+			case 0:
+				print "<li class=\"cbSelectItem\"><input id='revInd".$usr->getID()."' type='checkbox' name='indReviewers[]' value='". $usr->getID() ."' checked='checked'>".$usr->getFullName();
+				break;
+			case -2:
+				print "<li class=\"cbSelectItem\"><input id='revInd".$usr->getID()."' type='checkbox' name='indReviewers[]' value='". $usr->getID() ."'>".$usr->getFullName();
+				break;
+			default:
+				print "<li class=\"cbSelectItem\"><input id='revInd".$usr->getID()."' type='checkbox' name='indReviewers[]' value='". $usr->getID() ."' disabled='disabled'>".$usr->getFullName();
+				break;
+		}
+	}
+	else {
+		print "<li class=\"cbSelectItem\"><input id='revInd".$usr->getID()."' type='checkbox' name='indReviewers[]' value='". $usr->getID() ."'>". $usr->getFullName();
+	}
+}
+?>
+</ul>
+</div>
 <div class="cbSelectTitle"><?php printMLText("groups")?>:</div>
 <div class="cbSelectContainer">
 <ul class="cbSelectList">
 <?php
 foreach ($docAccess["groups"] as $group) {
-	if (isset($approvalIndex["g"][$group->getID()])) {
-		$st = $approvalIndex["g"][$group->getID()]["status"];
-		$idx = $approvalIndex["g"][$group->getID()]["idx"];
-		switch ($st) {
+
+	$mandatory=false;
+	foreach ($res as $r) if ($r['reviewerGroupID']==$group->getID()) $mandatory=true;
+	
+	if ($mandatory){
+
+		print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>".$group->getName();
+		print "<input id='revGrp".$group->getID()."' type='hidden' name='grpReviewers[]' value='". $group->getID() ."'>";
+
+	}else if (isset($reviewIndex["g"][$group->getID()])) {
+
+		switch ($reviewIndex["g"][$group->getID()]["status"]) {
 			case 0:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appGrp".$group->getID()."'><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."' checked='checked'>".$group->getName()."</label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."' checked='checked'>".$group->getName();
 				break;
 			case -2:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appGrp".$group->getID()."'><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."'>".$group->getName();
 				break;
 			default:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appGrp".$group->getID()."'><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."' disabled='disabled'>".$group->getName()."</label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."' disabled='disabled'>".$group->getName();
 				break;
 		}
 	}
 	else {
-		?>
-		<li class="cbSelectItem"><?php echo "<label for='appGrp".$group->getID()."'><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."'>".$group->getName()."</label>"; ?></li>
-		<?php
+		print "<li class=\"cbSelectItem\"><input id='revGrp".$group->getID()."' type='checkbox' name='grpReviewers[]' value='". $group->getID() ."'>".$group->getName();
 	}
 }
 ?>
 </ul>
 </div>
+
+<?php UI::contentSubHeading(getMLText("update_approvers"));?>
+
 <div class="cbSelectTitle cbSelectMargin"><?php printMLText("individuals")?>:</div>
 <div class="cbSelectContainer cbSelectMargin">
 <ul class="cbSelectList">
 <?php
-foreach ($docAccess["users"] as $user) {
-	if (isset($approvalIndex["i"][$user->getID()])) {
-		$st = $approvalIndex["i"][$user->getID()]["status"];
-		$idx = $approvalIndex["i"][$user->getID()]["idx"];
-		switch ($st) {
+
+$res=$user->getMandatoryApprovers();
+
+foreach ($docAccess["users"] as $usr) {
+
+	$mandatory=false;
+	foreach ($res as $r) if ($r['approverUserID']==$usr->getID()) $mandatory=true;
+
+	if ($mandatory){
+	
+		print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>". $usr->getFullName()." &lt;".$usr->getEmail()."&gt;";
+		print "<input id='appInd".$usr->getID()."' type='hidden' name='indApprovers[]' value='". $usr->getID() ."'>";
+
+	}else if (isset($approvalIndex["i"][$usr->getID()])) {
+	
+		switch ($approvalIndex["i"][$usr->getID()]["status"]) {
 			case 0:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appInd".$user->getID()."'><input id='appInd".$user->getID()."' type='checkbox' name='indApprovers[]' value='". $user->getID() ."' checked='checked'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='appInd".$usr->getID()."' type='checkbox' name='indApprovers[]' value='". $usr->getID() ."' checked='checked'>".$usr->getFullName();
 				break;
 			case -2:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appInd".$user->getID()."'><input id='appInd".$user->getID()."' type='checkbox' name='indApprovers[]' value='". $user->getID() ."'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='appInd".$usr->getID()."' type='checkbox' name='indApprovers[]' value='". $usr->getID() ."'>".$usr->getFullName();
 				break;
 			default:
-				?>
-				<li class="cbSelectItem"><?php echo "<label for='appInd".$user->getID()."'><input id='appInd".$user->getID()."' type='checkbox' name='indApprovers[]' value='". $user->getID() ."' disabled='disabled'>".$user->getFullName()." &lt;".$user->getEmail()."></label>"; ?></li>
-				<?php
+				print "<li class=\"cbSelectItem\"><input id='appInd".$usr->getID()."' type='checkbox' name='indApprovers[]' value='". $usr->getID() ."' disabled='disabled'>".$usr->getFullName();
 				break;
 		}
 	}
 	else {
-		?>
-		<li class="cbSelectItem"><?php echo "<label for='appInd".$user->getID()."'><input id='appInd".$user->getID()."' type='checkbox' name='indApprovers[]' value='". $user->getID() ."'>". $user->getFullName()." &lt;".$user->getEmail().">"; ?></li>
-		<?php
+		print "<li class=\"cbSelectItem\"><input id='appInd".$usr->getID()."' type='checkbox' name='indApprovers[]' value='". $usr->getID() ."'>". $usr->getFullName();
 	}
 }
 ?>
 </ul>
 </div>
-<script language="JavaScript">if (!document.getElementById('assignDocApprovers').checked) hideBlock('docApprovers');</script>
-</dd>
-</dl>
+<div class="cbSelectTitle"><?php printMLText("groups")?>:</div>
+<div class="cbSelectContainer">
+<ul class="cbSelectList">
+<?php
+foreach ($docAccess["groups"] as $group) {
+
+	$mandatory=false;
+	foreach ($res as $r) if ($r['approverGroupID']==$group->getID()) $mandatory=true;
+
+	if ($mandatory){
+
+		print "<li class=\"cbSelectItem\"><input type='checkbox' checked='checked' disabled='disabled'>".$group->getName();
+		print "<input id='appGrp".$group->getID()."' type='hidden' name='grpApprovers[]' value='". $group->getID() ."'>";
+
+	}else if (isset($approvalIndex["g"][$group->getID()])) {
+
+		switch ($approvalIndex["g"][$group->getID()]["status"]) {
+			case 0:
+				print "<li class=\"cbSelectItem\"><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."' checked='checked'>".$group->getName();
+				break;
+			case -2:
+				print "<li class=\"cbSelectItem\"><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."'>".$group->getName();
+				break;
+			default:
+				print "<li class=\"cbSelectItem\"><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."' disabled='disabled'>".$group->getName();
+				break;
+		}
+	}
+	else {
+		print "<li class=\"cbSelectItem\"><input id='appGrp".$group->getID()."' type='checkbox' name='grpApprovers[]' value='". $group->getID() ."'>".$group->getName();
+	}
+}
+?>
+</ul>
+</div>
+
 <p>
 <input type='hidden' name='documentid' value='<?php echo $documentid ?>'/>
 <input type='hidden' name='version' value='<?php echo $version ?>'/>

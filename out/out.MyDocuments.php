@@ -59,10 +59,6 @@ if ($showInProcess){
 	$reviewStatus = $user->getReviewStatus();
 	$approvalStatus = $user->getApprovalStatus();
 	
-	/*echo "<pre>";
-	print_r($approvalStatus);
-	echo "</pre>";*/
-	
 	// Create a comma separated list of all the documentIDs whose information is
 	// required.
 	$dList = array();
@@ -187,7 +183,7 @@ if ($showInProcess){
 				print "<td><a href=\"out.ViewDocument.php?documentid=".$st["documentID"]."\">".$docIdx[$st["documentID"]][$st["version"]]["name"]."</a></td>";
 				print "<td>".$docIdx[$st["documentID"]][$st["version"]]["ownerName"]."</td>";
 				print "<td>".$st["version"]."</td>";
-				print "<td>".$st["date"]."(". $docIdx[$st["documentID"]][$st["version"]]["statusName"]."</td>";
+				print "<td>".$st["date"]." ". $docIdx[$st["documentID"]][$st["version"]]["statusName"]."</td>";
 				print "<td".($docIdx[$st["documentID"]][$st["version"]]['status']!=S_EXPIRED?"":" class=\"warning\"").">".(!$docIdx[$st["documentID"]][$st["version"]]["expires"] ? "-":getReadableDate($docIdx[$st["documentID"]][$st["version"]]["expires"]))."</td>";				
 				print "</tr>\n";
 			}

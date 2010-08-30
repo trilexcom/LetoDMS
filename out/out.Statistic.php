@@ -1,7 +1,5 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -89,9 +87,12 @@ function getAccessColor($mode)
 
 function printFolder($folder)
 {
-	global $folder_count;
+	global $folder_count,$settings;
+	
 	$folder_count++;
-
+	$folder_size=0;
+	$doc_count=0;
+	
 	$color = $folder->inheritsAccess() ? "black" : getAccessColor($folder->getDefaultAccess());
 	
 	print "<li class=\"folderClass\">";
@@ -104,26 +105,35 @@ function printFolder($folder)
 	if (! $folder->inheritsAccess())
 		printAccessList($folder);
 	
-	print "</li>";
-	
 	$subFolders = $folder->getSubFolders();
 	$documents = $folder->getDocuments();
 	
 	print "<ul>";
-	foreach ($subFolders as $folder)
-		printFolder($folder);
 	
-	foreach ($documents as $document)
-		printDocument($document);
+	foreach ($subFolders as $sub) $folder_size += printFolder($sub);
+	foreach ($documents as $document){
+		$doc_count++;
+		$folder_size += printDocument($document);
+	}
+		
 	print "</ul>";
+	
+	print "<small>".formatted_size($folder_size).", ".$doc_count." ".getMLText("documents")."</small>\n";
+
+	print "</li>";
+	
+	return $folder_size;
 }
 
 function printDocument($document)
 {
 	global $document_count,$file_count,$settings,$storage_size;
+	
 	$document_count++;
 	
 	$local_file_count=0;
+	$folder_size=0;
+	
 	if (file_exists($settings->_contentDir.$document->getDir())){
 		$handle = opendir($settings->_contentDir.$document->getDir());
 		while ($entry = readdir($handle) )
@@ -131,29 +141,30 @@ function printDocument($document)
 			if (is_dir($settings->_contentDir.$document->getDir().$entry)) continue;
 			else{
 				$local_file_count++;
-				$storage_size += filesize($settings->_contentDir.$document->getDir().$entry);
+				$folder_size += filesize($settings->_contentDir.$document->getDir().$entry);
 			}
 
 		}
 		closedir($handle);
-	}	
+	}
+	$storage_size += $folder_size;
 	
 	$color = $document->inheritsAccess() ? "black" : getAccessColor($document->getDefaultAccess());
 	print "<li class=\"documentClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewDocument.php?documentid=".$document->getID()."\">".$document->getName()."</a>";
-
-	print " - ".getMLText("files").":".$local_file_count;
 	
 	$owner = $document->getOwner();
 	$color = getAccessColor(M_ALL);
 	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";	
 	
-	if (! $document->inheritsAccess())
-		printAccessList($document);
+	if (! $document->inheritsAccess()) printAccessList($document);
+		
+	print "<small>".formatted_size($folder_size).", ".$local_file_count." ".getMLText("files")."</small>\n";		
 	
 	print "</li>";
 	
-	$file_count += $local_file_count;
+	$file_count += $local_file_count;	
+	return $folder_size;
 }
 
 function printAccessList($obj)

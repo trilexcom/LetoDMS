@@ -184,6 +184,8 @@ else if ($action == "addaccess") {
 	}
 }
 
+add_log_line();
+
 header("Location:../out/out.FolderAccess.php?folderid=".$folderid);
 
 ?>
