@@ -35,9 +35,7 @@ if (!$user->isAdmin()) {
 }
 
 if (isset($_GET["logname"])) $logname=$_GET["logname"];
-else if (@readlink($settings->_contentDir."current.log")){
-	$logname=basename(@readlink($settings->_contentDir."current.log"));
-}else $logname=NULL;
+else $logname=NULL;
 
 
 UI::htmlStartPage(getMLText("backup_tools"));
@@ -81,8 +79,7 @@ foreach ($entries as $entry){
 	print "<td>".formatted_size(filesize($settings->_contentDir.$entry))."</td>\n";
 	print "<td><ul class=\"actions\">";
 	
-	if (@readlink($settings->_contentDir."current.log")!=$settings->_contentDir.$entry)
-		print "<li><a href=\"out.RemoveLog.php?logname=".$entry."\">".getMLText("rm_file")."</a></li>";
+	print "<li><a href=\"out.RemoveLog.php?logname=".$entry."\">".getMLText("rm_file")."</a></li>";
 	
 	print "<li><a href=\"../op/op.Download.php?logname=".$entry."\">".getMLText("download")."</a></li>";
 		

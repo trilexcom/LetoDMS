@@ -78,6 +78,7 @@ function checkForm()
 
 <form action="../op/op.AddSubFolder.php" name="form1" onsubmit="return checkForm();" method="POST">
 	<input type="Hidden" name="folderid" value="<?php print $folderid;?>">
+	<input type="Hidden" name="showtree" value="<?php echo showtree();?>">
 	<table>
 		<tr>
 			<td class="inputDescription"><?php printMLText("name");?>:</td>

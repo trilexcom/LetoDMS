@@ -64,6 +64,6 @@ if (!is_object($subFolder)) {
 
 add_log_line("?name=".$name."&folderid=".$folderid);
 
-header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
+header("Location:../out/out.ViewFolder.php?folderid=".$folderid."&showtree=".$_POST["showtree"]);
 
 ?>

@@ -152,7 +152,7 @@ if ($indReviewer) {
 		print "<td>".$reviewStatus["indstatus"][0]["comment"]."</td>";
 		$indUser = getUser($reviewStatus["indstatus"][0]["userID"]);
 		print "<td>".$reviewStatus["indstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
-		print "</tr></tbody></table>";
+		print "</tr></tbody></table><br>";
 	}
 ?>
 	<form method="POST" action="../op/op.ReviewDocument.php" name="form1" onsubmit="return checkIndForm();">
@@ -190,7 +190,7 @@ else if ($grpReviewer) {
 		print "<td>".$reviewStatus["grpstatus"][0]["comment"]."</td>";
 		$indUser = getUser($reviewStatus["grpstatus"][0]["userID"]);
 		print "<td>".$reviewStatus["grpstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
-		print "</tr></tbody></table>";
+		print "</tr></tbody></table><br>\n";
 	}
 
 	$grpSelectBox = "";

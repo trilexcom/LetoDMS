@@ -81,7 +81,7 @@ $text["choose_target_document"] = "Choose document";
 $text["choose_target_folder"] = "Choose folder";
 $text["choose_user"] = "Choose user";
 $text["comment"] = "Comment";
-$text["comment_for_current_version"] = "Comment for current version";
+$text["comment_for_current_version"] = "Version comment";
 $text["confirm_pwd"] = "Confirm Password";
 $text["confirm_rm_document"] = "Do you really want to remove the document \"[documentname]\"?<br>Be careful: This action cannot be undone.";
 $text["confirm_rm_folder"] = "Do you really want to remove the folder \"[foldername]\" and its content?<br>Be careful: This action cannot be undone.";
@@ -112,10 +112,10 @@ $text["document_title"] = "Document '[documentname]'";
 $text["document_versions"] = "All versions";
 $text["documents"] = "Documents";
 $text["documents_in_process"] = "Documents In Process";
-$text["documents_owned_by_user"] = "Documents Owned by User";
-$text["documents_to_approve"] = "Documents Awaiting User's Approval";
-$text["documents_to_review"] = "Documents Awaiting User's Review";
-$text["documents_user_requiring_attention"] = "Documents Owned by User That Require Attention";
+$text["documents_owned_by_user"] = "Documents owned by you";
+$text["documents_to_approve"] = "Documents awaiting your approval";
+$text["documents_to_review"] = "Documents awaiting your Review";
+$text["documents_user_requiring_attention"] = "Documents owned by you that require attention";
 $text["does_not_expire"] = "Does not expire";
 $text["does_not_inherit_access_msg"] = "<a class=\"inheritAccess\" href=\"[inheriturl]\">Inherit access</a>";
 $text["download"] = "Download";
@@ -505,7 +505,7 @@ $text["include_documents"] = "Include documents";
 $text["manager"] = "Manager";
 $text["toggle_manager"] = "Toggle manager";
 
-// new from 1.10
+// new from 2.0
 
 $text["calendar"] = "Calendar";
 $text["week_view"] = "Week view";
@@ -556,5 +556,9 @@ $text["email_header"] = "This is an automatic message from the DMS server.";
 $text["email_footer"] = "You can always change your e-mail settings using 'My Account' functions"; 
 
 $text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
+
+// new from 2.0.1
+
+$text["max_upload_size"] = "Maximum upload size for each file";
 
 ?>

@@ -81,6 +81,7 @@ UI::contentContainerStart();
 ?>
 <form action="../op/op.EditFolder.php" name="form1" onsubmit="return checkForm();" method="POST">
 <input type="Hidden" name="folderid" value="<?php print $folderid;?>">
+<input type="Hidden" name="showtree" value="<?php echo showtree();?>">
 <table>
 <tr>
 <td><?php printMLText("name");?>:</td>

@@ -61,6 +61,7 @@ UI::contentContainerStart();
 ?>
 <form action="../op/op.MoveFolder.php" name="form1">
 	<input type="Hidden" name="folderid" value="<?php print $folderid;?>">
+	<input type="Hidden" name="showtree" value="<?php echo showtree();?>">
 	<table>
 		<tr>
 			<td><?php printMLText("choose_target_folder");?>:</td>

@@ -112,12 +112,27 @@ a:active {
 	margin-top: 0;
 	margin-bottom: 2px;
 }
+
+#logo {
+	float:left;
+	margin-right: 5px;
+}
+
 .siteName {
 	background: url(img/bg-global-tl.png) no-repeat top left;
 	padding: 2px 4px 2px 4px;
-	font-size: 1.2em;
+	font-size: 1.6em;
 	font-weight: bold;
 	/*width: 40%; */
+}
+
+.siteNameLogin {
+	background: url(img/bg-global-tl.png) no-repeat top left;
+	padding: 2px 4px 0px 4px;
+	font-size: 3em;
+	font-weight: bold;
+	font-style: italic;
+	color: #fff;
 }
 .globalBox {
 	background: url(img/bg-global.png) repeat-x top left;
@@ -134,7 +149,7 @@ a:active {
 	height: 4em;
 }
 .globalBox div#signatory {
-	padding-left: 4px;
+	padding-left: 55px;
 	position: absolute;
 	bottom: 1px;
 }

@@ -51,6 +51,8 @@ if ($folder->getAccessMode($user) < M_READWRITE) {
 }
 
 $comment  = sanitizeString($_POST["comment"]);
+$version_comment = sanitizeString($_POST["version_comment"]);
+
 $keywords = sanitizeString($_POST["keywords"]);
 
 $reqversion = (int)$_POST["reqversion"];
@@ -152,13 +154,14 @@ for ($file_num=0;$file_num<count($_FILES["userfile"]["tmp_name"]);$file_num++){
 	if (is_bool($lastDotIndex) && !$lastDotIndex) $fileType = ".";
 	else $fileType = substr($userfilename, $lastDotIndex);
 
-	if (count($_FILES["userfile"]["tmp_name"])==1) $name = sanitizeString($_POST["name"]);
+	if ((count($_FILES["userfile"]["tmp_name"])==1)&&($_POST["name"]!=""))
+		$name = sanitizeString($_POST["name"]);
 	else $name = basename($userfilename);
 	
 	$res = $folder->addDocument($name, $comment, $expires, $user, $keywords,
 	                            $userfiletmp, basename($userfilename),
 	                            $fileType, $userfiletype, $sequence,
-	                            $reviewers, $approvers, $reqversion);
+	                            $reviewers, $approvers, $reqversion,$version_comment);
 	
 	if (is_bool($res) && !$res) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
@@ -167,6 +170,6 @@ for ($file_num=0;$file_num<count($_FILES["userfile"]["tmp_name"]);$file_num++){
 	add_log_line("?name=".$name."&folderid=".$folderid);
 }
 
-header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
+header("Location:../out/out.ViewFolder.php?folderid=".$folderid."&showtree=".$_POST["showtree"]);
 
 ?>

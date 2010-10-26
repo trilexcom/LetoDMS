@@ -246,4 +246,14 @@ function add_log_line($msg="")
 	fclose($h);
 }
 
+function showtree()
+{
+	global $settings;
+	
+	if (isset($_GET["showtree"])) return $_GET["showtree"];
+	else if ($settings->_expandFolderTree==0) return 0;
+	
+	return 1;
+}
+
 ?>

@@ -1,7 +1,7 @@
 /*    Copyright (C) 2010 Matteo Lucarelli
 */
 body {
-	font-size: 72%;
+	font-size: 70%;
 	font-family: sans-serif;
 }
 body.login {
@@ -70,10 +70,25 @@ a:active {
 	margin-top: 0;
 	margin-bottom: 2px;
 }
+
+#logo {
+	float:left;
+	margin-right: 5px;
+}
+
 .siteName {
 	background: url(img/bg-global-tl.png) no-repeat top left;
 	padding: 2px 4px 0px 4px;
-	font-size: 1.4em;
+	font-size: 1.6em;
+	font-weight: bold;
+	font-style: italic;
+	color: #fff;
+}
+
+.siteNameLogin {
+	background: url(img/bg-global-tl.png) no-repeat top left;
+	padding: 2px 4px 0px 4px;
+	font-size: 3em;
 	font-weight: bold;
 	font-style: italic;
 	color: #fff;
@@ -93,8 +108,9 @@ a:active {
 .globalBox#noNav {
 	height: 4em;
 }
-.globalBox div#signatory {
-	padding-left: 4px;
+
+div#signatory {
+	padding-left: 55px;
 	position: absolute;
 	bottom: 1px;
 }
@@ -222,6 +238,20 @@ ul.groupView ul{
 	border-top: 1px solid #000;
 	list-style-image:url("../../out/images/usericon.gif");
 	font-weight: normal;
+}
+
+#tree-open{
+	width: 25%;
+}
+
+#tree-open ul{
+	margin-left: 0px;
+	padding: 0;
+	padding-left:15px;
+}
+
+#tree-closed{
+	width: 20px;
 }
 
 table.folderView {
@@ -400,8 +430,9 @@ span.absSpacerTitle {
 }
 
 .warning{
-	color: rgb(255,0,0);
 	font-weight: bold;
+	padding:0.1em;
+	border: 1px solid rgb(255,0,0);
 }
 
 .error{

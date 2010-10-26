@@ -65,6 +65,6 @@ if (!$folder->setParent($targetFolder)) {
 }
 
 add_log_line();
-header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
+header("Location:../out/out.ViewFolder.php?folderid=".$folderid."&showtree=".$_GET["showtree"]);
 
 ?>

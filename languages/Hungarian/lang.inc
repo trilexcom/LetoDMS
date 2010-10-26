@@ -520,7 +520,7 @@ $text["include_documents"] = "Include documents";
 $text["manager"] = "Manager";
 $text["toggle_manager"] = "Toggle manager";
 
-// new from 1.10
+// new from 2.0
 
 $text["calendar"] = "Calendar";
 $text["week_view"] = "Week view";
@@ -571,5 +571,9 @@ $text["email_header"] = "This is an automatic message from the DMS server.";
 $text["email_footer"] = "You can always change your e-mail settings using 'My Account' functions"; 
 
 $text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
+
+// new from 2.0.1
+
+$text["max_upload_size"] = "Maximum upload size for each file";
 
 ?>

@@ -123,12 +123,12 @@ UI::contentHeading(getMLText("details_version", array ("version" => $version->ge
 UI::contentContainerStart();
 print "<table class=\"folderView\">";
 print "<thead>\n<tr>\n";
-print "<th></th>\n";
-print "<th>".getMLText("version")."</th>\n";
-print "<th>".getMLText("file")."</th>\n";
-print "<th>".getMLText("comment")."</th>\n";
-print "<th>".getMLText("status")."</th>\n";
-print "<th></th>\n";
+print "<th width='10%'></th>\n";
+print "<th width='10%'>".getMLText("version")."</th>\n";
+print "<th width='20%'>".getMLText("file")."</th>\n";
+print "<th width='25%'>".getMLText("comment")."</th>\n";
+print "<th width='15%'>".getMLText("status")."</th>\n";
+print "<th width='20%'></th>\n";
 print "</tr>\n</thead>\n<tbody>\n";
 print "<tr>\n";
 print "<td><ul class=\"actions\">";
@@ -146,10 +146,11 @@ print "<td><ul class=\"documentDetail\">\n";
 print "<li>".$version->getOriginalFileName()."</li>\n";
 
 if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
-else print "<li>". $version->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
 $updatingUser = $version->getUser();
-print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($version->getDate())."</li>";
+print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a></li>";
+print "<li>".getLongReadableDate($version->getDate())."</li>";
 print "</ul></td>\n";
 
 print "<td>".$version->getComment()."</td>";
@@ -184,10 +185,10 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 	print "</td></tr>\n";
 	
 	print "<tr>\n";
-	print "<td><b>".getMLText("name")."</b></td>\n";
-	print "<td><b>".getMLText("status")."</b></td>\n";
-	print "<td><b>".getMLText("comment")."</b></td>";
-	print "<td><b>".getMLText("last_update")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("name")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("last_update")."</b></td>\n";
+	print "<td width='25%'><b>".getMLText("comment")."</b></td>";
+	print "<td width='35%'><b>".getMLText("status")."</b></td>\n";
 	print "</tr>\n";
 
 	foreach ($reviewStatus as $r) {
@@ -214,12 +215,12 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		}
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
-		print "<td>".getReviewStatusText($r["status"])."</td>\n";
-		print "<td>".$r["comment"]."</td>\n";
-		print "<td>".$r["date"];
+		print "<td><ul class=\"documentDetail\"><li>".$r["date"]."</li>";
 		$updateUser = getUser($r["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'");
-		print "</td>\n</tr>\n";
+		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'")."</li></ul></td>";
+		print "<td>".$r["comment"]."</td>\n";
+		print "<td>".getReviewStatusText($r["status"])."</td>\n";
+		print "</tr>\n";
 	}
 }
 
@@ -230,10 +231,10 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 	print "</td></tr>\n";
 		
 	print "<tr>\n";
-	print "<td><b>".getMLText("name")."</b></td>\n";
-	print "<td><b>".getMLText("status")."</b></td>\n";
-	print "<td><b>".getMLText("comment")."</b></td>";
-	print "<td><b>".getMLText("last_update")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("name")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("last_update")."</b></td>\n";
+	print "<td width='25%'><b>".getMLText("comment")."</b></td>";
+	print "<td width='35%'><b>".getMLText("status")."</b></td>\n";
 	print "</tr>\n";
 
 	foreach ($approvalStatus as $a) {
@@ -260,12 +261,12 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		}
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
-		print "<td>".getApprovalStatusText($a["status"])."</td>\n";
-		print "<td>".$a["comment"]."</td>\n";
-		print "<td>".$a["date"];
+		print "<td><ul class=\"documentDetail\"><li>".$a["date"]."</li>";
 		$updateUser = getUser($a["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'");
-		print "</td>\n</tr>\n";
+		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'")."</li></ul></td>";
+		print "<td>".$a["comment"]."</td>\n";
+		print "<td>".getApprovalStatusText($a["status"])."</td>\n";
+		print "</tr>\n";
 	}
 }
 

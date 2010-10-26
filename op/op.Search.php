@@ -138,6 +138,9 @@ if (is_array($_GET["searchin"])) {
 	}
 }
 
+// if none is checkd search all
+if (count($searchin)==0) $searchin=array( 0, 1, 2, 3);
+
 $searchKey = "";
 // Assemble the arguments for the concatenation function. This allows the
 // search to be carried across all the relevant fields.

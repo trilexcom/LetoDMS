@@ -77,8 +77,7 @@ if ($document->isLocked()) {
 	$lockingUser = $document->getLockingUser();
 ?>
 <tr>
-	<td><?php printMLText("lock_status");?>:</td>
-	<td class="warning"><?php printMLText("lock_message", array("email" => $lockingUser->getEmail(), "username" => $lockingUser->getFullName()));?></td>
+	<td class="warning" colspan=2><?php printMLText("lock_message", array("email" => $lockingUser->getEmail(), "username" => $lockingUser->getFullName()));?></td>
 </tr>
 <?php
 }
@@ -112,12 +111,12 @@ UI::contentHeading(getMLText("current_version"));
 UI::contentContainerStart();
 print "<table class=\"folderView\">";
 print "<thead>\n<tr>\n";
-print "<th></th>\n";
-print "<th>".getMLText("version")."</th>\n";
-print "<th>".getMLText("file")."</th>\n";
-print "<th>".getMLText("comment")."</th>\n";
-print "<th>".getMLText("status")."</th>\n";
-print "<th></th>\n";
+print "<th width='10%'></th>\n";
+print "<th width='10%'>".getMLText("version")."</th>\n";
+print "<th width='20%'>".getMLText("file")."</th>\n";
+print "<th width='25%'>".getMLText("comment")."</th>\n";
+print "<th width='15%'>".getMLText("status")."</th>\n";
+print "<th width='20%'></th>\n";
 print "</tr></thead><tbody>\n";
 print "<tr>\n";
 print "<td><ul class=\"actions\">";
@@ -136,17 +135,18 @@ print "<li>".$latestContent->getOriginalFileName() ."</li>\n";
 
 if ($file_exists)
 	print "<li>". formatted_size(filesize($settings->_contentDir . $latestContent->getPath())) ." ".$latestContent->getMimeType()."</li>";
-else print "<li>".$latestContent->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
 $updatingUser = $latestContent->getUser();
-print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($latestContent->getDate())."</li>";
+print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a></li>";
+print "<li>".getLongReadableDate($latestContent->getDate())."</li>";
 
 print "</ul>\n";
 print "<td>".$latestContent->getComment()."</td>";
 
-print "<td><ul class=\"actions\"><li>".getOverallStatusText($status["status"]);
+print "<td width='10%'>".getOverallStatusText($status["status"]);
 if ( $status["status"]==S_DRAFT_REV || $status["status"]==S_DRAFT_APP || $status["status"]==S_EXPIRED ){
-	print "<li".($document->hasExpired()?" class=\"warning\" ":"").">".(!$document->getExpires() ? getMLText("does_not_expire") : getMLText("expires").": ".getReadableDate($document->getExpires()))."</li>";
+	print "<br><span".($document->hasExpired()?" class=\"warning\" ":"").">".(!$document->getExpires() ? getMLText("does_not_expire") : getMLText("expires").": ".getReadableDate($document->getExpires()))."</span>";
 }
 print "</td>";
 
@@ -173,8 +173,12 @@ if ($document->getAccessMode($user) >= M_READWRITE) {
 
 print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&vfile=1\">".getMLText("versioning_info")."</a></li>";	
 
+print "</ul>";
+echo "</td>";
+print "</tr></tbody>\n</table>\n";
+
 //
-// Display a link if the user is a reviewer or approver for this document.
+// retrieve if the user is a reviewer or approver for this document.
 //
 $userRStat = $user->getReviewStatus($documentid, $latestContent->getVersion());
 $userAStat = $user->getApprovalStatus($documentid, $latestContent->getVersion());
@@ -212,16 +216,6 @@ if (!is_bool($userAStat)) {
 	}
 }
 
-if ($is_reviewer && $status["status"]==S_DRAFT_REV) {
-	print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("submit_review")."</a></li>";
-}
-else if ($is_approver && $status["status"]==S_DRAFT_APP) {
-	print "<li><a href=\"../out/out.ApproveDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("submit_approval")."</a></li>";
-}
-
-print "</ul>";
-echo "</td>";
-print "</tr></tbody>\n</table>\n";
 
 print "<table class=\"folderView\">\n";
 
@@ -232,11 +226,11 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 	print "</tr>";
 	
 	print "<tr>\n";
-	print "<td><b>".getMLText("name")."</b></td>\n";
-	print "<td><b>".getMLText("status")."</b></td>\n";
-	print "<td><b>".getMLText("comment")."</b></td>";
-	print "<td><b>".getMLText("last_update")."</b></td>\n";
-	print "<td></td>\n";
+	print "<td width='20%'><b>".getMLText("name")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("last_update")."</b></td>\n";
+	print "<td width='25%'><b>".getMLText("comment")."</b></td>";
+	print "<td width='15%'><b>".getMLText("status")."</b></td>\n";
+	print "<td width='20%'></td>\n";
 	print "</tr>\n";
 
 	foreach ($reviewStatus as $r) {
@@ -263,14 +257,19 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		}
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
-		print "<td>".getReviewStatusText($r["status"])."</td>\n";
-		print "<td>".$r["comment"]."</td>\n";
-		print "<td>".$r["date"];
+		print "<td><ul class=\"documentDetail\"><li>".$r["date"]."</li>";
 		$updateUser = getUser($r["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'");	
+		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'")."</li></ul></td>";
+		print "<td>".$r["comment"]."</td>\n";
+		print "<td>".getReviewStatusText($r["status"])."</td>\n";
 		print "<td><ul class=\"actions\">";
-		if (($updateUser==$user)&&(($r["status"]==1)||($r["status"]==-1))&&(!$document->hasExpired()))
+		
+		if ($is_reviewer && $status["status"]==S_DRAFT_REV) {
+			print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("submit_review")."</a></li>";
+		}else if (($updateUser==$user)&&(($r["status"]==1)||($r["status"]==-1))&&(!$document->hasExpired())){
 			print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit")."</a></li>";
+		}
+		
 		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
@@ -283,11 +282,11 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 	print "</tr>";
 
 	print "<tr>\n";
-	print "<td><b>".getMLText("name")."</b></td>\n";
-	print "<td><b>".getMLText("status")."</b></td>\n";
-	print "<td><b>".getMLText("comment")."</b></td>";
-	print "<td><b>".getMLText("last_update")."</b></td>\n";	
-	print "<td></td>\n";
+	print "<td width='20%'><b>".getMLText("name")."</b></td>\n";
+	print "<td width='20%'><b>".getMLText("last_update")."</b></td>\n";	
+	print "<td width='25%'><b>".getMLText("comment")."</b></td>";
+	print "<td width='15%'><b>".getMLText("status")."</b></td>\n";
+	print "<td width='20%'></td>\n";
 	print "</tr>\n";
 
 	foreach ($approvalStatus as $a) {
@@ -314,14 +313,19 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		}
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
-		print "<td>".getApprovalStatusText($a["status"])."</td>\n";
-		print "<td>".$a["comment"]."</td>\n";
-		print "<td>".$a["date"];
+		print "<td><ul class=\"documentDetail\"><li>".$a["date"]."</li>";
 		$updateUser = getUser($a["userID"]);
-		print " - ".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'");	
+		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'")."</li></ul></td>";	
+		print "<td>".$a["comment"]."</td>\n";
+		print "<td>".getApprovalStatusText($a["status"])."</td>\n";
 		print "<td><ul class=\"actions\">";
-		if (($updateUser==$user)&&(($a["status"]==1)||($a["status"]==-1))&&(!$document->hasExpired()))
+		
+		if ($is_approver && $status["status"]==S_DRAFT_APP) {
+			print "<li><a href=\"../out/out.ApproveDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("submit_approval")."</a></li>";
+		}else if (($updateUser==$user)&&(($a["status"]==1)||($a["status"]==-1))&&(!$document->hasExpired())){
 			print "<li><a href=\"../out/out.ApproveDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit")."</a></li>";
+		}
+		
 		print "</ul></td>\n";	
 		print "</td>\n</tr>\n";
 	}
@@ -338,12 +342,12 @@ if (count($versions)>1) {
 
 	print "<table class=\"folderView\">";
 	print "<thead>\n<tr>\n";
-	print "<th></th>\n";
-	print "<th>".getMLText("version")."</th>\n";
-	print "<th>".getMLText("file")."</th>\n";
-	print "<th>".getMLText("comment")."</th>\n";
-	print "<th>".getMLText("status")."</th>\n";
-	print "<th></th>\n";
+	print "<th width='10%'></th>\n";
+	print "<th width='10%'>".getMLText("version")."</th>\n";
+	print "<th width='20%'>".getMLText("file")."</th>\n";
+	print "<th width='25%'>".getMLText("comment")."</th>\n";
+	print "<th width='15%'>".getMLText("status")."</th>\n";
+	print "<th width='20%'></th>\n";
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	for ($i = count($versions)-2; $i >= 0; $i--) {
@@ -367,9 +371,10 @@ if (count($versions)>1) {
 		print "<td><ul class=\"documentDetail\">\n";
 		print "<li>".$version->getOriginalFileName()."</li>\n";
 		if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
-		else print "<li>". $version->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
+		else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 		$updatingUser = $version->getUser();
-		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a> - ".getLongReadableDate($version->getDate())."</li>";
+		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a><li>";
+		print "<li>".getLongReadableDate($version->getDate())."</li>";
 		print "</ul>\n";
 		print "<td>".$version->getComment()."</td>";
 		print "<td>".getOverallStatusText($vstat["status"])."</td>";
@@ -397,11 +402,10 @@ if (count($files) > 0) {
 
 	print "<table class=\"folderView\">";
 	print "<thead>\n<tr>\n";
-	print "<th></th>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("file")."</th>\n";
-	print "<th>".getMLText("comment")."</th>\n";
-	print "<th></th>\n";
+	print "<th width='20%'></th>\n";
+	print "<th width='20%'>".getMLText("file")."</th>\n";
+	print "<th width='40%'>".getMLText("comment")."</th>\n";
+	print "<th width='20%'></th>\n";
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	foreach($files as $file) {
@@ -413,11 +417,9 @@ if (count($files) > 0) {
 		print "<tr>";
 		print "<td><ul class=\"actions\">";
 		if ($file_exists)
-			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&file=".$file->getID()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($file->getFileType())."\" title=\"".$file->getMimeType()."\">".getMLText("download")."</a>";
+			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&file=".$file->getID()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($file->getFileType())."\" title=\"".$file->getMimeType()."\">".$file->getName()."</a>";
 		else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($file->getFileType())."\" title=\"".$file->getMimeType()."\">";
 		print "</ul></td>";
-
-		print "<td>".$file->getName()."</td>";
 		
 		print "<td><ul class=\"documentDetail\">\n";
 		print "<li>".$file->getOriginalFileName() ."</li>\n";
@@ -425,7 +427,8 @@ if (count($files) > 0) {
 			print "<li>". filesize($settings->_contentDir . $file->getPath()) ." bytes ".$file->getMimeType()."</li>";
 		else print "<li>".$file->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
-		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$responsibleUser->getEmail()."\">".$responsibleUser->getFullName()."</a> - ".getLongReadableDate($file->getDate())."</li>";
+		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$responsibleUser->getEmail()."\">".$responsibleUser->getFullName()."</a></li>";
+		print "<li>".getLongReadableDate($file->getDate())."</li>";
 
 		print "<td>".$file->getComment()."</td>";
 	
@@ -441,9 +444,10 @@ if (count($files) > 0) {
 }
 else printMLText("empty_notify_list");
 
-if ($document->getAccessMode($user) >= M_READWRITE)
+if ($document->getAccessMode($user) >= M_READWRITE){
+	print "<br>";
 	print "<ul class=\"actions\"><li><a href=\"../out/out.AddFile.php?documentid=".$documentid."\">".getMLText("add")."</a></ul>\n";
-
+}
 UI::contentContainerEnd();
 
 
@@ -456,10 +460,10 @@ if (count($links) > 0) {
 
 	print "<table class=\"folderView\">";
 	print "<thead>\n<tr>\n";
-	print "<th>".getMLText("name")."</th>\n";
-	print "<th>".getMLText("comment")."</th>\n";
-	print "<th>".getMLText("document_link_by")."</th>\n";
-	print "<th>".getMLText("document_link_public")."</th>\n";
+	print "<th width='40%'></th>\n";
+	print "<th width='25%'>".getMLText("comment")."</th>\n";
+	print "<th width='15%'>".getMLText("document_link_by")."</th>\n";
+	print "<th width='20%'></th>\n";
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	foreach($links as $link) {
@@ -469,8 +473,10 @@ if (count($links) > 0) {
 		print "<tr>";
 		print "<td><a href=\"out.ViewDocument.php?documentid=".$targetDoc->getID()."\" class=\"linklist\">".$targetDoc->getName()."</a></td>";
 		print "<td>".$targetDoc->getComment()."</td>";
-		print "<td>".$responsibleUser->getFullName()."</td>";
-		print "<td>" . (($link->isPublic()) ? getMLText("yes") : getMLText("no")) . "</td>";
+		print "<td>".$responsibleUser->getFullName();
+		if (($user->getID() == $responsibleUser->getID()) || ($document->getAccessMode($user) == M_ALL ))
+			print "<br>".getMLText("document_link_public").":".(($link->isPublic()) ? getMLText("yes") : getMLText("no"));
+		print "</td>";
 		print "<td><span class=\"actions\">";
 		if (($user->getID() == $responsibleUser->getID()) || ($document->getAccessMode($user) == M_ALL ))
 			print "<a href=\"../op/op.RemoveDocumentLink.php?documentid=".$documentid."&linkid=".$link->getID()."\">".getMLText("delete")."</a>";
@@ -483,6 +489,7 @@ else printMLText("empty_notify_list");
 
 if ($user->getID() != $settings->_guestID){
 ?>
+	<br>
 	<form action="../op/op.AddDocumentLink.php" name="form1">
 	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
 	<table>

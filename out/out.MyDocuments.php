@@ -444,8 +444,6 @@ else {
 		exit;
 	}
 	
-	// TODO: verificare scadenza
-
 	UI::contentHeading(getMLText("all_documents"));
 	UI::contentContainerStart();
 

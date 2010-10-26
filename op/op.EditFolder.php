@@ -68,6 +68,6 @@ else {
 
 add_log_line("?folderid=".$folderid);
 
-header("Location:../out/out.ViewFolder.php?folderid=".$folderid);
+header("Location:../out/out.ViewFolder.php?folderid=".$folderid."&showtree=".$_POST["showtree"]);
 
 ?>

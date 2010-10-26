@@ -74,7 +74,7 @@ $text["choose_group"] = "--Seleziona gruppo--";
 $text["choose_target_document"] = "Seleziona documento";
 $text["choose_target_folder"] = "Seleziona cartella";
 $text["choose_user"] = "--Seleziona utente--";
-$text["comment_for_current_version"] = "Commento per la versione corrente";
+$text["comment_for_current_version"] = "Commento per la versione";
 $text["comment"] = "Commento";
 $text["confirm_pwd"] = "Conferma Password";
 $text["confirm_rm_document"] = "Vuoi veramente eliminare il documento \"[documentname]\"?<br>Attenzione: L'operazione &egrave; irreversibile";
@@ -374,7 +374,7 @@ $text["version_under_approval"] = "Versione in fase di approvazione";
 $text["version_under_review"] = "Versione in fase di revisione";
 $text["version"] = "Versione";
 $text["view_document"] = "Visualizza documento";
-$text["view_online"] = "Visualizza online";
+$text["view_online"] = "Visualizza";
 $text["warning"] = "Attenzione";
 $text["wrong_pwd"] = "Password errata. Riprova.";
 $text["yes"] = "Si";
@@ -470,7 +470,7 @@ $text["include_documents"] = "Includi documenti";
 $text["manager"] = "Manager";
 $text["toggle_manager"] = "Manager";
 
-// new from 1.10
+// new from 2.0
 
 $text["calendar"] = "Calendario";
 $text["week_view"] = "Vista settimana";
@@ -521,5 +521,10 @@ $text["email_header"] = "Questo &egrave; un messaggio automatico inviato dal ser
 $text["email_footer"] = "Puoi cambiare le tue preferenze utilizzando le funzioni del menu 'Account personale'"; 
 
 $text["add_multiple_files"] = "Aggiungi documenti multipli (il nome del file verr&agrave; usato come nome del documento)";
+
+// new from 2.0.1
+
+$text["max_upload_size"] = "Dimensione massima caricabile per ogni file";
+
 
 ?>

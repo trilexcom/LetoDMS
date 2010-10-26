@@ -49,8 +49,8 @@ if (!isset($_POST["version"]) || !is_numeric($_POST["version"]) || intval($_POST
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));
 }
 
-$version = $_POST["version"];
-$version = $document->getContentByVersion($version);
+$version_num = $_POST["version"];
+$version = $document->getContentByVersion($version_num);
 
 if (!is_object($version)) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_version"));

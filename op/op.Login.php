@@ -65,6 +65,21 @@ if ((!isset($pwd) || strlen($pwd)==0) && ($login != $guestUser->getLogin()))  {
 // LDAP Sign In
 //
 
+/* new code by doudoux - TO BE TESTED */
+$ldapSearchAttribut = "uid=";
+$tmpDN = "uid=".$login.",".$settings->_ldapBaseDN;
+
+if (isset($settings->_ldapType))
+{
+    if ($settings->_ldapType==1)
+    {
+        $ldapSearchAttribut = "sAMAccountName=";
+        $tmpDN = $login.'@'.$settings->_ldapAccountDomainName;
+    }
+} 
+/* end of new code */
+
+
 $user = false;
 if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 	if (isset($settings->_ldapPort) && is_int($settings->_ldapPort)) {
@@ -81,6 +96,20 @@ if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 		// try an anonymous bind first. If it succeeds, get the DN for the user.
 		$bind = @ldap_bind($ds);
 		$dn = false;
+				
+		/* new code by doudoux - TO BE TESTED */
+	        if ($bind) {        
+	            $search = ldap_search($ds, $settings->_ldapBaseDN, $ldapSearchAttribut.$login);
+	            if (!is_bool($search)) {
+	                $info = ldap_get_entries($ds, $search);
+	                if (!is_bool($info) && $info["count"]>0) {
+	                    $dn = $info[0]['dn'];
+	                }
+	            }
+	        } 
+		/* end of new code */
+		
+		/* old code */
 		if ($bind) {
 			$search = ldap_search($ds, $settings->_ldapBaseDN, "uid=".$login);
 			if (!is_bool($search)) {
@@ -90,10 +119,18 @@ if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 				}
 			}
 		}
+		/* end of old code */
+
+		
 		if (is_bool($dn)) {
 			// This is the fallback position, in case the anonymous bind does not
 			// succeed.
-			$dn = "uid=".$login.",".$settings->_ldapBaseDN;
+			
+			/* new code by doudoux  - TO BE TESTED */
+			$dn = $tmpDN;
+			/* old code */
+			//$dn = "uid=".$login.",".$settings->_ldapBaseDN; 
+			
 		}
 		$bind = @ldap_bind($ds, $dn, $pwd);
 		if ($bind) {
@@ -102,7 +139,13 @@ if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 			$user = getUserByLogin($login);
 			if (is_bool($user) && !$settings->_restricted) {
 				// Retrieve the user's LDAP information.
-				$search = ldap_search($ds, $dn, "uid=".$login);
+				
+				
+				/* new code by doudoux  - TO BE TESTED */
+				$search = ldap_search($ds, $settings->_ldapBaseDN, $ldapSearchAttribut . $login); 
+				/* old code */
+				//$search = ldap_search($ds, $dn, "uid=".$login);
+				
 				if (!is_bool($search)) {
 					$info = ldap_get_entries($ds, $search);
 					if (!is_bool($info) && $info["count"]==1 && $info[0]["count"]>0) {

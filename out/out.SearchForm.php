@@ -88,7 +88,7 @@ UI::contentContainerStart();
 <tr>
 <td><?php printMLText("search_in");?>:</td>
 <td><ul class="actions">
-<li class="first"><input type="Checkbox" id="keywords" name="searchin[]" value="1" checked><label for="keywords"><?php printMLText("keywords");?></label></li>
+<li class="first"><input type="Checkbox" id="keywords" name="searchin[]" value="1"><label for="keywords"><?php printMLText("keywords");?></label></li>
 <li><input type="Checkbox" name="searchin[]" id="searchName" value="2"><label for="searchName"><?php printMLText("name");?></label></li>
 <li><input type="Checkbox" name="searchin[]" id="comment" value="3"><label for="comment"><?php printMLText("comment");?></label></li>
 </ul>

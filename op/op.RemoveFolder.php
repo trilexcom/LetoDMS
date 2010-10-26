@@ -57,6 +57,6 @@ if (!$folder->remove()) {
 
 add_log_line();
 
-header("Location:../out/out.ViewFolder.php?folderid=".$parent->getID());
+header("Location:../out/out.ViewFolder.php?folderid=".$parent->getID()."&showtree=".$_GET["showtree"]);
 
 ?>

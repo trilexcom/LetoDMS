@@ -42,8 +42,7 @@ if (!is_object($folder)) {
 	UI::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
 }
 
-if (isset($_GET["showtree"])) $showtree=$_GET["showtree"];
-else $showtree=0;
+$showtree=showtree();
 
 if (isset($_GET["orderby"]) && strlen($_GET["orderby"])==1 ) {
 	$orderby=$_GET["orderby"];
@@ -124,8 +123,12 @@ foreach($documents as $document) {
 	$status = $latestContent->getStatus();
 	
 	print "<tr>";
-	print "<td><a href=\"../op/op.Download.php?documentid=".$docID."&version=".$version."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></a></td>";
-	print "<td><a href=\"out.ViewDocument.php?documentid=".$docID."\">" . $document->getName() . "</a></td>\n";
+	
+	if (file_exists($settings->_contentDir . $latestContent->getPath()))
+		print "<td><a href=\"../op/op.Download.php?documentid=".$docID."&version=".$version."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></a></td>";
+	else print "<td><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></td>";
+	
+	print "<td><a href=\"out.ViewDocument.php?documentid=".$docID."&showtree=".$showtree."\">" . $document->getName() . "</a></td>\n";
 	print "<td>".$owner->getFullName()."</td>";
 	print "<td>".getOverallStatusText($status["status"])."</td>";
 	print "<td>".$version."</td>";
@@ -137,7 +140,7 @@ if ((count($subFolders) > 0)||(count($documents) > 0)) echo "</tbody>\n</table>\
 
 UI::contentContainerEnd();
 
-if ($settings->_enableFolderTree) print "</tr></table>";
+if ($settings->_enableFolderTree) print "</td></tr></table>";
 
 UI::htmlEndPage();
 ?>

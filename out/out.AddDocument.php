@@ -55,8 +55,11 @@ UI::pageNavigation($folderPathHTML, "view_folder", $folder);
 function checkForm()
 {
 	msg = "";
-	if (document.form1.userfile.value == "") msg += "<?php printMLText("js_no_file");?>\n";
-	if (document.form1.name.value == "") msg += "<?php printMLText("js_no_name");?>\n";
+	//if (document.form1.userfile[].value == "") msg += "<?php printMLText("js_no_file");?>\n";
+	
+	if(!document.form1.name.disabled){
+	  if (document.form1.name.value == "") msg += "<?php printMLText("js_no_name");?>\n";
+		}
 <?php
 	if (isset($settings->_strictFormCheck) && $settings->_strictFormCheck) {
 	?>
@@ -69,7 +72,7 @@ function checkForm()
 		alert(msg);
 		return false;
 	}
-	else return true;
+	return true;
 }
 
 
@@ -89,8 +92,15 @@ UI::contentContainerStart();
 // privileges.
 $docAccess = $folder->getApproversList();
 ?>
+<table>
+<tr>
+	<td class="warning"><?php echo getMLtext("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
+</tr>
+</table><br>
+
 <form action="../op/op.AddDocument.php" enctype="multipart/form-data" method="post" name="form1" onsubmit="return checkForm();">
 <input type="Hidden" name="folderid" value="<?php print $folderid; ?>">
+<input type="Hidden" name="showtree" value="<?php echo showtree();?>">
 <table>
 <tr>
 	<td><?php printMLText("sequence");?>:</td>
@@ -115,12 +125,16 @@ $docAccess = $folder->getApproversList();
 </tr>
 <tr>
 	<td><?php printMLText("comment");?>:</td>
-	<td><textarea name="comment" rows="4" cols="80"></textarea></td>
+	<td><textarea name="comment" rows="3" cols="80"></textarea></td>
+</tr>
+<tr>
+	<td><?php printMLText("comment_for_current_version");?>:</td>
+	<td><textarea name="version_comment" rows="3" cols="80"></textarea></td>
 </tr>
 <tr>
 	<td><?php printMLText("keywords");?>:</td>
 	<td>
-	<textarea name="keywords" rows="2" cols="80"></textarea><br>
+	<textarea name="keywords" rows="1" cols="80"></textarea><br>
 	<a href="javascript:chooseKeywords();"><?php printMLText("use_default_keywords");?></a>
 	<script language="JavaScript">
 	var openDlg;

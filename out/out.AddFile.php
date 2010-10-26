@@ -81,6 +81,12 @@ UI::contentHeading(getMLText("linked_files"));
 UI::contentContainerStart();
 
 ?>
+<table>
+<tr>
+	<td class="warning"><?php echo getMLtext("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
+</tr>
+</table><br>
+
 <form action="../op/op.AddFile.php" enctype="multipart/form-data" method="post" name="form1" onsubmit="return checkForm();">
 <input type="Hidden" name="documentid" value="<?php print $documentid; ?>">
 <table>

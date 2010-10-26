@@ -151,7 +151,8 @@ class UI {
 
 		echo "<div class=\"globalBox\" id=\"noNav\">\n";
 		echo "<div class=\"globalTR\"></div>\n";
-		echo "<div class=\"siteName\">".
+		echo "<div id=\"logo\"><img src='../styles/logo.png'></div>\n";
+		echo "<div class=\"siteNameLogin\">".
 			(strlen($settings->_siteName)>0 ? $settings->_siteName : "LetoDMS").
 			"</div>\n";
 		echo "<div style=\"clear: both; height: 0px; font-size:0;\">&nbsp;</div>\n".
@@ -166,7 +167,7 @@ class UI {
 		echo "<div class=\"globalTR\"></div>\n";
 		echo "<ul class=\"globalNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.ViewFolder.php?folderid=".$settings->_rootFolderID."\">".getMLText("content")."</a></li>\n";
-		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=w\">".getMLText("calendar")."</a></li>\n";
+		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=".$settings->_calendarDefaultView."\">".getMLText("calendar")."</a></li>\n";
 		echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
 		echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
 		if ($user->isAdmin()) echo "<li><a href=\"../out/out.AdminTools.php\">".getMLText("admin_tools")."</a></li>\n";
@@ -182,6 +183,7 @@ class UI {
 		echo "<input type=\"hidden\" name=\"searchin[]\" value=\"3\" />";
 		echo "<input name=\"query\" type=\"text\" size=\"20\" /><input type=\"submit\" value=\"".getMLText("search")."\" id=\"searchButton\"/></form>\n";
 		echo "</li>\n</ul>\n";
+		echo "<div id=\"logo\"><img src='../styles/logo.png'></div>\n";
 		echo "<div class=\"siteName\">".
 			(strlen($settings->_siteName)>0 ? $settings->_siteName : "LetoDMS").
 			"</div>\n";
@@ -244,20 +246,20 @@ class UI {
 		$folderID = $folder->getID();
 		echo "<ul class=\"localNav\">\n";
 		if ($accessMode == M_READ && $user->getID() != $settings->_guestID) {
-			echo "<li id=\"first\"><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."\">".getMLText("edit_folder_notify")."</a></li>\n";
+			echo "<li id=\"first\"><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_folder_notify")."</a></li>\n";
 		}
 		else if ($accessMode >= M_READWRITE) {
-			echo "<li id=\"first\"><a href=\"../out/out.AddSubFolder.php?folderid=". $folderID ."\">".getMLText("add_subfolder")."</a></li>\n";
-			echo "<li><a href=\"../out/out.AddDocument.php?folderid=". $folderID ."\">".getMLText("add_document")."</a></li>\n";
-			echo "<li><a href=\"../out/out.EditFolder.php?folderid=". $folderID ."\">".getMLText("edit_folder_props")."</a></li>\n";
-			echo "<li><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."\">".getMLText("edit_existing_notify")."</a></li>\n";
+			echo "<li id=\"first\"><a href=\"../out/out.AddSubFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("add_subfolder")."</a></li>\n";
+			echo "<li><a href=\"../out/out.AddDocument.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("add_document")."</a></li>\n";
+			echo "<li><a href=\"../out/out.EditFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_folder_props")."</a></li>\n";
+			echo "<li><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_existing_notify")."</a></li>\n";
 			if ($folderID != $settings->_rootFolderID && $folder->getParent())
-				echo "<li><a href=\"../out/out.MoveFolder.php?folderid=". $folderID ."\">".getMLText("move_folder")."</a></li>\n";
+				echo "<li><a href=\"../out/out.MoveFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("move_folder")."</a></li>\n";
 		}
 		if ($accessMode == M_ALL) {
 			if ($folderID != $settings->_rootFolderID && $folder->getParent())
-				echo "<li><a href=\"../out/out.RemoveFolder.php?folderid=". $folderID ."\">".getMLText("rm_folder")."</a></li>\n";
-			echo "<li><a href=\"../out/out.FolderAccess.php?folderid=". $folderID ."\">".getMLText("edit_folder_access")."</a></li>\n";
+				echo "<li><a href=\"../out/out.RemoveFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("rm_folder")."</a></li>\n";
+			echo "<li><a href=\"../out/out.FolderAccess.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_folder_access")."</a></li>\n";
 		}
 		echo "</ul>\n";
 		return;
@@ -578,22 +580,34 @@ class UI {
 	{	
 		global $user, $form, $settings;
 		
-		// open the tree until the current folder
-		$is_open=false;
-		if ($currentFolderID!=-1){
+		if ($settings->_expandFolderTree==2){
+		
+			// folder completely open
+			$is_open=true;
 			
-			$currentFolder=getFolder($currentFolderID);
+		}else if ($settings->_expandFolderTree==1 && $folderID==$settings->_rootFolderID ){
+		
+			$is_open=true;
 			
-			if (is_object($currentFolder)){
+		}else{
+			// open the tree until the current folder
+			$is_open=false;
 			
-				$parent=$currentFolder->getParent();
+			if ($currentFolderID!=-1){
 				
-				while (is_object($parent)){
-					if ($parent->getID()==$folderID){
-						$is_open=true;
-						break;
+				$currentFolder=getFolder($currentFolderID);
+				
+				if (is_object($currentFolder)){
+				
+					$parent=$currentFolder->getParent();
+					
+					while (is_object($parent)){
+						if ($parent->getID()==$folderID){
+							$is_open=true;
+							break;
+						}
+						$parent=$parent->getParent();
 					}
-					$parent=$parent->getParent();
 				}
 			}
 		}
@@ -604,7 +618,7 @@ class UI {
 		$subFolders = $folder->getSubFolders();
 		$subFolders = filterAccess($subFolders, $user, M_READ);
 		
-		if ($folderID == $settings->_rootFolderID) print "<ul style='list-style-type: none;'>\n";
+		if ($folderID == $settings->_rootFolderID) print "<ul style='list-style-type: none;' class='tree'>\n";
 
 		print "<li>\n";
 
@@ -677,16 +691,21 @@ class UI {
 		</script>
 		<?php
 	
-		print "<table width=\"100%\"><tr><td>";
+		print "<table width=\"100%\"><tr>";
 
 		if ($showtree==1){
 
-			UI::contentHeading("<a href=\"../out/out.ViewFolder.php?folderid=". $folderid."\"><img src=\"".UI::getImgPath("m.png")."\" border=0></a>");
+			print "<td id='tree-open'>";
+
+			UI::contentHeading("<a href=\"../out/out.ViewFolder.php?folderid=". $folderid."&showtree=0\"><img src=\"".UI::getImgPath("m.png")."\" border=0></a>");
 			UI::contentContainerStart();
 			UI::printFoldersTree(M_READ, -1, $settings->_rootFolderID, $folderid, true);
 			UI::contentContainerEnd();
 
 		}else{
+		
+			print "<td id='tree-closed'>";		
+		
 			UI::contentHeading("<a href=\"../out/out.ViewFolder.php?folderid=". $folderid."&showtree=1\"><img src=\"".UI::getImgPath("p.png")."\" border=0></a>");
 			UI::contentContainerStart();
 			UI::contentContainerEnd();

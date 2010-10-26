@@ -1,4 +1,65 @@
 --------------------------------------------------------------------------------
+                     Changes in version 2.0.1
+--------------------------------------------------------------------------------
+
+ADDED A GRAPHIC LOGO
+The user can personalize it changing the image in styles/logo.png
+Reviewed the style to accomplish with the logo
+
+New settings' flag "_expandFolderTree" to start with the navigation tree
+hidden, expanded or expanded at the first level
+
+The tree status (hide/show) will be preserved through folder actions
+
+The witdh of open/closed tree can be defined using CSS (in "clean" CSS style 
+"tree-open" and "tree-closed" )
+
+DIFFERENT COMMENTS FOR DOCUMENT AND VERSION
+Creating a document user can insert a different comment for version and for 
+entire document. If the version comment is leaved empty the document comment 
+will be used for both
+
+Added a warning about the maximum upload file size in the upload pages 
+(add document and add files). The size is a server setting and does not depend 
+by letoDMS
+
+Better allignment in the view document page (Thanks to alekseyn). Better 
+allignment in the view document version page.
+Note: the allignement is simply suggested setting width in table columns, thus
+can be modified by very long strings.
+
+Now checking none between keywords,name and comment in search form means 
+searching all. That's a more logical way (same as behaviour of status checks)
+
+Added a settings var for default calendar view (week,month or year)
+
+Simplified the "Related documents" table: now the public yes/no is visible
+only to the user tha can edit it
+
+Removed a small bug with calendar function inclusion (thanks to c8900219)
+
+Bugfixed the control of empty document names (thanks to turkeburgr)
+
+Fixed a compatiblity bug in log management page (removed the unused readlink function)
+
+Restyled the warnings appearance in clean style
+
+Fixed a bug with empty vars on user management
+
+Fixed a small bug when trying to download deleted files from folder view 
+
+Fixed a smal bug with logging on version removing (Thanks to larppaxyz)
+
+Reviewed print css according to folder tree and logo 
+
+In print view the status was hide by css. Fixed
+
+EXPERIMENTAL: review the LDAP autentication by Doudoux. The old code is leaved 
+commented in op.Login.php and in inc.Settings.php.
+
+the submit review/approval has moved in the reviewer/approvers list
+
+--------------------------------------------------------------------------------
                      Changes in version 2.0.0
 --------------------------------------------------------------------------------
 

@@ -186,18 +186,18 @@ else if ($action == "edituser") {
 	
 	$editedUser->delMandatoryReviewers();
 	
-	foreach ($_POST["usrReviewers"] as $revID) 
+	if (isset($_POST["usrReviewers"])) foreach ($_POST["usrReviewers"] as $revID) 
 		$editedUser->setMandatoryReviewer($revID,false);
 			
-	foreach ($_POST["grpReviewers"] as $revID) 
+	if (isset($_POST["grpReviewers"])) foreach ($_POST["grpReviewers"] as $revID) 
 		$editedUser->setMandatoryReviewer($revID,true);
 
 	$editedUser->delMandatoryApprovers();
 	
-	foreach ($_POST["usrApprovers"] as $appID) 
+	if (isset($_POST["usrApprovers"])) foreach ($_POST["usrApprovers"] as $appID) 
 		$editedUser->setMandatoryApprover($appID,false);
 			
-	foreach ($_POST["grpApprovers"] as $appID) 
+	if (isset($_POST["grpApprovers"])) foreach ($_POST["grpApprovers"] as $appID) 
 		$editedUser->setMandatoryApprover($appID,true);
 	
 	add_log_line(".php&action=edituser&userid=".$userid);

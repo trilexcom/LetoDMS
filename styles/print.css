@@ -47,6 +47,7 @@ a{
 	color: black;
 	position: absolute;
 	bottom: 0px;
+	margin-left: 55px;
 }
 /* IE6 Hack */
 * html .mainHeading {
@@ -93,6 +94,10 @@ a{
 }
 
 .globalNav {
+	display:none;
+}
+
+.tree {
 	display:none;
 }
 

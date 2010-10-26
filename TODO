@@ -15,26 +15,12 @@ and eventually updating the status of the document. This function will be called
 
 Sometimes in the DB are written messages strings in plain language whose 
 language depends on the current user and will never be translated.
- This can be avoided using only coded messages
+This can be avoided using only coded messages
 
-In the translation files there are a lot of string not used and the newer ones are non ordered
-This require a mass revision of all the lang.inc files. (English and Italian are the most updated)
-This revisione should be done when all the translation will be updated to last version (never?)
+The mail language is translated using the current user language but should use 
+the receiver language (not easy).
 
 In my Documents->all documents there should be two lists: one (the current) with 
 the user's document, and another with the user's updated document (that's because 
 one user could have updated a document not owned by himself)
 
-The include list in every file could be reordered in a single include file 
-with "require_once" (actually every file include everithing)
-
-Not everywhere in the sources every object (like $document, $folder, ecc)
-is tested as valid before using it (this can cause new php error)
-
-Security on user permission for all the op/ files is not completely tested
-Try to access direclty to the op file and control.
-
-The mail language is translated using the current user language but should use 
-the receiver language (not easy).
-
-Search function could be completed with: update date, update user, document type, ecc.

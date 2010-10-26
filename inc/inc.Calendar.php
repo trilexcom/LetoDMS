@@ -1,4 +1,4 @@
-<?
+<?php
 //    Copyright (C) 2010 Matteo Lucarelli
 // 
 //    Some code from PHP Calendar Class Version 1.4 (5th March 2001)

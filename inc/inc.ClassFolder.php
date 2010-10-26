@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Matteo Lucarelli
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -41,11 +42,11 @@ function getFolderPathHTML($folder, $tagAll=false) {
 	$txtpath = "";
 	for ($i = 0; $i < count($path); $i++) {
 		if ($i +1 < count($path)) {
-			$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".(isset($_GET["showtree"])?$_GET["showtree"]:0)."\">".
+			$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
 				$path[$i]->getName()."</a> / ";
 		}
 		else {
-			$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".(isset($_GET["showtree"])?$_GET["showtree"]:0)."\">".
+			$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
 									 $path[$i]->getName()."</a>" : $path[$i]->getName());
 		}
 	}
@@ -495,7 +496,8 @@ class Folder
 		return $this->_documents;
 	}
 
-	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion) 
+	// $comment will be used for both document and version leaving empty the version_comment 
+	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") 
 	{
 		GLOBAL $db, $user, $settings;
 		
@@ -517,7 +519,11 @@ class Folder
 			return false;
 		
 		$document = getDocument($db->getInsertID());
-		$res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
+		
+		if ($version_comment!="")
+			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
+		else $res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
+
 		if (is_bool($res) && !$res)
 		{
 			$queryStr = "DELETE FROM tblDocuments WHERE id = " . $document->getID();
@@ -533,6 +539,7 @@ class Folder
 			getMLText("name").": ".$name."\r\n".
 			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
+			getMLText("comment_for_current_version").": ".$version_comment."\r\n".
 			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
 
 		$subject=mydmsDecodeString($subject);

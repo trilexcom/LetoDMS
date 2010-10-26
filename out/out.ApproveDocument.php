@@ -149,7 +149,7 @@ if ($indApprover) {
 		print "<td>".$approvalStatus["indstatus"][0]["comment"]."</td>";
 		$indUser = getUser($approvalStatus["indstatus"][0]["userID"]);
 		print "<td>".$approvalStatus["indstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
-		print "</tr></tbody></table>";
+		print "</tr></tbody></table><br>\n";
 	}
 ?>
 	<form method="POST" action="../op/op.ApproveDocument.php" name="form1" onsubmit="return checkIndForm();">
@@ -187,7 +187,7 @@ else if ($grpApprover) {
 		print "<td>".$approvalStatus["grpstatus"][0]["comment"]."</td>";
 		$indUser = getUser($approvalStatus["grpstatus"][0]["userID"]);
 		print "<td>".$approvalStatus["grpstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
-		print "</tr></tbody></table>";
+		print "</tr></tbody></table><br>\n";
 	}
 
 	$grpSelectBox = "";

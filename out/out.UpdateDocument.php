@@ -84,7 +84,10 @@ UI::contentContainerStart();
 if ($document->isLocked()) {
 
 	$lockingUser = $document->getLockingUser();
-	print "<span class=\"warning\">";
+	
+	print "<table><tr><td class=\"warning\">";
+	
+	//print "<span class=\"warning\">";
 	
 	printMLText("update_locked_msg", array("username" => $lockingUser->getFullName(), "email" => $lockingUser->getEmail()));
 	
@@ -95,12 +98,14 @@ if ($document->isLocked()) {
 	else
 	{
 		printMLText("no_update_cause_locked");
-		print "</span>";
+		//print "</span>";
+		print "</td></tr></table>";
 		UI::contentContainerEnd();
 		UI::htmlEndPage();
 		exit;
 	}
-	print "</span>";
+	//print "</span>";
+	print "</td></tr></table><br>";
 }
 
 // Retrieve a list of all users and groups that have review / approve

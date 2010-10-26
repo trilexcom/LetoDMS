@@ -10,7 +10,7 @@ translators then we wait for users contributions.
 If your language is not present in the login panel:
 - copy the language/english/ folder and rename it as you language
 - open the file languages/your_lang/lang.inc and translate it
-- open the help file languages/your_lang/help.htm nad translate it
+- open the help file languages/your_lang/help.htm and translate it
 
 If you see some wrong or not translated messages:
 - open the file languages/your_lang/lang.inc
@@ -36,20 +36,22 @@ You need a working web server with MySQL/PHP support.
 * Unpack all the files in a public web server folder. If you're working on a 
 host machine your provider will indicate you where you should upload the files.
 
-* Download ADODB (http://adodb.sourceforge.net/) and unpack in the letDMS 
-directory (for PHP4 there are old version of adodb)
+* if you have PHP4 download older version ADODB (http://adodb.sourceforge.net/) 
+and replace the adodb folder in the letoDMS directory. The included adodb works 
+with PHP5 then nothing to do here if you have a PHP5 installation
 
-* Create a data folder somewhere in your web server
+* Create a data folder somewhere in your web server. The data folder created by
+the letoDMS archive should work for a test installation and must be set as 
+writable to the web-server user.
 
-For security reason probably it should not be in the public folders.
+For security reason the data folder should not be inside the public folders.
 The directory must have read/write permission for the web-server user.
 
 * Create a new DB on your web server
 * Create a new user for the DB with all permissions on the new DB
 * Execute "create_tables.sql" in the new DB
 
-* Edit the inc/inc.Settings.php to match your preference and settings
-
+* Edit the inc/inc.Settings.php to match your preference and settings. 
 At least $_rootDir, $_httpRoot, $_contentDir, $_ADOdbPath, $_dbHostname, 
 $_dbDatabase, $_dbUser, $_dbPass must be edit. Note that for the path you 
 probably need to ask to your provider because the absolute path on the server
@@ -70,7 +72,7 @@ NOTE: UPDATING FROM A PREVIOUS VERSION
   http://www.yoursite/path/to/dms/UPDATE-vX.X.X/update.php
 
 Every script is require to update starting from a version previous than the
-one in the folder name. For example to update from a 1.7.1 to 1.8.3 you need
+one in the folder name. For example to update from a 1.7.1 to 1.9 you need
 to run both UPDATE-v1.8.1/update.php and UPDATE-v1.9/update.php.
 
 
@@ -93,8 +95,7 @@ upon it for all database connectivity.
 
 2. Installation & Configuration ================================================
 
-Unzip the downloaded file (mydms-1.7.2.zip) in a directory that is
-accessible via your web server.
+Unzip the downloaded archive in a directory that is accessible via your web server.
 
 You will also need to create a directory where the uploaded files
 are stored. This directory should not be accessible via your

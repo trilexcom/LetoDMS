@@ -27,7 +27,7 @@ class Settings
 	var $_footNote = "letoDMS free document management system - www.letodms.com";
 	
 	// if true the disclaimer message the lang.inc files will be print on the bottom of the page
-	var $_printDisclaimer = true;	
+	var $_printDisclaimer = true;
 
 	// Default page on login. Defaults to out/out.ViewFolder.php
 	var $_siteDefaultPage = "";
@@ -52,17 +52,17 @@ class Settings
 	var $_strictFormCheck = false;
 
 	// path to where mydms is located
-	var $_rootDir = "/var/www/letoDMS-1.10/";
+	var $_rootDir = "/var/www/letoDMS-2.0.1/";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
 	// http://www.example.com/mydms/, set $_httpRoot = "/mydms/".
 	// If the URL is http://www.example.com/, set $_httpRoot = "/".
-	var $_httpRoot = "/letoDMS-1.10/";
+	var $_httpRoot = "/letoDMS-2.0.1/";
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "/var/www/letoDMS-1.10/data/";
+	var $_contentDir = "/var/www/letoDMS-2.0.1/data/";
 
 	// To work around limitations in the underlying file system, a new 
 	// directory structure has been devised that exists within the content 
@@ -81,11 +81,11 @@ class Settings
 	var $_updateNotifyTime = 86400; //means 24 hours
 
 	// files with one of the following endings can be viewed online (USE ONLY LOWER CASE CHARACTERS)
-	// to disable: var $_viewOnlineFileTypes = array();
+	//var $_viewOnlineFileTypes = array();
 	var $_viewOnlineFileTypes = array(".txt", ".text", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg", ".jpeg");
 
 	// enable/disable converting of files
-	var $_enableConverting = true;
+	var $_enableConverting = false;
 
 	// default style (name of a subfolder in folder "styles")
 	var $_theme = "clean";
@@ -109,7 +109,7 @@ class Settings
 	var $_logFileEnable = true;
 	
 	// the log file rotation (h=hourly, d=daily, m=monthly)
-	var $_logFileRotation = "d";
+	var $_logFileRotation = "m";
 	
 	// enable users images
 	var $_enableUserImage = false;
@@ -117,16 +117,24 @@ class Settings
 	// enable calendar
 	var $_enableCalendar = true;
 	
+	// calendar default view ("w" for week,"m" for month,"y" for year)
+	var $_calendarDefaultView = "y";
+	
 	// first day of the week (0=sunday, 6=saturday)
 	var $_firstDayOfWeek = 0;
 	
-	// false to don't show the folder tree
+	// false to don't show the folder tree side panel
 	var $_enableFolderTree = true;
+	
+	// 0 to start with tree hidden
+	// 1 to start with tree shown and first level expanded
+	// 2 to start with tree shown fully expanded
+	var $_expandFolderTree = 1;
 
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb
-	var $_ADOdbPath = "/var/www/letoDMS-1.10/adodb/";
+	var $_ADOdbPath = "/var/www/letoDMS-2.0.1/adodb/";
 
 	//DB-Driver used by adodb (see adodb-readme)
 	var $_dbDriver = "mysql";
@@ -145,6 +153,14 @@ class Settings
 
 	// -------------------------------- LDAP Authentication Setup --------------------------------------------
 
+	/* new code by Doudoux - TO BE TESTED */
+	// var $_ldapHost = ""; // URIs are supported, e.g.: ldaps://ldap.host.com
+	// var $_ldapPort = 389; // Optional.
+	// var $_ldapBaseDN = "";
+	// var $_ldapAccountDomainName = "";
+	// var $_ldapType = 1; // 0 = Generic LDAP ; 1 = Microsoft LDAP 	
+	
+	/* old code */
 	// var $_ldapHost = ""; // URIs are supported, e.g.: ldaps://ldap.host.com
 	// var $_ldapPort = 389; // Optional.
 	// var $_ldapBaseDN = "";
