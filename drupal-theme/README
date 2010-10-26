@@ -1,0 +1,212 @@
+-------------------------------------------------------------------
+              LetoDMS Installation Instructions
+-------------------------------------------------------------------
+
+IMPORTANT NOTE ABOUT TRANSLATIONS ============================================== 
+
+as you can see letoDMS provide a lot of languages but we are not professional 
+translators then we wait for users contributions.
+
+If your language is not present in the login panel:
+- copy the language/english/ folder and rename it as you language
+- open the file languages/your_lang/lang.inc and translate it
+- open the help file languages/your_lang/help.htm and translate it
+
+If you see some wrong or not translated messages:
+- open the file languages/your_lang/lang.inc
+- search the wrong messages and translate them
+
+if you have some "error getting text":
+- search the string in the english file (languages/english/lang.inc)
+- copy to your language file (languages/your_lang/lang.inc)
+- Translate it
+
+If there is no help in your language:
+- Copy the English help (english/help.htm) file to your language folder
+- Translate it!
+
+If you apply any changes to the language files please send them to letoDMS 
+developers (www.letodms.com).
+
+
+0. Quick installation instructions =============================================
+
+You need a working web server with MySQL/PHP support.
+
+* Unpack all the files in a public web server folder. If you're working on a 
+host machine your provider will indicate you where you should upload the files.
+
+* if you have PHP4 download older version ADODB (http://adodb.sourceforge.net/) 
+and replace the adodb folder in the letoDMS directory. The included adodb works 
+with PHP5 then nothing to do here if you have a PHP5 installation
+
+* Create a data folder somewhere in your web server. The data folder created by
+the letoDMS archive should work for a test installation and must be set as 
+writable to the web-server user.
+
+For security reason the data folder should not be inside the public folders.
+The directory must have read/write permission for the web-server user.
+
+* Create a new DB on your web server
+* Create a new user for the DB with all permissions on the new DB
+* Execute "create_tables.sql" in the new DB
+
+* Edit the inc/inc.Settings.php to match your preference and settings. 
+At least $_rootDir, $_httpRoot, $_contentDir, $_ADOdbPath, $_dbHostname, 
+$_dbDatabase, $_dbUser, $_dbPass must be edit. Note that for the path you 
+probably need to ask to your provider because the absolute path on the server
+is not immediatly viewable in a hosted system.
+
+
+NOTE: UPDATING FROM A PREVIOUS VERSION
+
+- make a backup archive of your installation folder
+- make a backup archive of your data folder
+- dump your current DB
+- extract the letoDMS archive to your web server
+- edit the inc/inc.Settings.php file to match your previuos settings 
+  (you can even replace the file with your own one eventualy adding by hand
+  the missing new parameters)
+- login as administrator
+ -execute all the update.php script pointing your browser directly:
+  http://www.yoursite/path/to/dms/UPDATE-vX.X.X/update.php
+
+Every script is require to update starting from a version previous than the
+one in the folder name. For example to update from a 1.7.1 to 1.9 you need
+to run both UPDATE-v1.8.1/update.php and UPDATE-v1.9/update.php.
+
+
+1. Requirements ================================================================
+
+
+MyDMS is a web-based application written in PHP. It uses the MySQL RDBMS to
+manage the documents that are loaded into the application.
+
+Make sure you have PHP 4.0 or higher installed, and MySQL 4 or higher. MyDMS
+will work with PHP running in CGI-mode as well as running as module under
+apache. If you want to give your users the opportunity of uploading passport
+photos you have to enable the gd-library (but the rest of MyDMS will
+work without gd, too).
+
+You will also need to download and install the ADODB database
+abstraction library from http://adodb.sf.net/ since MyDMS relies
+upon it for all database connectivity.
+
+
+2. Installation & Configuration ================================================
+
+Unzip the downloaded archive in a directory that is accessible via your web server.
+
+You will also need to create a directory where the uploaded files
+are stored. This directory should not be accessible via your
+web-server for security reasons (create it outside of your www-root
+directory or put an appropriate .htaccess file in it).
+
+Download the ADODB package from SourceForge. The URL for the ADODB project
+page is:
+
+        http://adodb.sourceforge.net/
+
+Extract the distribution into a suitable directory. For example, one can
+extract the files into the MyDMS root directory.
+
+Next you should set up your Database. Use the included script
+create_tables.sql. Since the exact procedure differs on the
+different database-systems I cannot give you a detailed instruction
+here. Post any questions concering this problem to the MyDMS-Forum. In
+general, create the database, make sure that the database has been selected
+(e.g. "USE mydms;"), then run the script. As of 1.6.0, you must make sure
+that the database user has "create temporary table" privileges.
+
+N.B. If the create_tables.sql script fails, it may be because the database
+has been configured to use InnoDB tables by default instead of MyISAM tables.
+If this is the case, it will be necessary to alter the sript such that each
+create table command has the text " ENGINE = MyISAM" appended to the end,
+immediately prior to the semi-colon. For example:
+
+  Before:
+
+  CREATE TABLE `tblDocumentLocks` (
+    `document` int(11) NOT NULL default '0',
+    `userID` int(11) NOT NULL default '0',
+    PRIMARY KEY  (`document`)
+  ) ;
+
+  After:
+
+  CREATE TABLE `tblDocumentLocks` (
+    `document` int(11) NOT NULL default '0',
+    `userID` int(11) NOT NULL default '0',
+    PRIMARY KEY  (`document`)
+  ) ENGINE = MyISAM ;
+
+Now edit the configuration file. First, go to the "inc" directory and copy
+(or move) "inc.Settings-sample.php" to "inc.Settings.php". Open the file and
+set the variables to the correct values (you will find a short description
+for each variable in the file itself).
+
+TIP: You can find out your root-directory by placing the following
+line into a php-file: <?php phpInfo(); ?>
+Open it with your browser and look for "DOCUMENT_ROOT".
+
+When running into problems with the db-settings, read the readme-file
+in the adodb-directory or post questions to the MyDMS-Forum.
+
+By default PHP allows only files to be uploaded that are up to 2Mb
+in size. You can change this limit by editing php.ini: Search for
+"upload_max_filesize" and set it to the appropriate value (you
+should also change the value for "post_max_size" and make sure that
+your web-server does not limit the size either).
+
+
+3. Email Notification ==========================================================
+
+A new, re-vamped Notification system allows users to receive an email when a
+document or folder is changed. This is a new, event-based mechanism that
+notifies the user as soon as the change has been made and replaces the
+cron mechanism originally developed. Any user that has read access to a
+document or folder can subscribe to be notified of changes. Users that
+have been assigned as reviewers or approvers for a document are
+automatically added to the notification system for that document.
+
+A new page has been created for users to assist with the management of
+their notification subscriptions. This can be found in the "My Account"
+section under "Notification List".
+
+
+4. Auto-conversion to HTML =====================================================
+
+Version 1.3.0 introduces a new feature: Documents can automatically be
+converted to HTML when uploading.
+You can enable this feature by setting $_enableConverting (in 
+inc.Settings.php) to true.
+You will also need to edit $_convertFileTypes (again in 
+inc.Settings.php). This array defines which file-types are converted
+and how.
+Under windows Word-, Excel- and Powerpoint-Files are automatically
+converted using js-Scipts and MS-Office. I tested it with Office 2000
+and it worked just fine.
+Under Linux mswordview is used to convert Word-Files by default.
+Warning: Getting this feature working can be very tricky but if it
+works it is a great enhancement I think.
+Especially IIS could cause problems with its IIS-Guest-Account not
+having enough rights to execute Word or Excel...
+You will also have to edit your httpd.conf to be able to view the converted
+files online. Load mod_rewrite and add to following lines to your conf:
+
+  RewriteEngine on
+  RewriteCond %{REQUEST_URI} (.*)viewonline/([0-9]+)/([0-9]+)/(.+)$
+  RewriteRule (.*)viewonline/([0-9]+)/([0-9]+)/(.+)$ $1op.ViewOnline.php?request=$2:$3 [PT]
+
+IIS Users can download the IIS Rewrite Engine for example:
+http://www.qwerksoft.com/products/iisrewrite/
+
+Post any questions to the MyDMS forum, please.
+
+
+5. Nearly finished =============================================================
+
+Now point your browser to http://your.server.com/mydms/index.php
+and login with "admin" both as username and password.
+After having logged in you should first choose "My Account" and
+change the Administrator's password and email-address.
