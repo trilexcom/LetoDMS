@@ -420,7 +420,7 @@ print "</tr>\n</thead>\n<tbody>\n";
 $resultsFilteredByAccess = false;
 foreach ($resArr as $docArr) {
 
-	$document = new Document(
+	$document = new LetoDMS_Document(
 		$docArr["id"], $docArr["name"],
 		$docArr["comment"], $docArr["date"],
 		$docArr["expires"], $docArr["owner"],

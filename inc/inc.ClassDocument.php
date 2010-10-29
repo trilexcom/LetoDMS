@@ -27,36 +27,12 @@ define("S_EXPIRED",  -3);
 
 function getDocument($id)
 {
-	GLOBAL $db;
-	
-	if (!is_numeric($id)) return false;
-	
-	$queryStr = "SELECT * FROM tblDocuments WHERE id = " . $id;
-	$resArr = $db->getResultArray($queryStr);
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	if (count($resArr) != 1)
-		return false;
-	$resArr = $resArr[0];
-
-	// New Locking mechanism uses a separate table to track the lock.
-	$queryStr = "SELECT * FROM tblDocumentLocks WHERE document = " . $id;
-	$lockArr = $db->getResultArray($queryStr);
-	if ((is_bool($lockArr) && $lockArr==false) || (count($lockArr)==0)) {
-		// Could not find a lock on the selected document.
-		$lock = -1;
-	}
-	else {
-		// A lock has been identified for this document.
-		$lock = $lockArr[0]["userID"];
-	}
-
-	return new Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
+	return LetoDMS_Document::getDocument($id);
 }
 
 
 // these are the document information (all versions)
-class Document
+class LetoDMS_Document
 {
 	var $_id;
 	var $_name;
@@ -70,7 +46,7 @@ class Document
 	var $_keywords;
 	var $_sequence;
 	
-	function Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence)
+	function LetoDMS_Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence)
 	{
 		$this->_id = $id;
 		$this->_name = $name;
@@ -86,6 +62,35 @@ class Document
 		$this->_sequence = $sequence;
 	}
 	
+	function getDocument($id)
+	{
+		GLOBAL $db;
+		
+		if (!is_numeric($id)) return false;
+		
+		$queryStr = "SELECT * FROM tblDocuments WHERE id = " . $id;
+		$resArr = $db->getResultArray($queryStr);
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		if (count($resArr) != 1)
+			return false;
+		$resArr = $resArr[0];
+	
+		// New Locking mechanism uses a separate table to track the lock.
+		$queryStr = "SELECT * FROM tblDocumentLocks WHERE document = " . $id;
+		$lockArr = $db->getResultArray($queryStr);
+		if ((is_bool($lockArr) && $lockArr==false) || (count($lockArr)==0)) {
+			// Could not find a lock on the selected document.
+			$lock = -1;
+		}
+		else {
+			// A lock has been identified for this document.
+			$lock = $lockArr[0]["userID"];
+		}
+	
+		return new LetoDMS_Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
+	}
+
 	function getDir() {
 		global $settings;
 		return $settings->_contentOffsetDir."/".$this->_id."/";
