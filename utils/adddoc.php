@@ -11,10 +11,10 @@ include("inc/inc.ClassGroup.php");
 include("inc/inc.ClassUser.php");
 include("inc/inc.ClassEmail.php");
 include("inc/inc.DBAccess.php");
+include("inc/inc.DBInit.php");
 include("inc/inc.FileUtils.php");
 include("inc/inc.Language.php");
 include("inc/inc.ClassUIConsole.php");
-//include("inc/inc.Authentication.php");
 
 #$db->_conn->debug = 1;
 
@@ -101,7 +101,7 @@ if($reqversion<1)
 	$reqversion=1;
 
 /* Create a global user object */
-$user = getUser(1);
+$user = LetoDMS_User::getUser(1);
 
 /* Fake some server variables used in add_log_line() */
 $_SERVER['REMOTE_ADDR'] = 'console';
@@ -121,7 +121,7 @@ if(is_readable($filename)) {
 	UIConsole::exitError("","File is not readable");
 }
 
-$folder = getFolder($folderid);
+$folder = LetoDMS_Folder::getFolder($folderid);
 
 if (!is_object($folder)) {
 	UIConsole::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
