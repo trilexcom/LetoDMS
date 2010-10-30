@@ -18,50 +18,16 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-function getFolder($id)
-{
-	GLOBAL $db;
-
-	if (!is_numeric($id)) return false;
-	
-	$queryStr = "SELECT * FROM tblFolders WHERE id = " . $id;
-	$resArr = $db->getResultArray($queryStr);
-
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	else if (count($resArr) != 1)
-		return false;
-		
-	$resArr = $resArr[0];
-	return new Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
+function getFolder($id) {
+	return LetoDMS_Folder::getFolder($id);
 }
 
 function getFolderPathHTML($folder, $tagAll=false) {
-
-	$path = $folder->getPath();
-	$txtpath = "";
-	for ($i = 0; $i < count($path); $i++) {
-		if ($i +1 < count($path)) {
-			$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
-				$path[$i]->getName()."</a> / ";
-		}
-		else {
-			$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
-									 $path[$i]->getName()."</a>" : $path[$i]->getName());
-		}
-	}
-	return $txtpath;
+	return $folder->getFolderPathHTML($tagAll);
 }
 
 function getFolderPathPlain($folder) {
-	$path="";
-	$folderPath = $folder->getPath();
-	for ($i = 0; $i  < count($folderPath); $i++) {
-		$path .= $folderPath[$i]->getName();
-		if ($i +1 < count($folderPath))
-			$path .= " / ";
-	}
-	return $path;
+	return $folder->getFolderPathPlain();
 }
 
 
@@ -69,7 +35,7 @@ function getFolderPathPlain($folder) {
 |                            Folder-Klasse                             |
 \**********************************************************************/
 
-class Folder
+class LetoDMS_Folder
 {
 	var $_id;
 	var $_name;
@@ -80,7 +46,7 @@ class Folder
 	var $_defaultAccess;
 	var $_sequence;
 
-	function Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence)
+	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence)
 	{
 		$this->_id = $id;
 		$this->_name = $name;
@@ -90,6 +56,24 @@ class Folder
 		$this->_inheritAccess = $inheritAccess;
 		$this->_defaultAccess = $defaultAccess;
 		$this->_sequence = $sequence;
+	}
+
+	function getFolder($id)
+	{
+		GLOBAL $db;
+	
+		if (!is_numeric($id)) return false;
+		
+		$queryStr = "SELECT * FROM tblFolders WHERE id = " . $id;
+		$resArr = $db->getResultArray($queryStr);
+	
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		else if (count($resArr) != 1)
+			return false;
+			
+		$resArr = $resArr[0];
+		return new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 	}
 
 	function getID() { return $this->_id; }
@@ -397,7 +381,7 @@ class Folder
 			
 			$this->_subFolders = array();
 			for ($i = 0; $i < count($resArr); $i++)
-				$this->_subFolders[$i] = new Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
+				$this->_subFolders[$i] = new LetoDMS_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
 		}
 		
 		return $this->_subFolders;
@@ -454,6 +438,33 @@ class Folder
 			array_push($path, $this);
 			return $path;
 		}
+	}
+
+	function getFolderPathHTML($tagAll=false) {
+		$path = $this->getPath();
+		$txtpath = "";
+		for ($i = 0; $i < count($path); $i++) {
+			if ($i +1 < count($path)) {
+				$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
+					$path[$i]->getName()."</a> / ";
+			}
+			else {
+				$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
+										 $path[$i]->getName()."</a>" : $path[$i]->getName());
+			}
+		}
+		return $txtpath;
+	}
+	
+	function getFolderPathPlain() {
+		$path="";
+		$folderPath = $this->getPath();
+		for ($i = 0; $i  < count($folderPath); $i++) {
+			$path .= $folderPath[$i]->getName();
+			if ($i +1 < count($folderPath))
+				$path .= " / ";
+		}
+		return $path;
 	}
 
 	/**
