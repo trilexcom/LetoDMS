@@ -37,7 +37,7 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-$v = new Version;
+$v = new LetoDMS_Version;
 
 UI::htmlStartPage($v->banner());
 UI::globalNavigation();
