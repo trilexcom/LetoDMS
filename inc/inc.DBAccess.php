@@ -26,7 +26,7 @@ include $settings->_ADOdbPath . "adodb.inc.php";
 //Zugriff erfolgt auf MySQL-Server
 
 
-class DatabaseAccess
+class LetoDMS_DatabaseAccess
 {
 	var $_driver;
 	var $_hostname;
@@ -52,7 +52,7 @@ class DatabaseAccess
 	/**
 	 * Konstruktor
 	 */
-	function DatabaseAccess($driver, $hostname, $user, $passw, $database = false)
+	function LetoDMS_DatabaseAccess($driver, $hostname, $user, $passw, $database = false)
 	{
 		$this->_driver = $driver;
 		$this->_hostname = $hostname;
