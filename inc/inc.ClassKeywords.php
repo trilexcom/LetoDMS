@@ -18,93 +18,113 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 function getKeywordCategory($id) {
-	GLOBAL $db;
-	
-	if (!is_numeric($id))
-		die ("invalid id");
-	
-	$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
-	$resArr = $db->getResultArray($queryStr);
-	if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
-		return false;
-	
-	$resArr = $resArr[0];
-	return new Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+	return LetoDMS_KeywordCategory::getKeywordCategory($id);
 }
 
 function getKeywordCategoryByName($name, $owner) {
-	GLOBAL $db;
-	
-	$queryStr = "SELECT * FROM tblKeywordCategories WHERE name = '" . $name . "' AND owner = '" . $owner. "'";
-	$resArr = $db->getResultArray($queryStr);
-	if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
-		return false;
-
-	$resArr = $resArr[0];
-	return new Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+	return LetoDMS_KeywordCategory::getKeywordCategoryByName($name, $owner);
 }
 
 function getAllKeywordCategories($userID = -1) {
-	GLOBAL $db, $settings;
-	
-	$queryStr = "SELECT * FROM tblKeywordCategories";
-	if ($userID != -1)
-		$queryStr .= " WHERE owner = $userID OR owner = " . $settings->_adminID;
-	
-	$resArr = $db->getResultArray($queryStr);
-	if (is_bool($resArr) && !$resArr)
-		return false;
-	
-	$categories = array();
-	foreach ($resArr as $row)
-		array_push($categories, new KeywordCategory($row["id"], $row["owner"], $row["name"]));
-	
-	return $categories;
+	return LetoDMS_KeywordCategory::getAllKeywordCategories($userID = -1);
 }
 
 function getAllUserKeywordCategories($userID) {
-	GLOBAL $db, $settings;
-	
-	$queryStr = "SELECT * FROM tblKeywordCategories";
-	if ($userID != -1)
-		$queryStr .= " WHERE owner = " . $userID;
-	
-	$resArr = $db->getResultArray($queryStr);
-	if (is_bool($resArr) && !$resArr)
-		return false;
-	
-	$categories = array();
-	foreach ($resArr as $row)
-		array_push($categories, new KeywordCategory($row["id"], $row["owner"], $row["name"]));
-	
-	return $categories;
+	return LetoDMS_KeywordCategory::getAllUserKeywordCategories($userID);
 }
 
 function addKeywordCategory($owner, $name) {
-	global $db;
-
-	if (is_object(getKeywordCategoryByName($name, owner))) {
-		return false;
-	}
-	$queryStr = "INSERT INTO tblKeywordCategories (owner, name) VALUES ($owner, '$name')";
-	if (!$db->getResult($queryStr))
-		return false;
-	
-	return getKeywordCategory($db->getInsertID());
+	return LetoDMS_KeywordCategory::addKeywordCategory($owner, $name);
 }
 
 //----------------------------------------------------------------------------------------------
-class KeywordCategory
+class LetoDMS_KeywordCategory
 {
 	var $_id;
 	var $_ownerID;
 	var $_name;
 
-	function KeywordCategory($id, $ownerID, $name)
+	function LetoDMS_KeywordCategory($id, $ownerID, $name)
 	{
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_ownerID = $ownerID;
+	}
+
+	function getKeywordCategory($id) {
+		GLOBAL $db;
+		
+		if (!is_numeric($id))
+			die ("invalid id");
+		
+		$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
+		$resArr = $db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
+			return false;
+		
+		$resArr = $resArr[0];
+		return new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+	}
+
+	function getKeywordCategoryByName($name, $owner) {
+		GLOBAL $db;
+		
+		$queryStr = "SELECT * FROM tblKeywordCategories WHERE name = '" . $name . "' AND owner = '" . $owner. "'";
+		$resArr = $db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
+			return false;
+
+		$resArr = $resArr[0];
+		return new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+	}
+
+	function getAllKeywordCategories($userID = -1) {
+		GLOBAL $db, $settings;
+		
+		$queryStr = "SELECT * FROM tblKeywordCategories";
+		if ($userID != -1)
+			$queryStr .= " WHERE owner = $userID OR owner = " . $settings->_adminID;
+		
+		$resArr = $db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+		
+		$categories = array();
+		foreach ($resArr as $row)
+			array_push($categories, new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]));
+		
+		return $categories;
+	}
+
+	function getAllUserKeywordCategories($userID) {
+		GLOBAL $db, $settings;
+		
+		$queryStr = "SELECT * FROM tblKeywordCategories";
+		if ($userID != -1)
+			$queryStr .= " WHERE owner = " . $userID;
+		
+		$resArr = $db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+		
+		$categories = array();
+		foreach ($resArr as $row)
+			array_push($categories, new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]));
+		
+		return $categories;
+	}
+
+	function addKeywordCategory($owner, $name) {
+		global $db;
+
+		if (is_object(self::getKeywordCategoryByName($name, owner))) {
+			return false;
+		}
+		$queryStr = "INSERT INTO tblKeywordCategories (owner, name) VALUES ($owner, '$name')";
+		if (!$db->getResult($queryStr))
+			return false;
+		
+		return self::getKeywordCategory($db->getInsertID());
 	}
 
 	function getID() { return $this->_id; }
