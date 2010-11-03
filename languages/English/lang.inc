@@ -9,7 +9,7 @@
 //    the Free Software Foundation; either version 2 of the License, or
 //    (at your option) any later version.
 //
-//    This program is distributed in the hope that it will be useful,application/force-download
+//    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
@@ -471,10 +471,10 @@ $text["removed_file_email"] = "Removed attachment";
 $text["document_deleted"] = "Document deleted"; 
 $text["linked_files"] = "Attachments"; 
 $text["invalid_file_id"] = "Invalid file ID";
-$text["rm_file"] = "Remove file"; 
+$text["rm_file"] = "Remove file";
 $text["confirm_rm_file"] = "Do you really want to remove file \"[name]\" of document \"[documentname]\"?<br>Be careful: This action cannot be undone.";
 
-$text["backup_tools"] = "Backup tools"; 
+$text["backup_tools"] = "Backup tools";
 $text["versioning_file_creation"] = "Versioning file creation"; 
 $text["archive_creation"] = "Archive creation"; 
 $text["files_deletion"] = "Files deletion"; 
