@@ -428,7 +428,7 @@ class LetoDMS_User
 
 			$this->_groups = array();
 			foreach ($resArr as $row) {
-				$group = new Group($row["id"], $row["name"], $row["comment"]);
+				$group = new LetoDMS_Group($row["id"], $row["name"], $row["comment"]);
 				array_push($this->_groups, $group);
 			}
 		}

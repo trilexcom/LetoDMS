@@ -22,74 +22,20 @@
 \**********************************************************************/
 
 
-function getGroup($id)
-{
-	global $db;
-	
-	if (!is_numeric($id))
-		die ("invalid groupid");
-	
-	$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
-	$resArr = $db->getResultArray($queryStr);
-	
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
-		return false;
-	
-	$resArr = $resArr[0];
-	
-	return new Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+function getGroup($id) {
+	return LetoDMS_Group::getGroup($id);
 }
 
 function getGroupByName($name) {
-	global $db;
-	
-	$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
-	$resArr = $db->getResultArray($queryStr);
-	
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
-		return false;
-	
-	$resArr = $resArr[0];
-	
-	return new Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+	return LetoDMS_Group::getGroupByName($name);
 }
 
-function getAllGroups()
-{
-	global $db;
-	
-	$queryStr = "SELECT * FROM tblGroups ORDER BY name";
-	$resArr = $db->getResultArray($queryStr);
-	
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	
-	$groups = array();
-	
-	for ($i = 0; $i < count($resArr); $i++)
-		$groups[$i] = new Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
-	
-	return $groups;
+function getAllGroups() {
+	return LetoDMS_Group::getAllGroups();
 }
 
-
-function addGroup($name, $comment)
-{
-	global $db;
-
-	if (is_object(getGroupByName($name))) {
-		return false;
-	}
-
-	$queryStr = "INSERT INTO tblGroups (name, comment) VALUES ('".$name."', '" . $comment . "')";
-	if (!$db->getResult($queryStr))
-		return false;
-	
-	return getGroup($db->getInsertID());
+function addGroup($name, $comment) {
+	return LetoDMS_Group::addGroup($name, $comment);
 }
 
 
@@ -97,16 +43,86 @@ function addGroup($name, $comment)
 |                           Group-Klasse                               |
 \**********************************************************************/
 
-class Group
+class LetoDMS_Group
 {
 	var $_id;
 	var $_name;
 
-	function Group($id, $name, $comment)
+	function LetoDMS_Group($id, $name, $comment)
 	{
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_comment = $comment;
+	}
+
+	function getGroup($id)
+	{
+		global $db;
+		
+		if (!is_numeric($id))
+			die ("invalid groupid");
+		
+		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
+		$resArr = $db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
+			return false;
+		
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+	}
+
+	function getGroupByName($name) {
+		global $db;
+		
+		$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
+		$resArr = $db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
+			return false;
+		
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+	}
+
+	function getAllGroups()
+	{
+		global $db;
+		
+		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
+		$resArr = $db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		
+		$groups = array();
+		
+		for ($i = 0; $i < count($resArr); $i++)
+			$groups[$i] = new LetoDMS_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
+		
+		return $groups;
+	}
+
+
+	function addGroup($name, $comment)
+	{
+		global $db;
+
+		if (is_object(getGroupByName($name))) {
+			return false;
+		}
+
+		$queryStr = "INSERT INTO tblGroups (name, comment) VALUES ('".$name."', '" . $comment . "')";
+		if (!$db->getResult($queryStr))
+			return false;
+		
+		return self::getGroup($db->getInsertID());
 	}
 
 	function getID() { return $this->_id; }

@@ -1165,7 +1165,7 @@ class LetoDMS_Folder
 				$resArr = $db->getResultArray($queryStr);
 				if (!is_bool($resArr)) {
 					foreach ($resArr as $row) {
-						$this->_approversList["groups"][] = new Group($row["id"], $row["name"], $row["comment"]);
+						$this->_approversList["groups"][] = new LetoDMS_Group($row["id"], $row["name"], $row["comment"]);
 					}
 				}
 			}
