@@ -101,9 +101,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 		
 		$this->_name = $newName;
@@ -133,9 +133,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_comment = $newComment;
@@ -205,9 +205,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		return true;
@@ -244,9 +244,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_ownerID = $newOwner->getID();
@@ -285,9 +285,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_defaultAccess = $mode;
@@ -333,9 +333,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		// If any of the notification subscribers no longer have read access,
@@ -412,9 +412,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		return $newFolder;
@@ -556,9 +556,9 @@ class LetoDMS_Folder
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		return array($document, $res);
@@ -614,9 +614,9 @@ class LetoDMS_Folder
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 			foreach ($this->_notifyList["groups"] as $grp) {
-				Email::toGroup($user, $grp, $subject, $message);
+				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 			}
 		}
 
@@ -972,10 +972,10 @@ class LetoDMS_Folder
 		$message=mydmsDecodeString($message);
 		
 		if ($isUser) {
-			Email::toIndividual($user, $obj, $subject, $message);
+			LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
 		}
 		else {
-			Email::toGroup($user, $obj, $subject, $message);
+			LetoDMS_Email::toGroup($user, $obj, $subject, $message);
 		}
 
 		unset($this->_notifyList);
@@ -1060,10 +1060,10 @@ class LetoDMS_Folder
 		$message=mydmsDecodeString($message);
 		
 		if ($isUser) {
-			Email::toIndividual($user, $obj, $subject, $message);
+			LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
 		}
 		else {
-			Email::toGroup($user, $obj, $subject, $message);
+			LetoDMS_Email::toGroup($user, $obj, $subject, $message);
 		}
 
 		unset($this->_notifyList);

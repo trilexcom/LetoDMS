@@ -122,14 +122,14 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 		
 		// if user is not owner send notification to owner
 		if ($user->getID()!= $this->_ownerID) 
-			Email::toIndividual($user, $this->getOwner(), $subject, $message);		
+			LetoDMS_Email::toIndividual($user, $this->getOwner(), $subject, $message);		
 
 		$this->_name = $newName;
 		return true;
@@ -157,9 +157,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_comment = $newComment;
@@ -228,14 +228,14 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 		
 		// if user is not owner send notification to owner
 		if ($user->getID()!= $this->_ownerID) 
-			Email::toIndividual($user, $this->getOwner(), $subject, $message);		
+			LetoDMS_Email::toIndividual($user, $this->getOwner(), $subject, $message);		
 
 		return true;
 	}
@@ -270,12 +270,12 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 		// Send notification to previous owner.
-		Email::toIndividual($user, $oldOwner, $subject, $message);
+		LetoDMS_Email::toIndividual($user, $oldOwner, $subject, $message);
 
 		$this->_ownerID = $newOwner->getID();
 		$this->_owner = $newOwner;
@@ -312,9 +312,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_defaultAccess = $mode;
@@ -358,9 +358,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		// If any of the notification subscribers no longer have read access,
@@ -422,9 +422,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		$this->_expires = $expires;
@@ -849,10 +849,10 @@ class LetoDMS_Document
 			$message=mydmsDecodeString($message);
 			
 			if ($isUser) {
-				Email::toIndividual($user, $obj, $subject, $message);
+				LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
 			}
 			else {
-				Email::toGroup($user, $obj, $subject, $message);
+				LetoDMS_Email::toGroup($user, $obj, $subject, $message);
 			}
 		}
 
@@ -939,10 +939,10 @@ class LetoDMS_Document
 		$message=mydmsDecodeString($message);
 
 		if ($isUser) {
-			Email::toIndividual($user, $obj, $subject, $message);
+			LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
 		}
 		else {
-			Email::toGroup($user, $obj, $subject, $message);
+			LetoDMS_Email::toGroup($user, $obj, $subject, $message);
 		}
 
 		unset($this->_notifyList);
@@ -1063,15 +1063,15 @@ class LetoDMS_Document
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 			foreach ($this->_notifyList["groups"] as $grp) {
-				Email::toGroup($user, $grp, $subject, $message);
+				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 			}
 		}
 		
 		// if user is not owner send notification to owner
 		if ($user->getID()!= $this->_ownerID) 
-			Email::toIndividual($user, $this->getOwner(), $subject, $message);
+			LetoDMS_Email::toIndividual($user, $this->getOwner(), $subject, $message);
 
 		return $docResultSet;
 	}
@@ -1231,9 +1231,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 		
 		return true;
@@ -1271,9 +1271,9 @@ class LetoDMS_Document
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $this->_notifyList["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 		foreach ($this->_notifyList["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 	
 		return true;
@@ -1344,9 +1344,9 @@ class LetoDMS_Document
 			
 			// Send notification to subscribers.
 			$this->getNotifyList();
-			Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
 			foreach ($this->_notifyList["groups"] as $grp) {
-				Email::toGroup($user, $grp, $subject, $message);
+				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 			}
 		}
 		
@@ -1573,9 +1573,9 @@ class DocumentContent
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($user, $nl["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 
 		return true;
@@ -1732,13 +1732,13 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			Email::toList($user, $recipients, $subject, $message);
+			LetoDMS_Email::toList($user, $recipients, $subject, $message);
 			
 			// Send notification to subscribers.
 			$nl=$this->_document->getNotifyList();
-			Email::toList($user, $nl["users"], $subject, $message);
+			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
 			foreach ($nl["groups"] as $grp) {
-				Email::toGroup($user, $grp, $subject, $message);
+				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 			}
 		}
 
@@ -1816,9 +1816,9 @@ class DocumentContent
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toList($uu, $nl["users"], $subject, $message);
+		LetoDMS_Email::toList($uu, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
-			Email::toGroup($uu, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($uu, $grp, $subject, $message);
 		}
 		
 		// TODO: if user os not owner send notification to owner
@@ -1956,7 +1956,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2033,7 +2033,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2107,7 +2107,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2184,7 +2184,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2236,7 +2236,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2288,7 +2288,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2340,7 +2340,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}
@@ -2392,7 +2392,7 @@ class DocumentContent
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			return (Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
+			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
 		}
 		return 0;
 	}

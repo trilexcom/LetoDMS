@@ -115,13 +115,13 @@ if ($_POST["reviewType"] == "ind") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $content->getUser(), $subject, $message);
+		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
-		Email::toList($user, $nl["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 	}
 }
@@ -168,13 +168,13 @@ else if ($_POST["reviewType"] == "grp") {
 		$subject=mydmsDecodeString($subject);
 		$message=mydmsDecodeString($message);
 		
-		Email::toIndividual($user, $content->getUser(), $subject, $message);
+		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
 		
 		// Send notification to subscribers.
 		$nl=$document->getNotifyList();
-		Email::toList($user, $nl["users"], $subject, $message);
+		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
 		foreach ($nl["groups"] as $grp) {
-			Email::toGroup($user, $grp, $subject, $message);
+			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
 		}
 	}
 }
@@ -253,12 +253,12 @@ if ($_POST["reviewStatus"]==-1){
 						if ($dastat["type"] == 0) {
 
 							$approver = getUser($dastat["required"]);
-							Email::toIndividual($document->getOwner(), $approver, $subject, $message);
+							LetoDMS_Email::toIndividual($document->getOwner(), $approver, $subject, $message);
 						}
 						else if ($dastat["type"] == 1) {
 						
 							$group = getGroup($dastat["required"]);
-							Email::toGroup($document->getOwner(), $group, $subject, $message);
+							LetoDMS_Email::toGroup($document->getOwner(), $group, $subject, $message);
 						}
 					}
 				}
