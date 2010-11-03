@@ -23,12 +23,12 @@
  * dafür sind die Klassen Folder und Document selbst
  * verantwortlich.
  */
-class UserAccess
+class LetoDMS_UserAccess
 {
 	var $_userID;
 	var $_mode;
 
-	function UserAccess($userID, $mode)
+	function LetoDMS_UserAccess($userID, $mode)
 	{
 		$this->_userID = $userID;
 		$this->_mode = $mode;
@@ -47,12 +47,12 @@ class UserAccess
 }
 
 
-class GroupAccess
+class LetoDMS_GroupAccess
 {
 	var $_groupID;
 	var $_mode;
 
-	function GroupAccess($groupID, $mode)
+	function LetoDMS_GroupAccess($groupID, $mode)
 	{
 		$this->_groupID = $groupID;
 		$this->_mode = $mode;

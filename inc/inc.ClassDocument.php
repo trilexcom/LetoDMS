@@ -546,9 +546,9 @@ class LetoDMS_Document
 			foreach ($resArr as $row)
 			{
 				if ($row["userID"] != -1)
-					array_push($this->_accessList[$mode]["users"], new UserAccess($row["userID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($row["userID"], $row["mode"]));
 				else //if ($row["groupID"] != -1)
-					array_push($this->_accessList[$mode]["groups"], new GroupAccess($row["groupID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($row["groupID"], $row["mode"]));
 			}
 		}
 		
