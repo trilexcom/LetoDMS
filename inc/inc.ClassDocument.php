@@ -170,7 +170,7 @@ class LetoDMS_Document
 
 	function setKeywords($newKeywords)
 	{
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db;
 		
 		$queryStr = "UPDATE tblDocuments SET keywords = '" . $newKeywords . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
@@ -673,8 +673,6 @@ class LetoDMS_Document
 
 
 	function getGroupAccessMode($group) {
-		global $settings;
-
 		$highestPrivileged = M_NONE;
 		
 		//ACLs durchforsten
@@ -698,7 +696,6 @@ class LetoDMS_Document
 		
 		//Standard-Berechtigung verwenden
 		return $this->getDefaultAccess();
-
 	}
 
 	function getNotifyList() {
