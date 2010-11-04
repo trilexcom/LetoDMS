@@ -976,7 +976,7 @@ class LetoDMS_Document
 
 		unset($this->_content);
 		unset($this->_latestContent);
-		$docResultSet = new AddContentResultSet(new LetoDMS_DocumentContent($this->_id, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
+		$docResultSet = new LetoDMS_AddContentResultSet(new LetoDMS_DocumentContent($this->_id, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
 
 		// TODO - verify
 		if ($settings->_enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($settings->_convertFileTypes)))
@@ -1149,7 +1149,7 @@ class LetoDMS_Document
 			$this->_documentLinks = array();
 			
 			foreach ($resArr as $row)
-				array_push($this->_documentLinks, new DocumentLink($row["id"], $row["document"], $row["target"], $row["userID"], $row["public"]));
+				array_push($this->_documentLinks, new LetoDMS_DocumentLink($row["id"], $row["document"], $row["target"], $row["userID"], $row["public"]));
 		}
 		return $this->_documentLinks;
 	}
@@ -1191,7 +1191,7 @@ class LetoDMS_Document
 			$this->_documentFiles = array();
 			
 			foreach ($resArr as $row)
-				array_push($this->_documentFiles, new DocumentFile($row["id"], $row["document"], $row["userID"], $row["comment"], $row["date"], $row["dir"], $row["fileType"], $row["mimeType"], $row["orgFileName"], $row["name"]));
+				array_push($this->_documentFiles, new LetoDMS_DocumentFile($row["id"], $row["document"], $row["userID"], $row["comment"], $row["date"], $row["dir"], $row["fileType"], $row["mimeType"], $row["orgFileName"], $row["name"]));
 		}
 		return $this->_documentFiles;		
 	}
@@ -2396,21 +2396,10 @@ class LetoDMS_DocumentContent
 }
 
 
- /* ---------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------- */
  
 function getDocumentLink($linkID) {
-
-	GLOBAL $db;
-	
-	if (!is_numeric($linkID)) return false;
-
-	$queryStr = "SELECT * FROM tblDocumentLinks WHERE id = " . $linkID;
-	$resArr = $db->getResultArray($queryStr);
-	if ((is_bool($resArr) && !$resArr) || count($resArr)==0)
-		return false;
-
-	$resArr = $resArr[0];
-	return new DocumentLink($resArr["id"], $resArr["document"], $resArr["target"], $resArr["userID"], $resArr["public"]);
+	return LetoDMS_DocumentLink::getDocumentLink($linkID);
 }
 
 function filterDocumentLinks($user, $links)
@@ -2424,7 +2413,7 @@ function filterDocumentLinks($user, $links)
 	return $tmp;
 }
 
-class DocumentLink
+class LetoDMS_DocumentLink
 {
 	var $_id;
 	var $_documentID;
@@ -2432,7 +2421,7 @@ class DocumentLink
 	var $_userID;
 	var $_public;
 
-	function DocumentLink($id, $documentID, $targetID, $userID, $public)
+	function LetoDMS_DocumentLink($id, $documentID, $targetID, $userID, $public)
 	{
 		$this->_id = $id;
 		$this->_documentID = $documentID;
@@ -2441,26 +2430,41 @@ class DocumentLink
 		$this->_public = $public;
 	}
 
+	function getDocumentLink($linkID) {
+	
+		GLOBAL $db;
+		
+		if (!is_numeric($linkID)) return false;
+	
+		$queryStr = "SELECT * FROM tblDocumentLinks WHERE id = " . $linkID;
+		$resArr = $db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || count($resArr)==0)
+			return false;
+	
+		$resArr = $resArr[0];
+		return new LetoDMS_DocumentLink($resArr["id"], $resArr["document"], $resArr["target"], $resArr["userID"], $resArr["public"]);
+	}
+
 	function getID() { return $this->_id; }
 
 	function getDocument()
 	{
 		if (!isset($this->_document))
-			$this->_document = getDocument($this->_documentID);
+			$this->_document = LetoDMS_Document::getDocument($this->_documentID);
 		return $this->_document;
 	}
 
 	function getTarget()
 	{
 		if (!isset($this->_target))
-			$this->_target = getDocument($this->_targetID);
+			$this->_target = LetoDMS_Document::getDocument($this->_targetID);
 		return $this->_target;
 	}
 
 	function getUser()
 	{
 		if (!isset($this->_user))
-			$this->_user = getUser($this->_userID);
+			$this->_user = LetoDMS_User::getUser($this->_userID);
 		return $this->_user;
 	}
 
@@ -2481,20 +2485,10 @@ class DocumentLink
  /* ---------------------------------------------------------------------------------------------------- */
  
 function getDocumentFile($ID) {
-
-	GLOBAL $db;
-	
-	if (!is_numeric($ID)) return false;
-
-	$queryStr = "SELECT * FROM tblDocumentFiles WHERE id = " . $ID;
-	$resArr = $db->getResultArray($queryStr);
-	if ((is_bool($resArr) && !$resArr) || count($resArr)==0) return false;
-
-	$resArr = $resArr[0];
-	return new DocumentFile($resArr["id"], $resArr["document"], $resArr["userID"], $resArr["comment"], $resArr["date"], $resArr["dir"], $resArr["fileType"], $resArr["mimeType"], $resArr["orgFileName"], $resArr["name"]);
+	return LetoDMS_DocumentFile::getDocumentFile($ID);
 }
 
-class DocumentFile
+class LetoDMS_DocumentFile
 {
 	var $_id;
 	var $_documentID;
@@ -2507,7 +2501,7 @@ class DocumentFile
 	var $_orgFileName;
 	var $_name;
 
-	function DocumentFile($id, $documentID, $userID, $comment, $date, $dir, $fileType, $mimeType, $orgFileName,$name)
+	function LetoDMS_DocumentFile($id, $documentID, $userID, $comment, $date, $dir, $fileType, $mimeType, $orgFileName,$name)
 	{
 		$this->_id = $id;
 		$this->_documentID = $documentID;
@@ -2519,6 +2513,19 @@ class DocumentFile
 		$this->_mimeType = $mimeType;
 		$this->_orgFileName = $orgFileName;
 		$this->_name = $name;
+	}
+
+	function getDocumentFile($ID) {
+		GLOBAL $db;
+		
+		if (!is_numeric($ID)) return false;
+	
+		$queryStr = "SELECT * FROM tblDocumentFiles WHERE id = " . $ID;
+		$resArr = $db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || count($resArr)==0) return false;
+	
+		$resArr = $resArr[0];
+		return new LetoDMS_DocumentFile($resArr["id"], $resArr["document"], $resArr["userID"], $resArr["comment"], $resArr["date"], $resArr["dir"], $resArr["fileType"], $resArr["mimeType"], $resArr["orgFileName"], $resArr["name"]);
 	}
 
 	function getID() { return $this->_id; }
@@ -2567,7 +2574,7 @@ class DocumentFile
 // The object stores a copy of the new DocumentContent object, the newly assigned
 // reviewers and approvers and the status.
 //
-class AddContentResultSet {
+class LetoDMS_AddContentResultSet {
 	
 	var $_indReviewers;
 	var $_grpReviewers;
@@ -2576,7 +2583,7 @@ class AddContentResultSet {
 	var $_content;
 	var $_status;
 
-	function AddContentResultSet($content) {
+	function LetoDMS_AddContentResultSet($content) {
 
 		$this->_content = $content;
 		$this->_indReviewers = null;
