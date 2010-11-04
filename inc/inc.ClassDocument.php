@@ -976,7 +976,7 @@ class LetoDMS_Document
 
 		unset($this->_content);
 		unset($this->_latestContent);
-		$docResultSet = new AddContentResultSet(new DocumentContent($this->_id, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
+		$docResultSet = new AddContentResultSet(new LetoDMS_DocumentContent($this->_id, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
 
 		// TODO - verify
 		if ($settings->_enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($settings->_convertFileTypes)))
@@ -1086,7 +1086,7 @@ class LetoDMS_Document
 			
 			$this->_content = array();
 			foreach ($resArr as $row)
-				array_push($this->_content, new DocumentContent($row["document"], $row["version"], $row["comment"], $row["date"], $row["createdBy"], $row["dir"], $row["orgFileName"], $row["fileType"], $row["mimeType"]));
+				array_push($this->_content, new LetoDMS_DocumentContent($row["document"], $row["version"], $row["comment"], $row["date"], $row["createdBy"], $row["dir"], $row["orgFileName"], $row["fileType"], $row["mimeType"]));
 		}
 		
 		return $this->_content;
@@ -1115,7 +1115,7 @@ class LetoDMS_Document
 			return false;
 		
 		$resArr = $resArr[0];
-		return new DocumentContent($resArr["document"], $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
+		return new LetoDMS_DocumentContent($resArr["document"], $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
 	}
 
 	function getLatestContent()
@@ -1131,7 +1131,7 @@ class LetoDMS_Document
 				return false;
 			
 			$resArr = $resArr[0];
-			$this->_latestContent = new DocumentContent($resArr["document"], $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
+			$this->_latestContent = new LetoDMS_DocumentContent($resArr["document"], $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
 		}
 		return $this->_latestContent;
 	}
@@ -1472,7 +1472,7 @@ class LetoDMS_Document
  */
  
 // these are the version information
-class DocumentContent
+class LetoDMS_DocumentContent
 {
 
 	// if status is released and there are reviewers set status draft_rev	
@@ -1512,7 +1512,7 @@ class DocumentContent
 		else $this->setStatus(S_RELEASED,"",$user);
 	}
 
-	function DocumentContent($documentID, $version, $comment, $date, $userID, $dir, $orgFileName, $fileType, $mimeType)
+	function LetoDMS_DocumentContent($documentID, $version, $comment, $date, $userID, $dir, $orgFileName, $fileType, $mimeType)
 	{
 		$this->_documentID = $documentID;
 		$this->_version = $version;
