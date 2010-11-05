@@ -135,7 +135,6 @@ function createFolderTar($folder,$ark)
 			
 				// create an archive containing the files with original names and DMS path 
 				// thanks to Doudoux 
-
 				$latestContent = $document->getLatestContent();
 				if (is_object($latestContent))
 				{
@@ -146,11 +145,9 @@ function createFolderTar($folder,$ark)
 						
 				        TarWriteContents($ark, $settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());			        
 				}
-			
 			}else{
 
 				// create a server backup archive
-
 				$handle = opendir($settings->_contentDir.$document->getDir());
 				while ($entry = readdir($handle) )
 				{
@@ -159,7 +156,6 @@ function createFolderTar($folder,$ark)
 						TarAddHeader($ark,$settings->_contentDir.$document->getDir().$entry,$document->getDir().$entry);
 						TarWriteContents($ark,$settings->_contentDir.$document->getDir().$entry);
 					}
-
 				}
 				closedir($handle);
 			}
