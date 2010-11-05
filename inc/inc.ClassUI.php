@@ -162,6 +162,7 @@ class UI {
 	}
 
 	function globalNavigation($folder=null) {
+	
 		global $settings, $user;
 
 		echo "<div class=\"globalBox\">\n";
@@ -170,9 +171,7 @@ class UI {
 		echo "<li id=\"first\"><a href=\"../out/out.ViewFolder.php?folderid=".$settings->_rootFolderID."\">".getMLText("content")."</a></li>\n";
 		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=".$settings->_calendarDefaultView."\">".getMLText("calendar")."</a></li>\n";
 		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
-
 		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
-
 		if ($user->isAdmin()) echo "<li><a href=\"../out/out.AdminTools.php\">".getMLText("admin_tools")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Help.php\">".getMLText("help")."</a></li>\n";
 		echo "<li id=\"search\">\n";
@@ -320,8 +319,7 @@ class UI {
 		if ($settings->_enableUsersView){
 			echo "<li><a href=\"../out/out.UsrView.php\">".getMLText("users")."</a></li>\n";
 			echo "<li><a href=\"../out/out.GroupView.php\">".getMLText("groups")."</a></li>\n";
-		}
-		
+		}		
 		echo "</ul>\n";
 		return;
 	}

@@ -270,9 +270,7 @@ class LetoDMS_User
 		
 		$this->_isHidden = $isAdmin;
 		return true;
-	}
-	
-	
+	}	
 
 	/**
 	 * Entfernt den Benutzer aus dem System.
@@ -281,6 +279,7 @@ class LetoDMS_User
 	 * tblNotify, tblGroupMembers, tblFolders, tblDocuments und tblDocumentContent müssen berücksichtigt werden.
 	 */
 	function remove( $assignTo=-1 ) {
+	
 		GLOBAL $db, $settings, $user;
 
 		if ($assignTo==-1) $assignTo=$settings->_adminID;
