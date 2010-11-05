@@ -88,8 +88,6 @@ if ($document->isLocked()) {
 	
 	print "<table><tr><td class=\"warning\">";
 	
-	//print "<span class=\"warning\">";
-	
 	printMLText("update_locked_msg", array("username" => $lockingUser->getFullName(), "email" => $lockingUser->getEmail()));
 	
 	if ($lockingUser->getID() == $user->getID())
@@ -99,13 +97,12 @@ if ($document->isLocked()) {
 	else
 	{
 		printMLText("no_update_cause_locked");
-		//print "</span>";
 		print "</td></tr></table>";
 		UI::contentContainerEnd();
 		UI::htmlEndPage();
 		exit;
 	}
-	//print "</span>";
+
 	print "</td></tr></table><br>";
 }
 
@@ -114,9 +111,17 @@ if ($document->isLocked()) {
 $docAccess = $document->getApproversList();
 ?>
 
+<table>
+<tr>
+	<td class="warning"><?php echo getMLtext("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
+</tr>
+</table><br>
+
+
 <form action="../op/op.UpdateDocument.php" enctype="multipart/form-data" method="post" name="form1" onsubmit="return checkForm();">
 	<input type="Hidden" name="documentid" value="<?php print $documentid; ?>">
 	<table>
+	
 		<tr>
 			<td><?php printMLText("local_file");?>:</td>
 			<td><input type="File" name="userfile" size="60"></td>

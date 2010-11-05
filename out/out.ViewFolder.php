@@ -105,7 +105,8 @@ foreach($subFolders as $subFolder) {
 	$subdoc = filterAccess($subdoc, $user, M_READ);
 	
 	print "<tr class=\"folder\">";
-	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";
+//	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";
+	print "<td><a href=\"out.ViewFolder.php?folderid=".$subFolder->getID()."&showtree=".$showtree."\"><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></a></td>\n";
 	print "<td><a href=\"out.ViewFolder.php?folderid=".$subFolder->getID()."&showtree=".$showtree."\">" . $subFolder->getName() . "</a></td>\n";
 	print "<td>".$owner->getFullName()."</td>";
 	print "<td colspan=\"2\"><small>".count($subsub)." ".getMLText("folders").", ".count($subdoc)." ".getMLText("documents")."</small></td>";

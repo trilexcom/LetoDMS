@@ -49,7 +49,6 @@ UI::htmlStartPage(getMLText("calendar"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("calendar"), "calendar",array($day,$month,$year));
 
-
 if ($mode=="y"){
 
 	UI::contentHeading(getMLText("year_view")." : ".$year);
@@ -154,6 +153,12 @@ if ($mode=="y"){
 	
 		$date = getdate($i);
 		
+		// for daylight saving time TODO: could be better
+		if ( ($i!=$starttime) && ($prev_day==$date["mday"]) ){
+			$i += 3600;
+			$date = getdate($i);
+		}
+		
 		// highlight today
 		$class = ($date["year"] == $today["year"] && $date["mon"] == $today["mon"] && $date["mday"]  == $today["mday"]) ? "todayHeader" : "header";
 		
@@ -173,6 +178,8 @@ if ($mode=="y"){
 		}
 		
 		echo "</tr>\n";	
+		
+		$prev_day=$date["mday"];
 	}
 	echo "</table>\n";
 
