@@ -1182,7 +1182,7 @@ class Document
 		{
 			GLOBAL $db;
 			
-			$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id;
+			$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id." ORDER BY `date` DESC";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
 				

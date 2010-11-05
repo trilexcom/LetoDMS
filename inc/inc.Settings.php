@@ -39,7 +39,7 @@ class Settings
 
 	// If you want anybody to login as guest, set the following line to true
 	// note: guest login should be used only in a trusted environment
-	var $_enableGuestLogin = false;
+	var $_enableGuestLogin = true;
 
 	// Restricted access: only allow users to log in if they have an entry in
 	// the local database (irrespective of successful authentication with LDAP).
@@ -52,17 +52,17 @@ class Settings
 	var $_strictFormCheck = false;
 
 	// path to where mydms is located
-	var $_rootDir = "/var/www/letoDMS-2.0.1/";
+	var $_rootDir = "/var/www/letoDMS-2.0.2/";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
 	// http://www.example.com/mydms/, set $_httpRoot = "/mydms/".
 	// If the URL is http://www.example.com/, set $_httpRoot = "/".
-	var $_httpRoot = "/letoDMS-2.0.1/";
+	var $_httpRoot = "/letoDMS-2.0.2/";
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "/var/www/letoDMS-2.0.1/data/";
+	var $_contentDir = "/var/www/letoDMS-2.0.2/data/";
 
 	// To work around limitations in the underlying file system, a new 
 	// directory structure has been devised that exists within the content 
@@ -131,10 +131,18 @@ class Settings
 	// 2 to start with tree shown fully expanded
 	var $_expandFolderTree = 1;
 
+	// if true user cannot edit his own profile
+	var $_disableSelfEdit = false;
+	 
+	// if enabled admin can login only by specified IP addres
+	// leave ampty to avoid the control
+	// NOTE: works only with local autentication (no LDAP)
+	var $_adminIP = "";
+
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb
-	var $_ADOdbPath = "/var/www/letoDMS-2.0.1/adodb/";
+	var $_ADOdbPath = "/var/www/letoDMS-2.0.2/adodb/";
 
 	//DB-Driver used by adodb (see adodb-readme)
 	var $_dbDriver = "mysql";

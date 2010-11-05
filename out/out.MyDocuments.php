@@ -30,6 +30,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("my_documents"),getMLText("access_denied"));
+}
+
 // Check to see if the user wants to see only those documents that are still
 // in the review / approve stages.
 $showInProcess = false;

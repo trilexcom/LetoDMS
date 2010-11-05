@@ -222,6 +222,7 @@ print "<li>".getMLText("folders").": ".$folder_count."</li>\n";
 print "<li>".getMLText("documents").": ".$document_count."</li>\n";
 print "<li>".getMLText("files").": ".$file_count."</li>\n";
 print "<li>".getMLText("storage_size").": ".formatted_size($storage_size)."</li>\n";
+
 print "</ul>\n";
 
 print "</td></tr>";

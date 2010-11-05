@@ -34,9 +34,30 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
+// funcion by shalless at rubix dot net dot au (php.net)
+function dskspace($dir)
+{
+   $s = stat($dir);
+   $space = $s["blocks"]*512;
+   if (is_dir($dir))
+   {
+     $dh = opendir($dir);
+     while (($file = readdir($dh)) !== false)
+       if ($file != "." and $file != "..")
+         $space += dskspace($dir."/".$file);
+     closedir($dh);
+   }
+   return $space;
+} 
+
 UI::htmlStartPage(getMLText("backup_tools"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("admin_tools"), "admin_tools");
+
+UI::contentHeading(getMLText("backup_tools"));
+UI::contentContainerStart();
+print getMLText("space_used_on_data_folder")." : ".formatted_size(dskspace($settings->_contentDir));
+UI::contentContainerEnd();
 
 // versioning file creation ////////////////////////////////////////////////////
 
@@ -62,7 +83,6 @@ UI::printFolderChooser("form2",M_READWRITE);
 print "<input type=\"checkbox\" name=\"human_readable\" value=\"1\">".getMLText("human_readable");
 print "<input type='submit' name='' value='".getMLText("archive_creation")."'/>";
 print "</form>\n";
-
 
 // list backup files
 UI::contentSubHeading(getMLText("backup_list"));

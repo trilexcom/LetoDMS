@@ -260,18 +260,19 @@ class User
 		return true;
 	}
 	
-	
-
 	/**
 	 * Entfernt den Benutzer aus dem System.
 	 * Dies ist jedoch nicht mit einem Löschen des entsprechenden Eintrags aus tblUsers geschehen - vielmehr
 	 * muss dafür gesorgt werden, dass der Benutzer nirgendwo mehr auftaucht. D.h. auch die Tabellen tblACLs,
 	 * tblNotify, tblGroupMembers, tblFolders, tblDocuments und tblDocumentContent müssen berücksichtigt werden.
 	 */
-	function remove() {
+	function remove( $assignTo=-1 ) {
+	
 		GLOBAL $db, $settings, $user;
 
-		if ($this->_id==$settings->_adminID) {
+		if ($assignTo==-1) $assignTo=$settings->_adminID;
+
+		if (($this->_id==$settings->_adminID)||($this->_id==$settings->_guestID)) {
 			return false; // Cannot delete administrator.
 		}
 
@@ -296,13 +297,13 @@ class User
 		if (!$db->getResult($queryStr)) return false;
 		
 		//Der Besitz von Dokumenten oder Ordnern, deren bisheriger Besitzer der zu löschende war, geht an den Admin über
-		$queryStr = "UPDATE tblFolders SET owner = " . $settings->_adminID . " WHERE owner = " . $this->_id;
+		$queryStr = "UPDATE tblFolders SET owner = " . $assignTo . " WHERE owner = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 		
-		$queryStr = "UPDATE tblDocuments SET owner = " . $settings->_adminID . " WHERE owner = " . $this->_id;
+		$queryStr = "UPDATE tblDocuments SET owner = " . $assignTo . " WHERE owner = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 		
-		$queryStr = "UPDATE tblDocumentContent SET createdBy = " . $settings->_adminID . " WHERE createdBy = " . $this->_id;
+		$queryStr = "UPDATE tblDocumentContent SET createdBy = " . $assignTo . " WHERE createdBy = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 			
 		//Verweise auf Dokumente: Private löschen...
@@ -310,11 +311,11 @@ class User
 		if (!$db->getResult($queryStr)) return false;
 			
 		//... und öffentliche an Admin übergeben
-		$queryStr = "UPDATE tblDocumentLinks SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
+		$queryStr = "UPDATE tblDocumentLinks SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 		
 		// set administrator for deleted user's attachments
-		$queryStr = "UPDATE tblDocumentFiles SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
+		$queryStr = "UPDATE tblDocumentFiles SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 		
 		//Evtl. von diesem Benutzer gelockte Dokumente werden freigegeben
@@ -351,7 +352,7 @@ class User
 		if (!$db->getResult($queryStr)) return false;
 		
 		// set administrator for deleted user's events
-		$queryStr = "UPDATE tblEvents SET userID = " . $settings->_adminID . " WHERE userID = " . $this->_id;
+		$queryStr = "UPDATE tblEvents SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 
 			

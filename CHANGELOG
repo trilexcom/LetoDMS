@@ -1,4 +1,51 @@
 --------------------------------------------------------------------------------
+                     Changes in version 2.0.2
+--------------------------------------------------------------------------------
+
+USER'S OWN DATA SELF EDITING CAN BE DISABLED
+Added the settings flag  "disableSelfEdit". If true user cannot edit his 
+own profile data
+
+LIMIT ADMINSTRATOR ACCESS ON IP
+Added the possibility to limit the admin access by a specific IP address 
+(new "adminIP" settings value)
+
+REASSIGN DOCUMENTS AFTER USER DELETION
+When a user is deleted his properties (folders, documents, events, etc) can 
+be assigned to another user instead to be forced to administrator
+
+SPACE LEFT ON DEVICE 
+Added "space used by data" view on backup tools page
+
+Added some user operation control (admin or guest deletion, etc)
+
+The charset=iso-8859-1 use has been signaled on the html head (should fix 
+some charset miscoding)
+
+The guest user cannot edit/add events on the calendar
+
+The guest user security has been reinforced (control on a lot of operation,
+simplified menus, etc)
+
+Maximum file dimension warning added to document update page
+
+New german translation
+
+Removed a pair of residual "die" instructions
+
+Removed the deprecated split functions (replaced by preg_split)
+
+Removed the deprecated eregi_replace functions (replaced by str_ireplace)
+
+Fixed a bug with "remove version" operation
+
+Corrected calendar (week view) for daylight saving time
+
+The document attachment are now listed ordered (from newer to older)
+
+Modified the viewfolder page icon actions
+
+--------------------------------------------------------------------------------
                      Changes in version 2.0.1
 --------------------------------------------------------------------------------
 

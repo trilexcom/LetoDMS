@@ -38,7 +38,7 @@ $dms_session = sanitizeString($dms_session);
 
 $queryStr = "DELETE FROM tblSessions WHERE id = '$dms_session'";
 if (!$db->getResult($queryStr))
-	die ("Error while removing session from tblSessions: " . $db->getErrorMsg());
+	UI::exitError(getMLText("logout"),$db->getErrorMsg());
 
 //Delete Cookie
 setcookie("mydms_session", $_COOKIE["mydms_session"], time()-3600, $settings->_httpRoot);

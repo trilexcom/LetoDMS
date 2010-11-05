@@ -576,4 +576,9 @@ $text["add_multiple_files"] = "Add multiple files (will use filename as document
 
 $text["max_upload_size"] = "Maximum upload size for each file";
 
+// new from 2.0.2
+
+$text["space_used_on_data_folder"] = "Space used on data folder";
+$text["assign_user_property_to"] = "Assign user's properties to";
+
 ?>

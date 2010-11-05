@@ -30,6 +30,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
+}
+
 UI::htmlStartPage(getMLText("my_account"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("my_account"), "my_account");

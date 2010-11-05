@@ -198,6 +198,15 @@ if (is_bool($user)) {
 									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
 		exit;
 	}
+	
+	// control admin IP address if required
+	// TODO: extend control to LDAP autentication
+	if (($resArr["id"] == $settings->_adminID) && ($_SERVER['REMOTE_ADDR'] != $settings->_adminIP ) && ( $settings->_adminIP != "") ){
+		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("invalid_user_id").
+									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
+		exit;
+	}
+	
 	$userid = $resArr["id"];
 	$user = getUser($userid);
 }

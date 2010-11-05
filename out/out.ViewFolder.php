@@ -104,7 +104,8 @@ foreach($subFolders as $subFolder) {
 	$subdoc = filterAccess($subdoc, $user, M_READ);
 	
 	print "<tr class=\"folder\">";
-	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";
+//	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";
+	print "<td><a href=\"out.ViewFolder.php?folderid=".$subFolder->getID()."&showtree=".$showtree."\"><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></a></td>\n";
 	print "<td><a href=\"out.ViewFolder.php?folderid=".$subFolder->getID()."&showtree=".$showtree."\">" . $subFolder->getName() . "</a></td>\n";
 	print "<td>".$owner->getFullName()."</td>";
 	print "<td colspan=\"2\"><small>".count($subsub)." ".getMLText("folders").", ".count($subdoc)." ".getMLText("documents")."</small></td>";
@@ -126,8 +127,9 @@ foreach($documents as $document) {
 	
 	if (file_exists($settings->_contentDir . $latestContent->getPath()))
 		print "<td><a href=\"../op/op.Download.php?documentid=".$docID."&version=".$version."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></a></td>";
-	else print "<td><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></td>";
-	
+	else //print "<td><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></td>";
+	print "<td><a href=\"out.ViewDocument.php?documentid=".$docID."&showtree=".$showtree."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></a></td>";	
+
 	print "<td><a href=\"out.ViewDocument.php?documentid=".$docID."&showtree=".$showtree."\">" . $document->getName() . "</a></td>\n";
 	print "<td>".$owner->getFullName()."</td>";
 	print "<td>".getOverallStatusText($status["status"])."</td>";

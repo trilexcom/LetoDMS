@@ -32,7 +32,7 @@ $userid = sanitizeString($_GET["userid"]);
 $myUser = getUser($userid); //es soll ja auch möglich sein, die bilder von anderen anzuzeigen
 
 if (!$myUser->hasImage())
-	die ("Kein Bild verfügbar");
+	UI::exitError(getMLText("user_image"),getMLText("no_user_image"));
 
 $queryStr = "SELECT * FROM tblUserImages WHERE userID = " . $userid;
 $resArr = $db->getResultArray($queryStr);

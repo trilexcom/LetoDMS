@@ -119,6 +119,7 @@ class UI {
 		echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n".
 			"\"http://www.w3.org/TR/html4/strict.dtd\">\n";
 		echo "<html>\n<head>\n";
+		echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />\n";
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/".$theme."/style.css\"/>\n";
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/print.css\" media=\"print\"/>\n";
 		echo "<link rel='shortcut icon' href='../styles/".$theme."/favicon.ico' type='image/x-icon'/>\n";
@@ -161,6 +162,7 @@ class UI {
 	}
 
 	function globalNavigation($folder=null) {
+	
 		global $settings, $user;
 
 		echo "<div class=\"globalBox\">\n";
@@ -168,8 +170,8 @@ class UI {
 		echo "<ul class=\"globalNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.ViewFolder.php?folderid=".$settings->_rootFolderID."\">".getMLText("content")."</a></li>\n";
 		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=".$settings->_calendarDefaultView."\">".getMLText("calendar")."</a></li>\n";
-		echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
-		echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
+		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
+		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
 		if ($user->isAdmin()) echo "<li><a href=\"../out/out.AdminTools.php\">".getMLText("admin_tools")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Help.php\">".getMLText("help")."</a></li>\n";
 		echo "<li id=\"search\">\n";
@@ -307,17 +309,17 @@ class UI {
 		global $settings,$user;
 		
 		echo "<ul class=\"localNav\">\n";
-		echo "<li id=\"first\"><a href=\"../out/out.EditUserData.php\">".getMLText("edit_user_details")."</a></li>\n";
+		if (!$settings->_disableSelfEdit) echo "<li id=\"first\"><a href=\"../out/out.EditUserData.php\">".getMLText("edit_user_details")."</a></li>\n";
 		
 		if (!$user->isAdmin()) 
 			echo "<li><a href=\"../out/out.UserDefaultKeywords.php\">".getMLText("edit_default_keywords")."</a></li>\n";
+		
+		echo "<li><a href=\"../out/out.ManageNotify.php\">".getMLText("edit_existing_notify")."</a></li>\n";	
 		
 		if ($settings->_enableUsersView){
 			echo "<li><a href=\"../out/out.UsrView.php\">".getMLText("users")."</a></li>\n";
 			echo "<li><a href=\"../out/out.GroupView.php\">".getMLText("groups")."</a></li>\n";
 		}
-		echo "<li><a href=\"../out/out.ManageNotify.php\">".getMLText("edit_existing_notify")."</a></li>\n";	
-		
 		echo "</ul>\n";
 		return;
 	}
@@ -350,13 +352,15 @@ class UI {
 	
 	function calendarNavigationBar($d){
 	
+		global $settings,$user;
+	
 		$ds="&day=".$d[0]."&month=".$d[1]."&year=".$d[2];
 	
 		echo "<ul class=\"localNav\">\n";
 		echo "<li><a href=\"../out/out.Calendar.php?mode=w".$ds."\">".getMLText("week_view")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Calendar.php?mode=m".$ds."\">".getMLText("month_view")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Calendar.php?mode=y".$ds."\">".getMLText("year_view")."</a></li>\n";
-		echo "<li><a href=\"../out/out.AddEvent.php\">".getMLText("add_event")."</a></li>\n";
+		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.AddEvent.php\">".getMLText("add_event")."</a></li>\n";
 		echo "</ul>\n";
 		return;
 	

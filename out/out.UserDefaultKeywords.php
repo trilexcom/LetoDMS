@@ -31,6 +31,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("edit_default_keywords"),getMLText("access_denied"));
+}
+
 $categories = getAllUserKeywordCategories($user->getID());
 
 UI::htmlStartPage(getMLText("edit_default_keywords"));

@@ -29,6 +29,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
+}
+
 // Get list of subscriptions for documents or folders for user or groups
 function getNotificationList($as_group,$folders)
 {

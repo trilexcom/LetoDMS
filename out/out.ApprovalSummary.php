@@ -30,6 +30,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("my_documents"),getMLText("access_denied"));
+}
+
 if (!$db->createTemporaryTable("ttstatid")) {
 	UI::exitError(getMLText("approval_summary"),getMLText("internal_error_exit"));
 }

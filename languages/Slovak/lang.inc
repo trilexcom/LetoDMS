@@ -562,4 +562,9 @@ $text["add_multiple_files"] = "Pridať viacero súborov (názov súboru sa použ
 
 $text["max_upload_size"] = "Maximálna veľkosť každého súboru";
 
+// new from 2.0.2
+
+$text["space_used_on_data_folder"] = "Space used on data folder";
+$text["assign_user_property_to"] = "Assign user's properties to";
+
 ?>

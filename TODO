@@ -24,3 +24,12 @@ In my Documents->all documents there should be two lists: one (the current) with
 the user's document, and another with the user's updated document (that's because 
 one user could have updated a document not owned by himself)
 
+Improve calendar functions:
+- calendar could shows document expiration
+- e-mail notify events to users (add "notify to" function in add event form)
+
+Option to create archives in zip format instead of tar.gz. The option shuold be portable
+or should be anabled after verify if required zip library are available
+
+
+

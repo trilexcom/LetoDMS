@@ -29,6 +29,10 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
+}
+
 if (!$settings->_enableUsersView) {
 	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
 }

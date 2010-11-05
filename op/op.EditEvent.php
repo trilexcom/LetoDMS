@@ -34,6 +34,10 @@ include("../inc/inc.ClassUI.php");
 include("../inc/inc.Calendar.php");
 include("../inc/inc.Authentication.php");
 
+if ($user->getID($user) == $settings->_guestID) {
+	UI::exitError(getMLText("edit_event"),getMLText("access_denied"));
+}
+
 if (!isset($_POST["frommonth"]) || !isset($_POST["fromday"]) || !isset($_POST["fromyear"]) ) {
 	UI::exitError(getMLText("edit_event"),getMLText("error_occured"));
 }

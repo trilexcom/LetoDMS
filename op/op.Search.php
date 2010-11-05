@@ -90,10 +90,10 @@ function getTime() {
 function markQuery($str, $tag = "b") {
 
 	GLOBAL $query;
-	$querywords = split(" ", $query);
+	$querywords = preg_split("/ /", $query);
 	
 	foreach ($querywords as $queryword)
-		$str = eregi_replace("($queryword)", "<" . $tag . ">\\1</" . $tag . ">", $str);
+		$str = str_ireplace("($queryword)", "<" . $tag . ">\\1</" . $tag . ">", $str);
 	
 	return $str;
 }
@@ -115,7 +115,7 @@ else {
 // Split the search string into constituent keywords.
 $tkeys=array();
 if (strlen($query)>0) {
-	$tkeys = split("[\t\r\n ,]+", $query);
+	$tkeys = preg_split("/[\t\r\n ,]+/", $query);
 }
 
 $mode = "AND";

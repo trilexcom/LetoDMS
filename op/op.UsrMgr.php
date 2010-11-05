@@ -111,7 +111,7 @@ else if ($action == "removeuser") {
 		$userid = $_GET["userid"];
 	}
 
-	if ($userid==$settings->_adminID) {
+	if (($userid==$settings->_adminID)||($userid==$settings->_guestID)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("cannot_delete_admin"));
 	}
 	if (!isset($userid) || !is_numeric($userid) || intval($userid)<1) {
@@ -123,7 +123,7 @@ else if ($action == "removeuser") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
-	if (!$userToRemove->remove()) {
+	if (!$userToRemove->remove($_POST["assignTo"])) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
 		

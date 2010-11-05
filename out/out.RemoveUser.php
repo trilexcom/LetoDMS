@@ -38,7 +38,14 @@ if (!$user->isAdmin()) {
 if (!isset($_GET["userid"]) || !is_numeric($_GET["userid"]) || intval($_GET["userid"])<1) {
 	UI::exitError(getMLText("rm_user"),getMLText("invalid_user_id"));
 }
+
 $userid = $_GET["userid"];
+
+
+if (($userid==$settings->_adminID)||($userid==$settings->_guestID)) {
+	UI::exitError(getMLText("rm_user"),getMLText("access_denied"));
+}
+
 $currUser = getUser($userid);
 
 if (!is_object($currUser)) {
@@ -58,7 +65,27 @@ UI::contentContainerStart();
 <p>
 <?php printMLText("confirm_rm_user", array ("username" => $currUser->getFullName()));?>
 </p>
+
+<p>
+<?php printMLText("assign_user_property_to"); ?> :
+<select name="assignTo">
+<option value="<?php print $settings->_adminID; ?>"><?php echo getMLText("admin")?>
+
+<?php
+	$users = getAllUsers();
+	foreach ($users as $currUser) {
+		if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID) || ($currUser->getID() == $userid) )
+			continue;
+			
+		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;
+		print "<option value=\"".$currUser->getID()."\">" . $currUser->getLogin();
+	}
+?>
+</select>
+</p>
+
 <p><input type="Submit" value="<?php printMLText("rm_user");?>"></p>
+
 </form>
 <?php
 UI::contentContainerEnd();

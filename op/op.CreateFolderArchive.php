@@ -134,22 +134,19 @@ function createFolderTar($folder,$ark)
 			
 				// create an archive containing the files with original names and DMS path 
 				// thanks to Doudoux 
-
 				$latestContent = $document->getLatestContent();
 				if (is_object($latestContent))
-				{
+				{				
 					TarAddHeader(
 						$ark,
 						$settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType(),
 						getFolderPathPlainAST($folder)."/".$document->getID()."_".mydmsDecodeString($latestContent->getOriginalFileName()));
 						
 				        TarWriteContents($ark, $settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());			        
-				}
-			
+				}	
 			}else{
 
 				// create a server backup archive
-
 				$handle = opendir($settings->_contentDir.$document->getDir());
 				while ($entry = readdir($handle) )
 				{
@@ -158,7 +155,6 @@ function createFolderTar($folder,$ark)
 						TarAddHeader($ark,$settings->_contentDir.$document->getDir().$entry,$document->getDir().$entry);
 						TarWriteContents($ark,$settings->_contentDir.$document->getDir().$entry);
 					}
-
 				}
 				closedir($handle);
 			}
@@ -185,7 +181,7 @@ if (!is_object($folder)) {
 
 $human_readable = (isset($_GET["human_readable"]) && $_GET["human_readable"]==1 ? true : false);
 
-if ($human_readable)$ark_name = $settings->_contentDir.time()."_".$folderid."_HR.tar";
+if ($human_readable) $ark_name = $settings->_contentDir.time()."_".$folderid."_HR.tar";
 else $ark_name = $settings->_contentDir.time()."_".$folderid.".tar";
 
 $ark = fopen($ark_name,"w");
