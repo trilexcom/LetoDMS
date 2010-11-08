@@ -176,7 +176,7 @@ class UI {
 		echo "<li><a href=\"../out/out.Help.php\">".getMLText("help")."</a></li>\n";
 		echo "<li id=\"search\">\n";
 		echo "<form action=\"../op/op.Search.php\">";
-		if ($folder!=null && is_object($folder) && !strcasecmp(get_class($folder), "Folder")) {
+		if ($folder!=null && is_object($folder) && !strcasecmp(get_class($folder), "LetoDMS_Folder")) {
 			echo "<input type=\"hidden\" name=\"folderid\" value=\"".$folder->getID()."\" />";
 		}
 		echo "<input type=\"hidden\" name=\"navBar\" value=\"1\" />";
@@ -239,7 +239,7 @@ class UI {
 	
 		global $user, $settings, $theme;
 
-		if (!is_object($folder) || strcasecmp(get_class($folder), "Folder")) {
+		if (!is_object($folder) || strcasecmp(get_class($folder), "LetoDMS_Folder")) {
 			echo "<ul class=\"localNav\">\n";
 			echo "</ul>\n";
 			return;

@@ -2772,7 +2772,7 @@ class LetoDMS_AddContentResultSet {
 			return false;
 		}
 		if (!strcasecmp($type, "i")) {
-			if (strcasecmp(get_class($reviewer), "User")) {
+			if (strcasecmp(get_class($reviewer), "LetoDMS_User")) {
 				return false;
 			}
 			if ($this->_indReviewers == null) {
@@ -2781,7 +2781,7 @@ class LetoDMS_AddContentResultSet {
 			$this->_indReviewers[$status][] = $reviewer;
 		}
 		if (!strcasecmp($type, "g")) {
-			if (strcasecmp(get_class($reviewer), "Group")) {
+			if (strcasecmp(get_class($reviewer), "LetoDMS_Group")) {
 				return false;
 			}
 			if ($this->_grpReviewers == null) {
@@ -2798,7 +2798,7 @@ class LetoDMS_AddContentResultSet {
 			return false;
 		}
 		if (!strcasecmp($type, "i")) {
-			if (strcasecmp(get_class($approver), "User")) {
+			if (strcasecmp(get_class($approver), "LetoDMS_User")) {
 				return false;
 			}
 			if ($this->_indApprovers == null) {
@@ -2807,7 +2807,7 @@ class LetoDMS_AddContentResultSet {
 			$this->_indApprovers[$status][] = $approver;
 		}
 		if (!strcasecmp($type, "g")) {
-			if (strcasecmp(get_class($approver), "Group")) {
+			if (strcasecmp(get_class($approver), "LetoDMS_Group")) {
 				return false;
 			}
 			if ($this->_grpApprovers == null) {
