@@ -123,6 +123,14 @@ class Settings
 	// false to don't show the folder tree
 	var $_enableFolderTree = true;
 
+	// if true user cannot edit his own profile
+	var $_disableSelfEdit = false;
+
+	// if enabled admin can login only by specified IP addres
+	// leave ampty to avoid the control
+	// NOTE: works only with local autentication (no LDAP)
+	var $_adminIP = "";
+
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb
