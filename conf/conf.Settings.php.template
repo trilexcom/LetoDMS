@@ -116,12 +116,20 @@ class Settings
 	
 	// enable calendar
 	var $_enableCalendar = true;
-	
+
+  // calendar default view ("w" for week,"m" for month,"y" for year)
+	var $_calendarDefaultView = "y";
+
 	// first day of the week (0=sunday, 6=saturday)
 	var $_firstDayOfWeek = 0;
 	
 	// false to don't show the folder tree
 	var $_enableFolderTree = true;
+
+  // 0 to start with tree hidden
+	// 1 to start with tree shown and first level expanded
+	// 2 to start with tree shown fully expanded
+	var $_expandFolderTree = 1;
 
 	// if true user cannot edit his own profile
 	var $_disableSelfEdit = false;
