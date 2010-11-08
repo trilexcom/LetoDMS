@@ -561,4 +561,9 @@ $text["add_multiple_files"] = "Mehrere Dateien hochladen (Dateiname wird als Dok
 
 $text["max_upload_size"] = "Maximale Größe einer hochgeladenen Datei";
 
+// new from 2.0.2
+
+$text["space_used_on_data_folder"] = "Space used on data folder";
+$text["assign_user_property_to"] = "Assign user's properties to";
+
 ?>

@@ -526,5 +526,9 @@ $text["add_multiple_files"] = "Aggiungi documenti multipli (il nome del file ver
 
 $text["max_upload_size"] = "Dimensione massima caricabile per ogni file";
 
+// new from 2.0.2
+
+$text["space_used_on_data_folder"] = "Spazio utilizzato dai dati";
+$text["assign_user_property_to"] = "Assegna le propriet&agrave; dell'utente a";
 
 ?>
