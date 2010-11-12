@@ -252,7 +252,7 @@ function showtree()
 	global $settings;
 	
 	if (isset($_GET["showtree"])) return $_GET["showtree"];
-	else if ($settings->_expandFolderTree==0) return 0;
+	else if ($settings->_enableFolderTree==0) return 0;
 	
 	return 1;
 }

@@ -20,8 +20,7 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -36,7 +35,7 @@ if (!isset($documentid) || !is_numeric($documentid) || intval($documentid)<1) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));
 }
 
-$document = getDocument($documentid);
+$document = $dms->getDocument($documentid);
 
 if (!is_object($document)) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));

@@ -20,8 +20,7 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -141,11 +140,11 @@ if (count($searchin)==0) $searchin=array( 0, 1, 2, 3);
 // the folder hierarchy.
 if (isset($_GET["targetidform1"]) && is_numeric($_GET["targetidform1"]) && $_GET["targetidform1"]>0) {
 	$targetid = $_GET["targetidform1"];
-	$startFolder = getFolder($targetid);
+	$startFolder = $dms->getFolder($targetid);
 }
 else {
 	$targetid = $settings->_rootFolderID;
-	$startFolder = getFolder($targetid);
+	$startFolder = $dms->getFolder($targetid);
 }
 if (!is_object($startFolder)) {
 	UI::exitError(getMLText("search_results"),getMLText("invalid_folder_id"));
@@ -153,7 +152,7 @@ if (!is_object($startFolder)) {
 
 // Now that the target folder has been identified, it is possible to create
 // the full navigation bar.
-$folderPathHTML = getFolderPathHTML($startFolder, true);
+$folderPathHTML = $startFolder->getFolderPathHTML(true);
 UI::htmlStartPage(getMLText("search_results"));
 UI::globalNavigation($startFolder);
 UI::pageNavigation($folderPathHTML, "", $startFolder);
@@ -230,7 +229,7 @@ if (isset($_GET["pg"])) {
 
 // ------------------------------------- Suche starten --------------------------------------------
 $startTime = getTime();
-$resArr = LetoDMS_Document::search($query, 25, ($pageNumber-1)*25, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate);
+$resArr = $dms->search($query, 25, ($pageNumber-1)*25, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate);
 $searchTime = getTime() - $startTime;
 $searchTime = round($searchTime, 2);
 // ---------------------------------- Ausgabe der Ergebnisse --------------------------------------

@@ -19,8 +19,7 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -76,7 +75,7 @@ if ($_GET["type"]=="document"){
 	
 	}else UI::exitError(getMLText("my_account"),getMLText("error_occured"));
 	
-	$document = getDocument($documentid);
+	$document = $dms->getDocument($documentid);
 	
 	$userid=$user->getID();
 	
@@ -97,7 +96,7 @@ if ($_GET["type"]=="document"){
 	
 	}else UI::exitError(getMLText("my_account"),getMLText("error_occured"));
 	
-	$folder = getFolder($folderid);
+	$folder = $dms->getFolder($folderid);
 	
 	$userid=$user->getID();
 	

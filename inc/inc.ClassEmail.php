@@ -18,7 +18,9 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-class LetoDMS_Email {
+require_once("inc.ClassNotify.php");
+
+class LetoDMS_Email extends LetoDMS_Notify {
 
 	function toIndividual($sender, $recipient, $subject, $message) {
 	
@@ -38,7 +40,7 @@ class LetoDMS_Email {
 		$message = getMLText("email_header")."\r\n\r\n".$message;
 		$message .= "\r\n\r\n".getMLText("email_footer");
 
-		return (mail($recipient->getEmail(), $subject, $message, $header) ? 0 : -1);
+		return (mail($recipient->getEmail(), $this->replaceMarker($subject), $this->replaceMarker($message), $header) ? 0 : -1);
 	}
 
 	function toGroup($sender, $groupRecipient, $subject, $message) {
@@ -68,7 +70,7 @@ class LetoDMS_Email {
 		$message = getMLText("email_header")."\r\n\r\n".$message;
 		$message .= "\r\n\r\n".getMLText("email_footer");
 
-		return (mail($toList, $subject, $message, $header) ? 0 : -1);
+		return (mail($toList, parent::replaceMarker($subject), parent::replaceMarker($message), $header) ? 0 : -1);
 	}
 
 	function toList($sender, $recipients, $subject, $message) {
@@ -100,7 +102,7 @@ class LetoDMS_Email {
 		$message = getMLText("email_header")."\r\n\r\n".$message;
 		$message .= "\r\n\r\n".getMLText("email_footer");
 
-		return (mail($toList, $subject, $message, $header) ? 0 : -1);
+		return (mail($toList, $this->replaceMarker($subject), $this->replaceMarker($message), $header) ? 0 : -1);
 	}
 }
 ?>

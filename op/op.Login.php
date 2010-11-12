@@ -24,6 +24,7 @@ include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.ClassUser.php");
+include("../inc/inc.ClassEmail.php");
 
 function _printMessage($heading, $message) {
 

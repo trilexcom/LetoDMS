@@ -19,9 +19,8 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassEmail.php");
-include("../inc/inc.ClassFolder.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -57,7 +56,7 @@ if (!isset($_POST["folderid"]) || !is_numeric($_POST["folderid"]) || intval($_PO
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
 }
 $folderid = $_POST["folderid"];
-$folder = getFolder($folderid);
+$folder = $dms->getFolder($folderid);
 
 if (!is_object($folder)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));

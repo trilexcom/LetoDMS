@@ -21,8 +21,7 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -41,14 +40,14 @@ if (isset($_GET["version"])){
 	}
 
 	$documentid = $_GET["documentid"];
-	$document = getDocument($documentid);
+	$document = $dms->getDocument($documentid);
 
 	if (!is_object($document)) {
 		UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));
 
 	}
 	$folder = $document->getFolder();
-	$docPathHTML = getFolderPathHTML($folder, true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
+	$docPathHTML = $folder->getFolderPathHTML(true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
 
 	if ($document->getAccessMode($user) < M_READ) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
@@ -85,14 +84,14 @@ if (isset($_GET["version"])){
 	}
 
 	$documentid = $_GET["documentid"];
-	$document = getDocument($documentid);
+	$document = $dms->getDocument($documentid);
 
 	if (!is_object($document)) {
 		UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));
 
 	}
 	$folder = $document->getFolder();
-	$docPathHTML = getFolderPathHTML($folder, true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
+	$docPathHTML = $folder->getFolderPathHTML(true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
 
 	if ($document->getAccessMode($user) < M_READ) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
@@ -102,7 +101,7 @@ if (isset($_GET["version"])){
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_file_id"));
 	}
 	$fileid = $_GET["file"];
-	$file = getDocumentFile($fileid);
+	$file = $document->getDocumentFile($fileid);
 
 	if (!is_object($file)) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("invalid_file_id"));

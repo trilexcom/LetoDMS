@@ -21,8 +21,7 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassGroup.php");
 include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
@@ -38,7 +37,8 @@ if (!isset($_GET["folderid"]) || !is_numeric($_GET["folderid"]) || intval($_GET[
 else {
 	$folderid = $_GET["folderid"];
 }
-$folder = getFolder($folderid);
+
+$folder = $dms->getFolder($folderid);
 if (!is_object($folder)) {
 	UI::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
 }
@@ -49,7 +49,7 @@ if (isset($_GET["orderby"]) && strlen($_GET["orderby"])==1 ) {
 	$orderby=$_GET["orderby"];
 }else $orderby="";
 
-$folderPathHTML = getFolderPathHTML($folder);
+$folderPathHTML = $folder->getFolderPathHTML();
 
 if ($folder->getAccessMode($user) < M_READ) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));

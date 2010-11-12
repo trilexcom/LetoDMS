@@ -45,6 +45,8 @@ class LetoDMS_Folder
 	var $_inheritAccess;
 	var $_defaultAccess;
 	var $_sequence;
+	var $_notifier;
+	var $_dms;
 
 	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence)
 	{
@@ -56,6 +58,8 @@ class LetoDMS_Folder
 		$this->_inheritAccess = $inheritAccess;
 		$this->_defaultAccess = $defaultAccess;
 		$this->_sequence = $sequence;
+		$this->_notifier = null;
+		$this->_dms = null;
 	}
 
 	function getFolder($id)
@@ -76,34 +80,40 @@ class LetoDMS_Folder
 		return new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 	}
 
+	function setDMS($dms) {
+		$this->_dms = $dms;
+	}
+
 	function getID() { return $this->_id; }
 
 	function getName() { return $this->_name; }
 
 	function setName($newName) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 		
 		$queryStr = "UPDATE tblFolders SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_renamed_email");
-		$message = getMLText("folder_renamed_email")."\r\n";
-		$message .= 
-			getMLText("old").": ".$this->_name."\r\n".
-			getMLText("new").": ".$newName."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_renamed_email");
+			$message = getMLText("folder_renamed_email")."\r\n";
+			$message .= 
+				getMLText("old").": ".$this->_name."\r\n".
+				getMLText("new").": ".$newName."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 		
 		$this->_name = $newName;
@@ -114,28 +124,30 @@ class LetoDMS_Folder
 	function getComment() { return $this->_comment; }
 
 	function setComment($newComment) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 		
 		$queryStr = "UPDATE tblFolders SET comment = '" . $newComment . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("comment_changed_email");
-		$message = getMLText("comment_changed_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->_name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$newComment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("comment_changed_email");
+			$message = getMLText("comment_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$newComment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		$this->_comment = $newComment;
@@ -193,21 +205,23 @@ class LetoDMS_Folder
 		}
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_moved_email");
-		$message = getMLText("folder_moved_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->_name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->_comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_moved_email");
+			$message = getMLText("folder_moved_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$this->_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		return true;
@@ -221,7 +235,7 @@ class LetoDMS_Folder
 	}
 
 	function setOwner($newOwner) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 
 		$oldOwner = $this->getOwner();
 
@@ -229,24 +243,26 @@ class LetoDMS_Folder
 		if (!$db->getResult($queryStr))
 			return false;
 
-		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("ownership_changed_email");
-		$message = getMLText("ownership_changed_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->_name."\r\n".
-			getMLText("old").": ".$oldOwner->getFullName()."\r\n".
-			getMLText("new").": ".$newOwner->getFullName()."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$this->_comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			// Send notification to subscribers.
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("ownership_changed_email");
+			$message = getMLText("ownership_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
+				getMLText("new").": ".$newOwner->getFullName()."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$this->_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		$this->_ownerID = $newOwner->getID();
@@ -267,27 +283,29 @@ class LetoDMS_Folder
 	}
 
 	function setDefaultAccess($mode) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 
 		$queryStr = "UPDATE tblFolders set defaultAccess = " . $mode . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
-		$message = getMLText("access_permission_changed_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->_name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			// Send notification to subscribers.
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		$this->_defaultAccess = $mode;
@@ -311,7 +329,7 @@ class LetoDMS_Folder
 	function inheritsAccess() { return $this->_inheritAccess; }
 
 	function setInheritAccess($inheritAccess) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 
 		$inheritAccess = ($inheritAccess) ? "1" : "0";
 
@@ -321,21 +339,23 @@ class LetoDMS_Folder
 
 		$this->_inheritAccess = $inheritAccess;
 
-		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("access_permission_changed_email");
-		$message = getMLText("access_permission_changed_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->_name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			// Send notification to subscribers.
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->_name."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		// If any of the notification subscribers no longer have read access,
@@ -388,7 +408,7 @@ class LetoDMS_Folder
 	}
 
 	function addSubFolder($name, $comment, $owner, $sequence) {
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 
 		//inheritAccess = true, defaultAccess = M_READ
 		$queryStr = "INSERT INTO tblFolders (name, parent, comment, owner, inheritAccess, defaultAccess, sequence) ".
@@ -399,22 +419,24 @@ class LetoDMS_Folder
 		unset($this->_subFolders);
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("new_subfolder_email");
-		$message = getMLText("new_subfolder_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($newFolder)."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			getMLText("user").": ".$owner->getFullName()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$newFolder->getID()."\r\n";
+		if($this->_notifier) {
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("new_subfolder_email");
+			$message = getMLText("new_subfolder_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$name."\r\n".
+				getMLText("folder").": ".$newFolder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				getMLText("user").": ".$owner->getFullName()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$newFolder->getID()."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		return $newFolder;
@@ -510,7 +532,7 @@ class LetoDMS_Folder
 	// $comment will be used for both document and version leaving empty the version_comment 
 	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") 
 	{
-		GLOBAL $db, $user, $settings;
+		GLOBAL $db, $user;
 		
 		$expires = (!$expires) ? 0 : $expires;
 		
@@ -543,22 +565,24 @@ class LetoDMS_Folder
 		}
 
 		// Send notification to subscribers.
-		$this->getNotifyList();
-		$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("new_document_email");
-		$message = getMLText("new_document_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$name."\r\n".
-			getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			getMLText("comment_for_current_version").": ".$version_comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+		if($this->_notifier) {
+			$this->getNotifyList();
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("new_document_email");
+			$message = getMLText("new_document_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$name."\r\n".
+				getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				getMLText("comment_for_current_version").": ".$version_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
-		foreach ($this->_notifyList["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
+			foreach ($this->_notifyList["groups"] as $grp) {
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 
 		return array($document, $res);
@@ -600,23 +624,23 @@ class LetoDMS_Folder
 			return false;
 
 		// Send notification to subscribers.
-		if ($send_email){
+		if ($send_email && $this->_notifier){
 		
 			$this->getNotifyList();
-			$subject = $settings->_siteName.": ".$this->_name." - ".getMLText("folder_deleted_email");
+			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_deleted_email");
 			$message = getMLText("folder_deleted_email")."\r\n";
 			$message .= 
 				getMLText("name").": ".$this->_name."\r\n".
 				getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
 				getMLText("comment").": ".$this->_comment."\r\n".
-				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			LetoDMS_Email::toList($user, $this->_notifyList["users"], $subject, $message);
+			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
 			foreach ($this->_notifyList["groups"] as $grp) {
-				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+				$this->_notifier->toGroup($user, $grp, $subject, $message);
 			}
 		}
 
@@ -800,7 +824,6 @@ class LetoDMS_Folder
 	}
 
 	function getGroupAccessMode($group) {
-		GLOBAL $settings;
 
 		$highestPrivileged = M_NONE;
 		$foundInACL = false;
@@ -959,23 +982,24 @@ class LetoDMS_Folder
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
-		$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_added_email");
-		$message = getMLText("notify_added_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->getName()."\r\n".
-			getMLText("folder").": ".$path."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_added_email");
+			$message = getMLText("notify_added_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->getName()."\r\n".
+				getMLText("folder").": ".$path."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		if ($isUser) {
-			LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
-		}
-		else {
-			LetoDMS_Email::toGroup($user, $obj, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			if ($isUser) {
+				$this->_notifier->toIndividual($user, $obj, $subject, $message);
+			}
+			else {
+				$this->_notifier->toGroup($user, $obj, $subject, $message);
+			}
 		}
 
 		unset($this->_notifyList);
@@ -1048,22 +1072,24 @@ class LetoDMS_Folder
 			if ($i +1 < count($folderPath))
 				$path .= " / ";
 		}
-		$subject = $settings->_siteName.": ".$this->getName()." - ".getMLText("notify_deleted_email");
-		$message = getMLText("notify_deleted_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$this->getName()."\r\n".
-			getMLText("folder").": ".$path."\r\n".
-			getMLText("comment").": ".$this->getComment()."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
+		if($this->_notifier) {
+			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_deleted_email");
+			$message = getMLText("notify_deleted_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$this->getName()."\r\n".
+				getMLText("folder").": ".$path."\r\n".
+				getMLText("comment").": ".$this->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		if ($isUser) {
-			LetoDMS_Email::toIndividual($user, $obj, $subject, $message);
-		}
-		else {
-			LetoDMS_Email::toGroup($user, $obj, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			if ($isUser) {
+				$this->_notifier->toIndividual($user, $obj, $subject, $message);
+			}
+			else {
+				$this->_notifier->toGroup($user, $obj, $subject, $message);
+			}
 		}
 
 		unset($this->_notifyList);
