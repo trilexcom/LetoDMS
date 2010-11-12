@@ -401,7 +401,8 @@ class LetoDMS_Folder
 			
 			$this->_subFolders = array();
 			for ($i = 0; $i < count($resArr); $i++)
-				$this->_subFolders[$i] = new LetoDMS_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
+//				$this->_subFolders[$i] = new LetoDMS_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
+				$this->_subFolders[$i] = $this->_dms->getFolder($resArr[$i]["id"]);
 		}
 		
 		return $this->_subFolders;
@@ -523,7 +524,8 @@ class LetoDMS_Folder
 			
 			$this->_documents = array();
 			foreach ($resArr as $row) {
-				array_push($this->_documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
+//				array_push($this->_documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
+				array_push($this->_documents, $this->_dms->getDocument($row["id"]));
 			}
 		}
 		return $this->_documents;

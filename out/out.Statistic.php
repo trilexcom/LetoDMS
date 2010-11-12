@@ -210,7 +210,7 @@ print "</ul>\n";
 print "</td><td>\n";
 
 print "<ul>\n";
-printFolder(getFolder($settings->_rootFolderID));
+printFolder($dms->getFolder($settings->_rootFolderID));
 print "</ul>\n";
 
 print "</td></tr>";
