@@ -35,13 +35,13 @@ if (!$settings->_enableUsersView) {
 	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
 }
 
-$allUsers = getAllUsers();
+$allUsers = $dms->getAllUsers();
 
 if (is_bool($allUsers)) {
 	UI::exitError(getMLText("my_account"),getMLText("internal_error"));
 }
 
-$groups = getAllGroups();
+$groups = $dms->getAllGroups();
 
 if (is_bool($groups)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("internal_error"));

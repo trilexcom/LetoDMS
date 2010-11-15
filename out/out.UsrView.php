@@ -35,7 +35,7 @@ if (!$settings->_enableUsersView) {
 	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
 }
 
-$users = getAllUsers();
+$users = $dms->getAllUsers();
 
 if (is_bool($users)) {
 	UI::exitError(getMLText("my_account"),getMLText("internal_error"));
