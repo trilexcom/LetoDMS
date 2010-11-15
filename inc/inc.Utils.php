@@ -144,12 +144,12 @@ function createVersionigFile($document)
 	
 		switch ($r["type"]) {
 			case 0: // Reviewer is an individual.
-				$required = getUser($r["required"]);
+				$required = $dms->getUser($r["required"]);
 				if (!is_object($required)) $reqName = getMLText("unknown_user")." = ".$r["required"];
 				else $reqName =  getMLText("user")." = ".$required->getFullName();
 				break;
 			case 1: // Reviewer is a group.
-				$required = getGroup($r["required"]);
+				$required = $dms->getGroup($r["required"]);
 				if (!is_object($required)) $reqName = getMLText("unknown_group")." = ".$r["required"];
 				else $reqName = getMLText("group")." = ".$required->getName();
 				break;
@@ -178,12 +178,12 @@ function createVersionigFile($document)
 	
 		switch ($r["type"]) {
 			case 0: // Reviewer is an individual.
-				$required = getUser($r["required"]);
+				$required = $dms->getUser($r["required"]);
 				if (!is_object($required)) $reqName = getMLText("unknown_user")." = ".$r["required"];
 				else $reqName =  getMLText("user")." = ".$required->getFullName();
 				break;
 			case 1: // Reviewer is a group.
-				$required = getGroup($r["required"]);
+				$required = $dms->getGroup($r["required"]);
 				if (!is_object($required)) $reqName = getMLText("unknown_group")." = ".$r["required"];
 				else $reqName = getMLText("group")." = ".$required->getName();
 				break;

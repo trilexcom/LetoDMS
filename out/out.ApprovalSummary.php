@@ -23,8 +23,6 @@ include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDocument.php");
 include("../inc/inc.ClassFolder.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");

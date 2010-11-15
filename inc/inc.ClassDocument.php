@@ -435,7 +435,7 @@ class LetoDMS_Document { /* {{{ */
 
 	function getOwner() {
 		if (!isset($this->_owner))
-			$this->_owner = getUser($this->_ownerID);
+			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
 	}
 
@@ -687,7 +687,7 @@ class LetoDMS_Document { /* {{{ */
 			return false;
 		
 		if (!isset($this->_lockingUser))
-			$this->_lockingUser = getUser($this->_locked);
+			$this->_lockingUser = $this->_dms->getUser($this->_locked);
 		return $this->_lockingUser;
 	}
 
@@ -807,7 +807,7 @@ class LetoDMS_Document { /* {{{ */
 		unset($this->_accessList);
 
 		// Update the notify list, if necessary.
-		$mode = ($isUser ? $this->getAccessMode(getUser($userOrGroupID)) : $this->getGroupAccessMode(getGroup($userOrGroupID)));
+		$mode = ($isUser ? $this->getAccessMode($this->_dms->getUser($userOrGroupID)) : $this->getGroupAccessMode($this->_dms->getGroup($userOrGroupID)));
 		if ($mode == M_NONE) {
 			$this->removeNotify($userOrGroupID, $isUser);
 		}
@@ -913,9 +913,9 @@ class LetoDMS_Document { /* {{{ */
 			foreach ($resArr as $row)
 			{
 				if ($row["userID"] != -1)
-					array_push($this->_notifyList["users"], getUser($row["userID"]) );
+					array_push($this->_notifyList["users"], $this->_dms->getUser($row["userID"]) );
 				else //if ($row["groupID"] != -1)
-					array_push($this->_notifyList["groups"], getGroup($row["groupID"]) );
+					array_push($this->_notifyList["groups"], $this->_dms->getGroup($row["groupID"]) );
 			}
 		}
 		return $this->_notifyList;
@@ -937,7 +937,7 @@ class LetoDMS_Document { /* {{{ */
 		//
 		// Verify that user / group exists.
 		//
-		$obj = ($isUser ? getUser($userOrGroupID) : getGroup($userOrGroupID));
+		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}
@@ -1071,7 +1071,7 @@ class LetoDMS_Document { /* {{{ */
 		//
 		// Verify that user / group exists.
 		//
-		$obj = ($isUser ? getUser($userOrGroupID) : getGroup($userOrGroupID));
+		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}
@@ -1200,7 +1200,7 @@ class LetoDMS_Document { /* {{{ */
 		foreach (array("i", "g") as $i){
 			if (isset($reviewers[$i])) {
 				foreach ($reviewers[$i] as $reviewerID) {
-					$reviewer=($i=="i" ?getUser($reviewerID) : getGroup($reviewerID));
+					$reviewer=($i=="i" ?$this->_dms->getUser($reviewerID) : $this->_dms->getGroup($reviewerID));
 					$res = ($i=="i" ? $docResultSet->_content->addIndReviewer($reviewer, $user, true) : $docResultSet->_content->addGrpReviewer($reviewer, $user, true));
 					$docResultSet->addReviewer($reviewer, $i, $res);
 					// If no error is returned, or if the error is just due to email
@@ -1218,7 +1218,7 @@ class LetoDMS_Document { /* {{{ */
 		foreach (array("i", "g") as $i){
 			if (isset($approvers[$i])) {
 				foreach ($approvers[$i] as $approverID) {
-					$approver=($i=="i" ? getUser($approverID) : getGroup($approverID));
+					$approver=($i=="i" ? $this->_dms->getUser($approverID) : $this->_dms->getGroup($approverID));
 					$res=($i=="i" ? $docResultSet->_content->addIndApprover($approver, $user, !$pendingReview) : $docResultSet->_content->addGrpApprover($approver, $user, !$pendingReview));
 					$docResultSet->addApprover($approver, $i, $res);
 					if ($res==0 || $res=-3 || $res=-4) {
@@ -1782,7 +1782,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 	function getUser()
 	{
 		if (!isset($this->_user))
-			$this->_user = getUser($this->_userID);
+			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
 	}
 	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
@@ -1951,7 +1951,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		
 			$recipients = array();
 			foreach ($emailList as $eID) {
-				$eU = getUser($eID);
+				$eU = $this->_document->_dms->getUser($eID);
 				$recipients[] = $eU;
 			}
 			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("version_deleted_email");
@@ -2042,7 +2042,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 				getMLText("comment").": ".$this->_document->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
 
-			$uu = (is_null($updateUser) ? getUser($settings->_adminID) : $updateUser);
+			$uu = (is_null($updateUser) ? $this->_document->_dms->getUser($settings->_adminID) : $updateUser);
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
@@ -2647,7 +2647,7 @@ class LetoDMS_DocumentLink { /* {{{ */
 	function getUser()
 	{
 		if (!isset($this->_user))
-			$this->_user = LetoDMS_User::getUser($this->_userID);
+			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
 	}
 
@@ -2707,7 +2707,7 @@ class LetoDMS_DocumentFile { /* {{{ */
 	function getUser()
 	{
 		if (!isset($this->_user))
-			$this->_user = getUser($this->_userID);
+			$this->_user = $this->_dms->getUser($this->_userID);
 		return $this->_user;
 	}
 	

@@ -21,8 +21,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -84,7 +82,7 @@ if (isset($_GET["userid"])) {
 		$userid = -1;
 	}
 	else {
-		if (!is_object(getUser($_GET["userid"]))) {
+		if (!is_object($dms->getUser($_GET["userid"]))) {
 			UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("unknown_user"));
 		}
 		$userid = $_GET["userid"];
@@ -99,7 +97,7 @@ if (isset($_GET["groupid"])) {
 		$groupid = -1;
 	}
 	else {
-		if (!is_object(getGroup($_GET["groupid"]))) {
+		if (!is_object($dms->getGroup($_GET["groupid"]))) {
 			UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("unknown_group"));
 		}
 		$groupid = $_GET["groupid"];
@@ -115,7 +113,7 @@ if ($action == "setowner") {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("unknown_user"));	
 	}
 	
-	$newOwner = getUser($_GET["ownerid"]);
+	$newOwner = $dms->getUser($_GET["ownerid"]);
 	
 	if (!is_object($newOwner)) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("unknown_user"));	

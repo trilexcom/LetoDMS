@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -195,7 +193,7 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		$required = null;
 		switch ($r["type"]) {
 			case 0: // Reviewer is an individual.
-				$required = getUser($r["required"]);
+				$required = $dms->getUser($r["required"]);
 				if (!is_object($required)) {
 					$reqName = getMLText("unknown_user")." '".$r["required"]."'";
 				}
@@ -204,7 +202,7 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 				}
 				break;
 			case 1: // Reviewer is a group.
-				$required = getGroup($r["required"]);
+				$required = $dms->getGroup($r["required"]);
 				if (!is_object($required)) {
 					$reqName = getMLText("unknown_group")." '".$r["required"]."'";
 				}
@@ -216,7 +214,7 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
 		print "<td><ul class=\"documentDetail\"><li>".$r["date"]."</li>";
-		$updateUser = getUser($r["userID"]);
+		$updateUser = $dms->getUser($r["userID"]);
 		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$r["userID"]."'")."</li></ul></td>";
 		print "<td>".$r["comment"]."</td>\n";
 		print "<td>".getReviewStatusText($r["status"])."</td>\n";
@@ -241,7 +239,7 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		$required = null;
 		switch ($a["type"]) {
 			case 0: // Approver is an individual.
-				$required = getUser($a["required"]);
+				$required = $dms->getUser($a["required"]);
 				if (!is_object($required)) {
 					$reqName = getMLText("unknown_user")." '".$r["required"]."'";
 				}
@@ -250,7 +248,7 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 				}
 				break;
 			case 1: // Approver is a group.
-				$required = getGroup($a["required"]);
+				$required = $dms->getGroup($a["required"]);
 				if (!is_object($required)) {
 					$reqName = getMLText("unknown_group")." '".$r["required"]."'";
 				}
@@ -262,7 +260,7 @@ if (is_array($approvalStatus) && count($approvalStatus)>0) {
 		print "<tr>\n";
 		print "<td>".$reqName."</td>\n";
 		print "<td><ul class=\"documentDetail\"><li>".$a["date"]."</li>";
-		$updateUser = getUser($a["userID"]);
+		$updateUser = $dms->getUser($a["userID"]);
 		print "<li>".(is_object($updateUser) ? $updateUser->getFullName() : "unknown user id '".$a["userID"]."'")."</li></ul></td>";
 		print "<td>".$a["comment"]."</td>\n";
 		print "<td>".getApprovalStatusText($a["status"])."</td>\n";

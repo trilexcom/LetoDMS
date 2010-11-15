@@ -21,8 +21,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -58,7 +56,7 @@ if (isset($_GET["groupid"]) && (!is_numeric($_GET["groupid"]) || $_GET["groupid"
 $groupid = $_GET["groupid"];
 
 if (isset($_GET["groupid"])&&$_GET["groupid"]!=-1){
-	$group=getGroup($groupid);
+	$group=$dms->getGroup($groupid);
 	if (!$group->isMember($user,true) && !$user->isAdmin())
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));
 }

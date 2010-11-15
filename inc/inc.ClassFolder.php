@@ -230,7 +230,7 @@ class LetoDMS_Folder
 	function getOwner()
 	{
 		if (!isset($this->_owner))
-			$this->_owner = getUser($this->_ownerID);
+			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
 	}
 
@@ -756,7 +756,7 @@ class LetoDMS_Folder
 		unset($this->_accessList);
 
 		// Update the notify list, if necessary.
-		$mode = ($isUser ? $this->getAccessMode(getUser($userOrGroupID)) : $this->getGroupAccessMode(getGroup($userOrGroupID)));
+		$mode = ($isUser ? $this->getAccessMode($this->_dms->getUser($userOrGroupID)) : $this->getGroupAccessMode($this->_dms->getGroup($userOrGroupID)));
 		if ($mode == M_NONE) {
 			$this->removeNotify($userOrGroupID, $isUser);
 		}
@@ -864,9 +864,9 @@ class LetoDMS_Folder
 			foreach ($resArr as $row)
 			{
 				if ($row["userID"] != -1)
-					array_push($this->_notifyList["users"], getUser($row["userID"]) );
+					array_push($this->_notifyList["users"], $this->_dms->getUser($row["userID"]) );
 				else //if ($row["groupID"] != -1)
-					array_push($this->_notifyList["groups"], getGroup($row["groupID"]) );
+					array_push($this->_notifyList["groups"], $this->_dms->getGroup($row["groupID"]) );
 			}
 		}
 		return $this->_notifyList;
@@ -888,7 +888,7 @@ class LetoDMS_Folder
 		//
 		// Verify that user / group exists.
 		//
-		$obj = ($isUser ? getUser($userOrGroupID) : getGroup($userOrGroupID));
+		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}
@@ -1021,7 +1021,7 @@ class LetoDMS_Folder
 		//
 		// Verify that user / group exists.
 		//
-		$obj = ($isUser ? getUser($userOrGroupID) : getGroup($userOrGroupID));
+		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}

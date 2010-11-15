@@ -28,6 +28,8 @@
 
 require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
+require_once("inc.ClassGroup.php");
+require_once("inc.ClassUser.php");
 
 /**
  * Class to represent the complete document management
@@ -46,6 +48,12 @@ class LetoDMS_DMS {
 	protected $db;
 
 	/**
+	 * @var object $user reference to currently logged in user
+	 * @access public
+	 */
+	public $user;
+
+	/**
 	 * @var string $contentDir location in file system where all the
 	 *      data stores are located.
 	 * @access public
@@ -60,10 +68,52 @@ class LetoDMS_DMS {
 	 */
 	public $contentOffsetDir;
 
+	/**
+	 * @var integer $guestID ID of user treated as a guest with limited
+	 *      access rights
+	 * @access public
+	 */
+	public $guestID;
+
+	/**
+	 * @var integer $adminID ID of user treated as an administrator with full
+	 *      access rights
+	 * @access public
+	 */
+	public $adminID;
+
 	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
 		$this->db = $db;
 		$this->contentDir = $contentDir;
 		$this->contentOffsetDir = $contentOffsetDir;
+	} /* }}} */
+
+	/**
+	 * Login as a user
+	 *
+	 * Checks if the given credentials are valid returns a user object.
+	 * It also sets the property $user for later access on the currently
+	 * logged in user
+	 *
+	 * @param string $username login name of user
+	 * @param string $password password of user
+	 *
+	 * @return object instance of class LetoDMS_User or false
+	 */
+	function login($username, $password) { /* {{{ */
+	} /* }}} */
+
+	/**
+	 * Set the logged in user
+	 *
+	 * If user authentication was externally done, this function can
+	 * be used to tell the dms who is currently logged in.
+	 *
+	 * @param object $user
+	 *
+	 */
+	function setUser($user) { /* {{{ */
+		$this->user = $user;
 	} /* }}} */
 
 	/**
@@ -297,5 +347,119 @@ class LetoDMS_DMS {
 		$folder->setDMS($this);
 		return $folder;
 	} /* }}} */
+
+	/**
+	 * Return a user by its id
+	 *
+	 * This function retrieves a user from the database by its id.
+	 *
+	 * @param integer $id internal id of user
+	 * @return object instance of LetoDMS_User or false
+	 */
+	function getUser($id) { /* {{{ */
+		if (!is_numeric($id))
+			return false;
+		
+		$queryStr = "SELECT * FROM tblUsers WHERE id = " . $id;
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false) return false;
+		if (count($resArr) != 1) return false;
+		
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+	} /* }}} */
+
+	/**
+	 * Return a user by its login
+	 *
+	 * This function retrieves a user from the database by its login.
+	 *
+	 * @param integer $login internal login of user
+	 * @return object instance of LetoDMS_User or false
+	 */
+	function getUserByLogin($login) { /* {{{ */
+		$queryStr = "SELECT * FROM tblUsers WHERE login = '".$login."'";
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false) return false;
+		if (count($resArr) != 1) return false;
+			
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+	} /* }}} */
+
+	function getAllUsers() { /* {{{ */
+		$queryStr = "SELECT * FROM tblUsers ORDER BY login";
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		
+		$users = array();
+		
+		for ($i = 0; $i < count($resArr); $i++)
+			$users[$i] = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
+		
+		return $users;
+	} /* }}} */
+	
+	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isHidden=0) { /* {{{ */
+		if (is_object($this->getUserByLogin($login))) {
+			return false;
+		}
+		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, isAdmin, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$isAdmin."', '".$isHidden."')";
+		$res = $this->db->getResult($queryStr);
+		if (!$res)
+			return false;
+		
+		return $this->getUser($this->db->getInsertID());
+	} /* }}} */
+
+	function getGroup($id) { /* {{{ */
+		if (!is_numeric($id))
+			die ("invalid groupid");
+		
+		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
+			return false;
+		
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+	} /* }}} */
+
+	function getGroupByName($name) { /* {{{ */
+		$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
+			return false;
+		
+		$resArr = $resArr[0];
+		
+		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+	} /* }}} */
+
+	function addGroup($name, $comment) { /* {{{ */
+		if (is_object($this->getGroupByName($name))) {
+			return false;
+		}
+
+		$queryStr = "INSERT INTO tblGroups (name, comment) VALUES ('".$name."', '" . $comment . "')";
+		if (!$this->db->getResult($queryStr))
+			return false;
+		
+		return $this->getGroup($this->db->getInsertID());
+	} /* }}} */
+
 }
 ?>

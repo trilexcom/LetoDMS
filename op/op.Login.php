@@ -20,10 +20,10 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
 include("../inc/inc.Language.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.ClassUI.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.ClassEmail.php");
 
 function _printMessage($heading, $message) {
@@ -56,7 +56,7 @@ if (get_magic_quotes_gpc()) {
 	$pwd = stripslashes($pwd);
 }
 
-$guestUser = getUser($settings->_guestID);
+$guestUser = $dms->getUser($settings->_guestID);
 if ((!isset($pwd) || strlen($pwd)==0) && ($login != $guestUser->getLogin()))  {
 	_printMessage(getMLText("login_error_title"),	"<p>".getMLText("login_error_text")."</p>\n".
 		"<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
@@ -138,7 +138,7 @@ if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 		if ($bind) {
 			// Successfully authenticated. Now check to see if the user exists within
 			// the database. If not, add them in, but do not add their password.
-			$user = getUserByLogin($login);
+			$user = $dms->getUserByLogin($login);
 			if (is_bool($user) && !$settings->_restricted) {
 				// Retrieve the user's LDAP information.
 				
@@ -210,7 +210,7 @@ if (is_bool($user)) {
 	}
 	
 	$userid = $resArr["id"];
-	$user = getUser($userid);
+	$user = $dms->getUser($userid);
 }
 
 

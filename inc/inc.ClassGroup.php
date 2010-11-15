@@ -22,14 +22,6 @@
 \**********************************************************************/
 
 
-function getGroup($id) {
-	return LetoDMS_Group::getGroup($id);
-}
-
-function getGroupByName($name) {
-	return LetoDMS_Group::getGroupByName($name);
-}
-
 function getAllGroups() {
 	return LetoDMS_Group::getAllGroups();
 }
@@ -55,42 +47,6 @@ class LetoDMS_Group
 		$this->_comment = $comment;
 	}
 
-	function getGroup($id)
-	{
-		global $db;
-		
-		if (!is_numeric($id))
-			die ("invalid groupid");
-		
-		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
-		$resArr = $db->getResultArray($queryStr);
-		
-		if (is_bool($resArr) && $resArr == false)
-			return false;
-		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
-			return false;
-		
-		$resArr = $resArr[0];
-		
-		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
-	}
-
-	function getGroupByName($name) {
-		global $db;
-		
-		$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
-		$resArr = $db->getResultArray($queryStr);
-		
-		if (is_bool($resArr) && $resArr == false)
-			return false;
-		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
-			return false;
-		
-		$resArr = $resArr[0];
-		
-		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
-	}
-
 	function getAllGroups()
 	{
 		global $db;
@@ -109,21 +65,6 @@ class LetoDMS_Group
 		return $groups;
 	}
 
-
-	function addGroup($name, $comment)
-	{
-		global $db;
-
-		if (is_object(getGroupByName($name))) {
-			return false;
-		}
-
-		$queryStr = "INSERT INTO tblGroups (name, comment) VALUES ('".$name."', '" . $comment . "')";
-		if (!$db->getResult($queryStr))
-			return false;
-		
-		return self::getGroup($db->getInsertID());
-	}
 
 	function getID() { return $this->_id; }
 

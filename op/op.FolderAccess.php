@@ -21,8 +21,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -83,7 +81,7 @@ if (isset($_GET["userid"])) {
 		$userid = -1;
 	}
 	else {
-		if (!is_object(getUser($_GET["userid"]))) {
+		if (!is_object($dms->getUser($_GET["userid"]))) {
 			UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("unknown_user"));
 		}
 		$userid = $_GET["userid"];
@@ -114,7 +112,7 @@ if ($action == "setowner") {
 	if (!isset($_GET["ownerid"]) || !is_numeric($_GET["ownerid"]) || $_GET["ownerid"]<1) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("unknown_user"));
 	}
-	$newOwner = getUser($_GET["ownerid"]);
+	$newOwner = $dms->getUser($_GET["ownerid"]);
 	if (!is_object($newOwner)) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("unknown_user"));
 	}

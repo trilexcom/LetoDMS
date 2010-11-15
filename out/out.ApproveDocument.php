@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -147,7 +145,7 @@ if ($indApprover) {
 		printApprovalStatusText($approvalStatus["indstatus"][0]["status"]);
 		print "</td>";
 		print "<td>".$approvalStatus["indstatus"][0]["comment"]."</td>";
-		$indUser = getUser($approvalStatus["indstatus"][0]["userID"]);
+		$indUser = $dms->getUser($approvalStatus["indstatus"][0]["userID"]);
 		print "<td>".$approvalStatus["indstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
 		print "</tr></tbody></table><br>\n";
 	}
@@ -185,7 +183,7 @@ else if ($grpApprover) {
 		printApprovalStatusText($approvalStatus["grpstatus"][0]["status"]);
 		print "</td>";
 		print "<td>".$approvalStatus["grpstatus"][0]["comment"]."</td>";
-		$indUser = getUser($approvalStatus["grpstatus"][0]["userID"]);
+		$indUser = $dms->getUser($approvalStatus["grpstatus"][0]["userID"]);
 		print "<td>".$approvalStatus["grpstatus"][0]["date"]." - ". $indUser->getFullname() ."</td>";
 		print "</tr></tbody></table><br>\n";
 	}
@@ -194,7 +192,7 @@ else if ($grpApprover) {
 	foreach ($approvalStatus["grpstatus"] as $grp) {
 		if ($grp["status"]!=-2) {
 		
-			$g=getGroup($grpStatus["required"]);
+			$g=$dms->getGroup($grpStatus["required"]);
 
 			if ($grp["status"] != -2) {
 				$grpSelectBox .= (strlen($grpSelectBox)==0 ? "": "<option value=''></option>").

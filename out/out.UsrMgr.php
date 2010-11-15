@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -35,7 +33,7 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-$users = getAllUsers();
+$users = $dms->getAllUsers();
 
 if (is_bool($users)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("internal_error"));

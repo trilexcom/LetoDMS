@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -39,7 +37,7 @@ if (!isset($_GET["groupid"]) || !is_numeric($_GET["groupid"]) || intval($_GET["g
 	UI::exitError(getMLText("rm_group"),getMLText("invalid_user_id"));
 }
 $groupid = $_GET["groupid"];
-$currGroup = getGroup($groupid);
+$currGroup = $dms->getGroup($groupid);
 
 if (!is_object($currGroup)) {
 	UI::exitError(getMLText("rm_group"),getMLText("invalid_group_id"));

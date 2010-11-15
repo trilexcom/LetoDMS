@@ -21,15 +21,13 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
 include("../inc/inc.Authentication.php");
 
 $userid = sanitizeString($_GET["userid"]);
-$myUser = getUser($userid); //es soll ja auch möglich sein, die bilder von anderen anzuzeigen
+$myUser = $dms->getUser($userid); //es soll ja auch möglich sein, die bilder von anderen anzuzeigen
 
 if (!$myUser->hasImage())
 	UI::exitError(getMLText("user_image"),getMLText("no_user_image"));

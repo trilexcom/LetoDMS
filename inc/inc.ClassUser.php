@@ -19,51 +19,10 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 /**********************************************************************\
-|                  statische, User-bezogene Funktionen                 |
-\**********************************************************************/
-
-function getUser($id)
-{
-	return LetoDMS_User::getUser($id);
-}
-
-
-function getUserByLogin($login)
-{
-	return LetoDMS_User::getUserByLogin($login);
-}
-
-
-function getAllUsers()
-{
-	global $db;
-	
-	$queryStr = "SELECT * FROM tblUsers ORDER BY login";
-	$resArr = $db->getResultArray($queryStr);
-	
-	if (is_bool($resArr) && $resArr == false)
-		return false;
-	
-	$users = array();
-	
-	for ($i = 0; $i < count($resArr); $i++)
-		$users[$i] = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
-	
-	return $users;
-}
-
-
-function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isHidden=0) {
-	return LetoDMS_User::addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isHidden);
-}
-
-
-/**********************************************************************\
 |                            User-Klasse                               |
 \**********************************************************************/
 
-class LetoDMS_User
-{
+class LetoDMS_User {
 	var $_id;
 	var $_login;
 	var $_pwd;
@@ -87,52 +46,6 @@ class LetoDMS_User
 		$this->_comment = $comment;
 		$this->_isAdmin = $isAdmin;
 		$this->_isHidden = $isHidden;		
-	}
-
-	function getUser($id) {
-		GLOBAL $db;
-		
-		if (!is_numeric($id))
-			return false;
-		
-		$queryStr = "SELECT * FROM tblUsers WHERE id = " . $id;
-		$resArr = $db->getResultArray($queryStr);
-		
-		if (is_bool($resArr) && $resArr == false) return false;
-		if (count($resArr) != 1) return false;
-		
-		$resArr = $resArr[0];
-		
-		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
-	}
-
-	function getUserByLogin($login)
-	{
-		global $db;
-		
-		$queryStr = "SELECT * FROM tblUsers WHERE login = '".$login."'";
-		$resArr = $db->getResultArray($queryStr);
-		
-		if (is_bool($resArr) && $resArr == false) return false;
-		if (count($resArr) != 1) return false;
-			
-		$resArr = $resArr[0];
-		
-		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
-	}
-
-	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isHidden=0) {
-		global $db;
-	
-		if (is_object(self::getUserByLogin($login))) {
-			return false;
-		}
-		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, isAdmin, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$isAdmin."', '".$isHidden."')";
-		$res = $db->getResult($queryStr);
-		if (!$res)
-			return false;
-		
-		return self::getUser($db->getInsertID());
 	}
 
 	function getID() { return $this->_id; }

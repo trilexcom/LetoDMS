@@ -23,8 +23,6 @@ include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassEmail.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -152,7 +150,7 @@ else if ($_POST["reviewType"] == "grp") {
 	}
 	else {
 		// Send an email notification to the document updater.
-		$grp = getGroup($grpStatus["required"]);
+		$grp = $dms->getGroup($grpStatus["required"]);
 		
 		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
 		$message = getMLText("review_submit_email")."\r\n";
@@ -251,12 +249,12 @@ if ($_POST["reviewStatus"]==-1){
 					if ($dastat["status"] == 0) {
 						if ($dastat["type"] == 0) {
 
-							$approver = getUser($dastat["required"]);
+							$approver = $dms->getUser($dastat["required"]);
 							LetoDMS_Email::toIndividual($document->getOwner(), $approver, $subject, $message);
 						}
 						else if ($dastat["type"] == 1) {
 						
-							$group = getGroup($dastat["required"]);
+							$group = $dms->getGroup($dastat["required"]);
 							LetoDMS_Email::toGroup($document->getOwner(), $group, $subject, $message);
 						}
 					}

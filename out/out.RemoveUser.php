@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -46,7 +44,7 @@ if (($userid==$settings->_adminID)||($userid==$settings->_guestID)) {
 	UI::exitError(getMLText("rm_user"),getMLText("access_denied"));
 }
 
-$currUser = getUser($userid);
+$currUser = $dms->getUser($userid);
 
 if (!is_object($currUser)) {
 	UI::exitError(getMLText("rm_user"),getMLText("invalid_user_id"));
@@ -72,7 +70,7 @@ UI::contentContainerStart();
 <option value="<?php print $settings->_adminID; ?>"><?php echo getMLText("admin")?>
 
 <?php
-	$users = getAllUsers();
+	$users = $dms->getAllUsers();
 	foreach ($users as $currUser) {
 		if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID) || ($currUser->getID() == $userid) )
 			continue;

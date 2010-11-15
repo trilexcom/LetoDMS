@@ -23,8 +23,6 @@ include("../inc/inc.Utils.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -50,11 +48,11 @@ if ($action == "adduser") {
 	$isAdmin = (isset($_POST["isadmin"]) && $_POST["isadmin"]==1 ? 1 : 0);
 	$isHidden = (isset($_POST["ishidden"]) && $_POST["ishidden"]==1 ? 1 : 0);
 
-	if (is_object(getUserByLogin($login))) {
+	if (is_object($dms->getUserByLogin($login))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("user_exists"));
 	}
 
-	$newUser = addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin, $isHidden);
+	$newUser = $dms->addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin, $isHidden);
 	if ($newUser) {
 
 		if (isset($_FILES["userfile"]) && is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
@@ -118,7 +116,7 @@ else if ($action == "removeuser") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
-	$userToRemove = getUser($userid);
+	$userToRemove = $dms->getUser($userid);
 	if (!is_object($userToRemove)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
@@ -140,7 +138,7 @@ else if ($action == "edituser") {
 	}
 	
 	$userid=$_POST["userid"];
-	$editedUser = getUser($userid);
+	$editedUser = $dms->getUser($userid);
 	
 	if (!is_object($editedUser)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));

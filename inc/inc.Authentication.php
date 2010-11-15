@@ -49,12 +49,14 @@ $queryStr = "UPDATE tblSessions SET lastAccess = " . mktime() . " WHERE id = '" 
 if (!$db->getResult($queryStr))
 	die ("Error while updating tblSessions: " . $db->getErrorMsg());
 
-$user = getUser($resArr["userID"]);
+$user = $dms->getUser($resArr["userID"]);
 if (!is_object($user)) {
 	setcookie("mydms_session", $dms_session, time()-3600, $settings->_httpRoot); //delete cookie
 	header("Location: " . $settings->_httpRoot . "out/out.Login.php?referuri=".$refer);
 	exit;
 }
+
+$dms->setUser($user);
 
 $theme = $resArr["theme"];
 include $settings->_rootDir . "languages/" . $resArr["language"] . "/lang.inc";

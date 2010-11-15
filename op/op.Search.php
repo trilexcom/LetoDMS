@@ -21,8 +21,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -162,7 +160,7 @@ UI::contentHeading(getMLText("search_results"));
 // document owner.
 $owner = null;
 if (isset($_GET["ownerid"]) && is_numeric($_GET["ownerid"]) && $_GET["ownerid"]!=-1) {
-	$owner = LetoDMS_getUser($_GET["ownerid"]);
+	$owner = $dms->getUser($_GET["ownerid"]);
 	if (!is_object($owner)) {
 		UI::contentContainer(getMLText("unknown_owner"));
 		UI::htmlEndPage();

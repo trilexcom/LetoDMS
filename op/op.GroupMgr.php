@@ -22,8 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassGroup.php");
-include("../inc/inc.ClassUser.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.FileUtils.php");
@@ -46,7 +44,7 @@ if ($action == "addgroup") {
 	$name = sanitizeString($_GET["name"]);
 	$comment = sanitizeString($_GET["comment"]);
 
-	if (is_object(getGroupByName($name))) {
+	if (is_object($dms->getGroupByName($name))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("group_exists"));
 	}
 
@@ -67,7 +65,7 @@ else if ($action == "removegroup") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
 	}
 	
-	$group = getGroup($_POST["groupid"]);
+	$group = $dms->getGroup($_POST["groupid"]);
 	if (!is_object($group)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
 	}
@@ -87,7 +85,7 @@ else if ($action == "editgroup") {
 	}
 	
 	$groupid=$_GET["groupid"];
-	$group = getGroup($groupid);
+	$group = $dms->getGroup($groupid);
 	
 	if (!is_object($group)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
@@ -112,7 +110,7 @@ else if ($action == "addmember") {
 	}
 	
 	$groupid=$_POST["groupid"];
-	$group = getGroup($groupid);
+	$group = $dms->getGroup($groupid);
 	
 	if (!is_object($group)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
@@ -122,7 +120,7 @@ else if ($action == "addmember") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 	
-	$newMember = getUser($_POST["userid"]);
+	$newMember = $dms->getUser($_POST["userid"]);
 	if (!is_object($newMember)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
@@ -143,7 +141,7 @@ else if ($action == "rmmember") {
 	}
 	
 	$groupid=$_GET["groupid"];
-	$group = getGroup($groupid);
+	$group = $dms->getGroup($groupid);
 	
 	if (!is_object($group)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
@@ -153,7 +151,7 @@ else if ($action == "rmmember") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 	
-	$oldMember = getUser($_GET["userid"]);
+	$oldMember = $dms->getUser($_GET["userid"]);
 	if (!is_object($oldMember)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
@@ -171,7 +169,7 @@ else if ($action == "tmanager") {
 	}
 	
 	$groupid=$_GET["groupid"];
-	$group = getGroup($groupid);
+	$group = $dms->getGroup($groupid);
 	
 	if (!is_object($group)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
@@ -181,7 +179,7 @@ else if ($action == "tmanager") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 	
-	$usertoedit = getUser($_GET["userid"]);
+	$usertoedit = $dms->getUser($_GET["userid"]);
 	if (!is_object($usertoedit)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
