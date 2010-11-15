@@ -82,10 +82,31 @@ class LetoDMS_DMS {
 	 */
 	public $adminID;
 
+	/**
+	 * @var integer $rootFolderID ID of root folder
+	 * @access public
+	 */
+	public $rootFolderID;
+
 	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
 		$this->db = $db;
 		$this->contentDir = $contentDir;
 		$this->contentOffsetDir = $contentOffsetDir;
+		$this->rootFolderID = 1;
+		$this->adminID = 1;
+		$this->guestID = 2;
+	} /* }}} */
+
+	function setRootFolderID($id) { /* {{{ */
+		$this->rootFolderID = $id;
+	} /* }}} */
+
+	function setAdminID($id) { /* {{{ */
+		$this->adminID = $id;
+	} /* }}} */
+
+	function setGuestID($id) { /* {{{ */
+		$this->guestID = $id;
 	} /* }}} */
 
 	/**
@@ -368,7 +389,9 @@ class LetoDMS_DMS {
 		
 		$resArr = $resArr[0];
 		
-		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+		$user->setDMS($this);
+		return $user;
 	} /* }}} */
 
 	/**
@@ -388,7 +411,9 @@ class LetoDMS_DMS {
 			
 		$resArr = $resArr[0];
 		
-		return new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
+		$user->setDMS($this);
+		return $user;
 	} /* }}} */
 
 	function getAllUsers() { /* {{{ */
@@ -400,8 +425,11 @@ class LetoDMS_DMS {
 		
 		$users = array();
 		
-		for ($i = 0; $i < count($resArr); $i++)
-			$users[$i] = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
+		for ($i = 0; $i < count($resArr); $i++) {
+			$user = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
+			$user->setDMS($this);
+			$users[$i] = $user;
+		}
 		
 		return $users;
 	} /* }}} */
@@ -432,7 +460,9 @@ class LetoDMS_DMS {
 		
 		$resArr = $resArr[0];
 		
-		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group->setDMS($this);
+		return $group;
 	} /* }}} */
 
 	function getGroupByName($name) { /* {{{ */
@@ -446,7 +476,28 @@ class LetoDMS_DMS {
 		
 		$resArr = $resArr[0];
 		
-		return new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group->setDMS($this);
+		return $group;
+	} /* }}} */
+
+	function getAllGroups() { /* {{{ */
+		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
+		$resArr = $this->db->getResultArray($queryStr);
+		
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		
+		$groups = array();
+		
+		for ($i = 0; $i < count($resArr); $i++) {
+			
+			$group = new LetoDMS_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
+			$group->setDMS($this);
+			$groups[$i] = $group;
+		}
+		
+		return $groups;
 	} /* }}} */
 
 	function addGroup($name, $comment) { /* {{{ */

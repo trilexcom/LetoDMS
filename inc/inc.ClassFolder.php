@@ -18,19 +18,6 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-function getFolder($id) {
-	return LetoDMS_Folder::getFolder($id);
-}
-
-function getFolderPathHTML($folder, $tagAll=false) {
-	return $folder->getFolderPathHTML($tagAll);
-}
-
-function getFolderPathPlain($folder) {
-	return $folder->getFolderPathPlain();
-}
-
-
 /**********************************************************************\
 |                            Folder-Klasse                             |
 \**********************************************************************/
@@ -60,24 +47,6 @@ class LetoDMS_Folder
 		$this->_sequence = $sequence;
 		$this->_notifier = null;
 		$this->_dms = null;
-	}
-
-	function getFolder($id)
-	{
-		GLOBAL $db;
-	
-		if (!is_numeric($id)) return false;
-		
-		$queryStr = "SELECT * FROM tblFolders WHERE id = " . $id;
-		$resArr = $db->getResultArray($queryStr);
-	
-		if (is_bool($resArr) && $resArr == false)
-			return false;
-		else if (count($resArr) != 1)
-			return false;
-			
-		$resArr = $resArr[0];
-		return new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 	}
 
 	function setDMS($dms) {
@@ -163,7 +132,7 @@ class LetoDMS_Folder
 		}
 
 		if (!isset($this->_parent)) {
-			$this->_parent = getFolder($this->_parentID);
+			$this->_parent = $this->_dms->getFolder($this->_parentID);
 		}
 		return $this->_parent;
 	}
@@ -416,7 +385,7 @@ class LetoDMS_Folder
 					"VALUES ('".$name."', ".$this->_id.", '".$comment."', ".$owner->getID().", 1, ".M_READ.", ".$sequence.")";
 		if (!$db->getResult($queryStr))
 			return false;
-		$newFolder = getFolder($db->getInsertID());
+		$newFolder = $this->_dms->getFolder($db->getInsertID());
 		unset($this->_subFolders);
 
 		// Send notification to subscribers.
@@ -573,7 +542,7 @@ class LetoDMS_Folder
 			$message = getMLText("new_document_email")."\r\n";
 			$message .= 
 				getMLText("name").": ".$name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$comment."\r\n".
 				getMLText("comment_for_current_version").": ".$version_comment."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
@@ -633,7 +602,7 @@ class LetoDMS_Folder
 			$message = getMLText("folder_deleted_email")."\r\n";
 			$message .= 
 				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this)."\r\n".
+				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->_comment."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
 

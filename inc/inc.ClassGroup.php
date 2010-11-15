@@ -18,20 +18,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 /**********************************************************************\
-|                 statische, Group-bezogene Funktionen                 |
-\**********************************************************************/
-
-
-function getAllGroups() {
-	return LetoDMS_Group::getAllGroups();
-}
-
-function addGroup($name, $comment) {
-	return LetoDMS_Group::addGroup($name, $comment);
-}
-
-
-/**********************************************************************\
 |                           Group-Klasse                               |
 \**********************************************************************/
 
@@ -39,6 +25,7 @@ class LetoDMS_Group
 {
 	var $_id;
 	var $_name;
+	var $_dms;
 
 	function LetoDMS_Group($id, $name, $comment)
 	{
@@ -47,24 +34,9 @@ class LetoDMS_Group
 		$this->_comment = $comment;
 	}
 
-	function getAllGroups()
-	{
-		global $db;
-		
-		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
-		$resArr = $db->getResultArray($queryStr);
-		
-		if (is_bool($resArr) && $resArr == false)
-			return false;
-		
-		$groups = array();
-		
-		for ($i = 0; $i < count($resArr); $i++)
-			$groups[$i] = new LetoDMS_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
-		
-		return $groups;
+	function setDMS($dms) {
+		$this->_dms = $dms;
 	}
-
 
 	function getID() { return $this->_id; }
 

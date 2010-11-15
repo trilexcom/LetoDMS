@@ -48,7 +48,7 @@ if ($action == "addgroup") {
 		UI::exitError(getMLText("admin_tools"),getMLText("group_exists"));
 	}
 
-	$newGroup = addGroup($name, $comment);
+	$newGroup = $dms->addGroup($name, $comment);
 	if (!$newGroup) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}

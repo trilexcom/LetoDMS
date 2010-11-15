@@ -48,6 +48,10 @@ class LetoDMS_User {
 		$this->_isHidden = $isHidden;		
 	}
 
+	function setDMS($dms) {
+		$this->_dms = $dms;
+	}
+
 	function getID() { return $this->_id; }
 
 	function getLogin() { return $this->_login; }
