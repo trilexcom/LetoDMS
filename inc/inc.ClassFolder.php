@@ -1,6 +1,6 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
+//    Copyright (C) 2002-2005 Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
 //
@@ -18,12 +18,16 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-/**********************************************************************\
-|                            Folder-Klasse                             |
-\**********************************************************************/
-
-class LetoDMS_Folder
-{
+/**
+ * Class to represent the complete document management
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli, Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
+class LetoDMS_Folder {
 	var $_id;
 	var $_name;
 	var $_parentID;
@@ -35,8 +39,7 @@ class LetoDMS_Folder
 	var $_notifier;
 	var $_dms;
 
-	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence)
-	{
+	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_parentID = $parentID;
@@ -47,18 +50,47 @@ class LetoDMS_Folder
 		$this->_sequence = $sequence;
 		$this->_notifier = null;
 		$this->_dms = null;
-	}
+	} /* }}} */
 
-	function setDMS($dms) {
+	/*
+	 * Set dms this folder belongs to.
+	 *
+	 * Each folder needs a reference to the dms it belongs to. It will be
+	 * set when the folder is created by LetoDMS::getFolder(). The dms has a
+	 * references to the currently logged in user and the database connection.
+	 *
+	 * @param object $dms reference to dms
+	 */
+	function setDMS($dms) { /* {{{ */
 		$this->_dms = $dms;
+	} /* }}} */
+
+	function setNotifier($notifier) {
+		$this->_notifier = $notifier;
 	}
 
+	/*
+	 * Get the internal id of the folder.
+	 *
+	 * @return integer id of folder
+	 */
 	function getID() { return $this->_id; }
 
+	/*
+	 * Get the name of the folder.
+	 *
+	 * @return string name of folder
+	 */
 	function getName() { return $this->_name; }
 
-	function setName($newName) {
-		GLOBAL $db, $user;
+	/*
+	 * Set the name of the folder.
+	 *
+	 * @param string $newName set a new name of the folder
+	 */
+	function setName($newName) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblFolders SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
@@ -88,12 +120,13 @@ class LetoDMS_Folder
 		$this->_name = $newName;
 		
 		return true;
-	}
+	} /* }}} */
 
 	function getComment() { return $this->_comment; }
 
-	function setComment($newComment) {
-		GLOBAL $db, $user;
+	function setComment($newComment) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblFolders SET comment = '" . $newComment . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
@@ -121,13 +154,10 @@ class LetoDMS_Folder
 
 		$this->_comment = $newComment;
 		return true;
-	}
+	} /* }}} */
 
-	function getParent()
-	{
-		global $settings;
-
-		if ($this->_id == $settings->_rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
+	function getParent() { /* {{{ */
+		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
 			return false;
 		}
 
@@ -135,12 +165,13 @@ class LetoDMS_Folder
 			$this->_parent = $this->_dms->getFolder($this->_parentID);
 		}
 		return $this->_parent;
-	}
+	} /* }}} */
 
-	function setParent($newParent) {
-		global $db, $user, $settings;
+	function setParent($newParent) { /* {{{ */
+		global $user;
+		$db = $this->_dms->getDB();
 
-		if ($this->_id == $settings->_rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
+		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
 			return false;
 		}
 
@@ -194,17 +225,17 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function getOwner()
-	{
+	function getOwner() { /* {{{ */
 		if (!isset($this->_owner))
 			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
-	}
+	} /* }}} */
 
-	function setOwner($newOwner) {
-		GLOBAL $db, $user;
+	function setOwner($newOwner) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 
 		$oldOwner = $this->getOwner();
 
@@ -237,22 +268,21 @@ class LetoDMS_Folder
 		$this->_ownerID = $newOwner->getID();
 		$this->_owner = $newOwner;
 		return true;
-	}
+	} /* }}} */
 
-	function getDefaultAccess()
-	{
-		if ($this->inheritsAccess())
-		{
+	function getDefaultAccess() { /* {{{ */
+		if ($this->inheritsAccess()) {
 			$res = $this->getParent();
 			if (!$res) return false;
 			return $this->_parent->getDefaultAccess();
 		}
 		
 		return $this->_defaultAccess;
-	}
+	} /* }}} */
 
-	function setDefaultAccess($mode) {
-		GLOBAL $db, $user;
+	function setDefaultAccess($mode) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 
 		$queryStr = "UPDATE tblFolders set defaultAccess = " . $mode . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -293,12 +323,13 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
 	function inheritsAccess() { return $this->_inheritAccess; }
 
-	function setInheritAccess($inheritAccess) {
-		GLOBAL $db, $user;
+	function setInheritAccess($inheritAccess) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 
 		$inheritAccess = ($inheritAccess) ? "1" : "0";
 
@@ -341,13 +372,12 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
 	function getSequence() { return $this->_sequence; }
 
-	function setSequence($seq)
-	{
-		GLOBAL $db;
+	function setSequence($seq) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblFolders SET sequence = " . $seq . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -355,13 +385,12 @@ class LetoDMS_Folder
 		
 		$this->_sequence = $seq;
 		return true;
-	}
+	} /* }}} */
 
-	function getSubFolders($orderby="") {
-		GLOBAL $db;
+	function getSubFolders($orderby="") { /* {{{ */
+		$db = $this->_dms->getDB();
 		
-		if (!isset($this->_subFolders))
-		{
+		if (!isset($this->_subFolders)) {
 			if ($orderby=="n") $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY name";
 			else $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY sequence";
 			$resArr = $db->getResultArray($queryStr);
@@ -375,10 +404,11 @@ class LetoDMS_Folder
 		}
 		
 		return $this->_subFolders;
-	}
+	} /* }}} */
 
-	function addSubFolder($name, $comment, $owner, $sequence) {
-		GLOBAL $db, $user;
+	function addSubFolder($name, $comment, $owner, $sequence) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 
 		//inheritAccess = true, defaultAccess = M_READ
 		$queryStr = "INSERT INTO tblFolders (name, parent, comment, owner, inheritAccess, defaultAccess, sequence) ".
@@ -410,13 +440,15 @@ class LetoDMS_Folder
 		}
 
 		return $newFolder;
-	}
+	} /* }}} */
 
-	/**
-	 * Gibt ein Array mit allen Eltern, "Großelter" usw bis zum RootFolder zurück
-	 * Der Ordner selbst ist das letzte Element dieses Arrays
+	/*
+	 * Returns a array of all parents, grand parent, etc. up to root folder.
+	 * The folder itself is the last element of the array.
+	 *
+	 * @return array Array of parents
 	 */
-	function getPath() {
+	function getPath() { /* {{{ */
 		if (!isset($this->_parentID) || ($this->_parentID == "") || ($this->_parentID == 0)) {
 			return array($this);
 		}
@@ -430,9 +462,9 @@ class LetoDMS_Folder
 			array_push($path, $this);
 			return $path;
 		}
-	}
+	} /* }}} */
 
-	function getFolderPathHTML($tagAll=false) {
+	function getFolderPathHTML($tagAll=false) { /* {{{ */
 		$path = $this->getPath();
 		$txtpath = "";
 		for ($i = 0; $i < count($path); $i++) {
@@ -446,9 +478,9 @@ class LetoDMS_Folder
 			}
 		}
 		return $txtpath;
-	}
+	} /* }}} */
 	
-	function getFolderPathPlain() {
+	function getFolderPathPlain() { /* {{{ */
 		$path="";
 		$folderPath = $this->getPath();
 		for ($i = 0; $i  < count($folderPath); $i++) {
@@ -457,33 +489,27 @@ class LetoDMS_Folder
 				$path .= " / ";
 		}
 		return $path;
-	}
+	} /* }}} */
 
 	/**
 	 * Überprüft, ob dieser Ordner ein Unterordner von $folder ist
 	 */
-	function isDescendant($folder)
-	{
+	function isDescendant($folder) { /* {{{ */
 		if ($this->_parentID == $folder->getID())
 			return true;
-		else if (isset($this->_parentID))
-		{
+		elseif (isset($this->_parentID)) {
 			$res = $this->getParent();
 			if (!$res) return false;
 			
 			return $this->_parent->isDescendant($folder);
-		}
-		else
+		} else
 			return false;
-	}
+	} /* }}} */
 
-	function getDocuments($orderby="")
-	{
-		GLOBAL $db;
+	function getDocuments($orderby="") { /* {{{ */
+		$db = $this->_dms->getDB();
 		
-		if (!isset($this->_documents))
-		{
-				
+		if (!isset($this->_documents)) {
 			if ($orderby=="n") $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY name";
 			else $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY sequence";
 
@@ -498,12 +524,12 @@ class LetoDMS_Folder
 			}
 		}
 		return $this->_documents;
-	}
+	} /* }}} */
 
 	// $comment will be used for both document and version leaving empty the version_comment 
-	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") 
-	{
-		GLOBAL $db, $user;
+	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 		
 		$expires = (!$expires) ? 0 : $expires;
 		
@@ -528,8 +554,7 @@ class LetoDMS_Folder
 			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
 		else $res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
 
-		if (is_bool($res) && !$res)
-		{
+		if (is_bool($res) && !$res) {
 			$queryStr = "DELETE FROM tblDocuments WHERE id = " . $document->getID();
 			$db->getResult($queryStr);
 			return false;
@@ -557,14 +582,14 @@ class LetoDMS_Folder
 		}
 
 		return array($document, $res);
-	}
-
+	} /* }}} */
 	
-	function remove($send_email=TRUE) {
-		global $db, $user, $settings;
+	function remove($send_email=TRUE) { /* {{{ */
+		global $user;
+		$db = $this->_dms->getDB();
 
 		// Do not delete the root folder.
-		if ($this->_id == $settings->_rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
+		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
 			return false;
 		}
 
@@ -574,14 +599,12 @@ class LetoDMS_Folder
 		$res = $this->getDocuments();
 		if (is_bool($res) && !$res) return false;
 		
-		foreach ($this->_subFolders as $subFolder)
-		{
+		foreach ($this->_subFolders as $subFolder) {
 			$res = $subFolder->remove(FALSE);
 			if (!$res) return false;
 		}
 		
-		foreach ($this->_documents as $document)
-		{
+		foreach ($this->_documents as $document) {
 			$res = $document->remove(FALSE);
 			if (!$res) return false;
 		}
@@ -595,7 +618,7 @@ class LetoDMS_Folder
 			return false;
 
 		// Send notification to subscribers.
-		if ($send_email && $this->_notifier){
+		if ($send_email && $this->_notifier) {
 		
 			$this->getNotifyList();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_deleted_email");
@@ -620,22 +643,18 @@ class LetoDMS_Folder
 			return false;
 		
 		return true;
-	}
+	} /* }}} */
 
+	function getAccessList($mode = M_ANY, $op = O_EQ) { /* {{{ */
+		$db = $this->_dms->getDB();
 
-	function getAccessList($mode = M_ANY, $op = O_EQ)
-	{
-		GLOBAL $db;
-
-		if ($this->inheritsAccess())
-		{
+		if ($this->inheritsAccess()) {
 			$res = $this->getParent();
 			if (!$res) return false;
 			return $this->_parent->getAccessList($mode, $op);
 		}
 
-		if (!isset($this->_accessList[$mode]))
-		{
+		if (!isset($this->_accessList[$mode])) {
 			if ($op!=O_GTEQ && $op!=O_LTEQ && $op!=O_EQ) {
 				return false;
 			}
@@ -650,8 +669,7 @@ class LetoDMS_Folder
 				return false;
 
 			$this->_accessList[$mode] = array("groups" => array(), "users" => array());
-			foreach ($resArr as $row)
-			{
+			foreach ($resArr as $row) {
 				if ($row["userID"] != -1)
 					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($row["userID"], $row["mode"]));
 				else //if ($row["groupID"] != -1)
@@ -660,11 +678,10 @@ class LetoDMS_Folder
 		}
 
 		return $this->_accessList[$mode];
-	}
+	} /* }}} */
 
-	function clearAccessList()
-	{
-		GLOBAL $db;
+	function clearAccessList() { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "DELETE FROM tblACLs WHERE targetType = " . T_FOLDER . " AND target = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -672,10 +689,10 @@ class LetoDMS_Folder
 		
 		unset($this->_accessList);
 		return true;
-	}
+	} /* }}} */
 
-	function addAccess($mode, $userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function addAccess($mode, $userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
@@ -692,10 +709,10 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function changeAccess($newMode, $userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function changeAccess($newMode, $userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
@@ -711,10 +728,10 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function removeAccess($userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function removeAccess($userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
@@ -731,7 +748,7 @@ class LetoDMS_Folder
 		}
 
 		return true;
-	}
+	} /* }}} */
 
 	/*
 	 * Liefert die Art der Zugriffsberechtigung für den User $user; Mögliche Rechte: n (keine), r (lesen), w (schreiben+lesen), a (alles)
@@ -740,19 +757,15 @@ class LetoDMS_Folder
 	 * Wird bei den ACLs nicht gefunden, wird die Standard-Berechtigung zurückgegeben.
 	 * Ach ja: handelt es sich bei $user um den Besitzer ist die Berechtigung automatisch "a".
 	 */
-	function getAccessMode($user)
-	{
-		GLOBAL $settings;
-		
-		//Admin??
+	function getAccessMode($user) { /* {{{ */
+		/* Admins have full access */
 		if ($user->isAdmin()) return M_ALL;
 		
-		//Besitzer ??
+		/* User has full access if he/she is the owner of the document */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
 		
-		//Gast-Benutzer??
-		if (($user->getID() == $settings->_guestID) && ($settings->_enableGuestLogin))
-		{
+		/* Guest has read access by default, if guest login is allowed at all */
+		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin)) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
@@ -773,28 +786,24 @@ class LetoDMS_Folder
 		}
 		*/
 
-		//ACLs durchforsten
+		/* check ACLs */
 		$accessList = $this->getAccessList();
 		if (!$accessList) return false;
 
-		foreach ($accessList["users"] as $userAccess)
-		{
-			if ($userAccess->getUserID() == $user->getID())
-			{
+		foreach ($accessList["users"] as $userAccess) {
+			if ($userAccess->getUserID() == $user->getID()) {
 				return $userAccess->getMode();
 			}
 		}
-		foreach ($accessList["groups"] as $groupAccess)
-		{
-			if ($user->isMemberOfGroup($groupAccess->getGroup()))
-			{
+		foreach ($accessList["groups"] as $groupAccess) {
+			if ($user->isMemberOfGroup($groupAccess->getGroup())) {
 				return $groupAccess->getMode();
 			}
 		}
 		return $this->getDefaultAccess();
-	}
+	} /* }}} */
 
-	function getGroupAccessMode($group) {
+	function getGroupAccessMode($group) { /* {{{ */
 
 		$highestPrivileged = M_NONE;
 		$foundInACL = false;
@@ -816,13 +825,11 @@ class LetoDMS_Folder
 
 		//Standard-Berechtigung verwenden
 		return $this->getDefaultAccess();
-	}
+	} /* }}} */
 
-	function getNotifyList()
-	{
-		if (!isset($this->_notifyList))
-		{
-			GLOBAL $db;
+	function getNotifyList() { /* {{{ */
+		if (!isset($this->_notifyList)) {
+			$db = $this->_dms->getDB();
 
 			$queryStr ="SELECT * FROM tblNotify WHERE targetType = " . T_FOLDER . " AND target = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
@@ -839,34 +846,36 @@ class LetoDMS_Folder
 			}
 		}
 		return $this->_notifyList;
-	}
+	} /* }}} */
 
-	function addNotify($userOrGroupID, $isUser) {
-
-		// Return values:
-		// -1: Invalid User/Group ID.
-		// -2: Target User / Group does not have read access.
-		// -3: User is already subscribed.
-		// -4: Database / internal error.
-		//  0: Update successful.
-
-		GLOBAL $db, $settings, $user;
+	/*
+	 * Adds notify for a user or group to folder
+	 *
+	 * @param integer $userOrGroupID
+	 * @param boolean $isUser true if $userOrGroupID is a user id otherwise false
+	 * @return integer error code
+	 *    -1: Invalid User/Group ID.
+	 *    -2: Target User / Group does not have read access.
+	 *    -3: User is already subscribed.
+	 *    -4: Database / internal error.
+	 *     0: Update successful.
+	 */
+	function addNotify($userOrGroupID, $isUser) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
-		//
-		// Verify that user / group exists.
-		//
+		/* Verify that user / group exists */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}
 
-		//
-		// Verify that the requesting user has permission to add the target to
-		// the notification system.
-		//
-		if ($user->getID() == $settings->_guestID) {
+		/* Verify that the requesting user has permission to add the target to
+		 * the notification system.
+		 */
+		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -975,21 +984,24 @@ class LetoDMS_Folder
 
 		unset($this->_notifyList);
 		return 0;
-	}
+	} /* }}} */
 
-	function removeNotify($userOrGroupID, $isUser) {
-
-		// Return values:
-		// -1: Invalid User/Group ID.
-		// -3: User is not subscribed. No action taken.
-		// -4: Database / internal error.
-		//  0: Update successful.
-
-		GLOBAL $db, $settings, $user;
+	/*
+	 * Removes notify for a user or group to folder
+	 *
+	 * @param integer $userOrGroupID
+	 * @param boolean $isUser true if $userOrGroupID is a user id otherwise false
+	 * @return integer error code
+	 *    -1: Invalid User/Group ID.
+	 *    -3: User is not subscribed.
+	 *    -4: Database / internal error.
+	 *     0: Update successful.
+	 */
+	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
+		GLOBAL  $user;
+		$db = $this->_dms->getDB();
 		
-		//
-		// Verify that user / group exists.
-		//
+		/* Verify that user / group exists. */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
@@ -997,11 +1009,10 @@ class LetoDMS_Folder
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
-		//
-		// Verify that the requesting user has permission to add the target to
-		// the notification system.
-		//
-		if ($user->getID() == $settings->_guestID) {
+		/* Verify that the requesting user has permission to add the target to
+		 * the notification system.
+		 */
+		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -1065,10 +1076,10 @@ class LetoDMS_Folder
 
 		unset($this->_notifyList);
 		return 0;
-	}
+	} /* }}} */
 
-	function getApproversList() {
-		GLOBAL $db, $settings;
+	function getApproversList() { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!isset($this->_approversList)) {
 			$this->_approversList = array("groups" => array(), "users" => array());
@@ -1090,7 +1101,7 @@ class LetoDMS_Folder
 				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
 			}
 			foreach ($tmpList["users"] as $user) {
-				if ($user->getUserID()!=$settings->_guestID) {
+				if ($user->getUserID()!=$this->_dms->guestID) {
 					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
 				}
 			}
@@ -1105,11 +1116,11 @@ class LetoDMS_Folder
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`id` !='".$settings->_guestID."')";
+						"AND `tblUsers`.`id` !='".$this->_dms->guestID."')";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`id` !='".$settings->_guestID."') ".
+					"WHERE (`tblUsers`.`id` !='".$this->_dms->guestID."') ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
 					"OR (`tblUsers`.`isAdmin` = 1)".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
@@ -1120,7 +1131,7 @@ class LetoDMS_Folder
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`id` != '".$settings->_guestID."' ".
+						"AND `tblUsers`.`id` != '".$this->_dms->guestID."' ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
@@ -1129,14 +1140,14 @@ class LetoDMS_Folder
 					"OR (`tblUsers`.`isAdmin` = 1))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`id` != '".$settings->_guestID."' ".
+					"WHERE `tblUsers`.`id` != '".$this->_dms->guestID."' ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$settings->_enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
+					if ((!$this->_dms->enableAdminRevApp) && ($row["id"]==$this->_dms->adminID)) continue;					
 					$this->_approversList["users"][] = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}
@@ -1168,7 +1179,7 @@ class LetoDMS_Folder
 			}
 		}
 		return $this->_approversList;
-	}
+	} /* }}} */
 }
 
 ?>
