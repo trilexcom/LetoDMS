@@ -16,16 +16,6 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-/**
- * Implementation of LetoDMS_DMS
- *
- * @category   DMS
- * @package    LetoDMЅ
- * @author     Uwe Steinmann <uwe@steinmann.cx>
- * @copyright  Copyright (C) 2010, Uwe Steinmann
- * @version    Release: @package_version@
- */
-
 require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
 require_once("inc.ClassGroup.php");
@@ -88,6 +78,12 @@ class LetoDMS_DMS {
 	 */
 	public $rootFolderID;
 
+	/**
+	 * @var boolean $enableGuestLogin set to true if guest login is allowed
+	 * @access public
+	 */
+	public $enableGuestLogin;
+
 	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
 		$this->db = $db;
 		$this->contentDir = $contentDir;
@@ -95,6 +91,10 @@ class LetoDMS_DMS {
 		$this->rootFolderID = 1;
 		$this->adminID = 1;
 		$this->guestID = 2;
+	} /* }}} */
+
+	function getDB() { /* {{{ */
+		return $this->db;
 	} /* }}} */
 
 	function setRootFolderID($id) { /* {{{ */
@@ -107,6 +107,14 @@ class LetoDMS_DMS {
 
 	function setGuestID($id) { /* {{{ */
 		$this->guestID = $id;
+	} /* }}} */
+
+	function setEnableGuestLogin($enable) { /* {{{ */
+		$this->enableGuestLogin = $enable;
+	} /* }}} */
+
+	function setEnableAdminRevApp($enable) { /* {{{ */
+		$this->enableAdminRevApp = $enable;
 	} /* }}} */
 
 	/**
