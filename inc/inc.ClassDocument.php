@@ -96,185 +96,22 @@ class LetoDMS_Document { /* {{{ */
 	} /* }}} */
 
 	/*
-	 * Search the database for documents
+	 * Set dms this document belongs to.
 	 *
-	 * @param query string seach query with space separated words
-	 * @param limit integer number of items in result set
-	 * @param offset integer index of first item in result set
-	 * @param mode string either AND or OR
-	 * @param searchin array() list of fields to search in
-	 * @param startFolder object search in the folder only (null for root folder)
-	 * @param owner object search for documents owned by this user
-	 * @param status array list of status
-	 * @param creationstartdate array search for documents created after this date
-	 * @param creationenddate array search for documents created before this date
-	 * @return array containing the elements total and docs
+	 * Each document needs a reference to the dms it belongs to. It will be
+	 * set when the folder is created by LetoDMS::getDocument() or
+	 * LetoDMS::search(). The dms has a
+	 * references to the currently logged in user and the database connection.
+	 *
+	 * @param object $dms reference to dms
 	 */
-	function search($query, $limit=0, $offset=0, $mode='AND', $searchin=array(), $startFolder=null, $owner=null, $status = array(), $creationstartdate=array(), $creationenddate=array()) {
-		GLOBAL $db;
-		
-		// Split the search string into constituent keywords.
-		$tkeys=array();
-		if (strlen($query)>0) {
-			$tkeys = split("[\t\r\n ,]+", $query);
-		}
-		
-		// if none is checkd search all
-		if (count($searchin)==0)
-			$searchin=array( 0, 1, 2, 3);
-
-		$searchKey = "";
-		// Assemble the arguments for the concatenation function. This allows the
-		// search to be carried across all the relevant fields.
-		$concatFunction = "";
-		if (in_array(1, $searchin)) {
-			$concatFunction = "`tblDocuments`.`keywords`";
-		}
-		if (in_array(2, $searchin)) {
-			$concatFunction = (strlen($concatFunction) == 0 ? "" : $concatFunction.", ")."`tblDocuments`.`name`";
-		}
-		if (in_array(3, $searchin)) {
-			$concatFunction = (strlen($concatFunction) == 0 ? "" : $concatFunction.", ")."`tblDocuments`.`comment`";
-		}
-		
-		if (strlen($concatFunction)>0 && count($tkeys)>0) {
-			$concatFunction = "CONCAT_WS(' ', ".$concatFunction.")";
-			foreach ($tkeys as $key) {
-				$key = trim($key);
-				if (strlen($key)>0) {
-					$searchKey = (strlen($searchKey)==0 ? "" : $searchKey." ".$mode." ").$concatFunction." LIKE '%".$key."%'";
-				}
-			}
-		}
-		
-		// Check to see if the search has been restricted to a particular sub-tree in
-		// the folder hierarchy.
-		$searchFolder = "";
-		if ($startFolder) {
-			$searchFolder = "`tblDocuments`.`folderList` LIKE '%:".$startFolder->getID().":%'";
-		}
-		
-		// Check to see if the search has been restricted to a particular
-		// document owner.
-		$searchOwner = "";
-		if ($owner) {
-			$searchOwner = "`tblDocuments`.`owner` = '".$owner->getId()."'";
-		}
-		
-		// Is the search restricted to documents created between two specific dates?
-		$searchCreateDate = "";
-		if ($creationstartdate) {
-			$startdate = makeTimeStamp(0, 0, 0, $createstartdate["year"], $createstartdate["month"], $createstartdate["day"]);
-			if ($startdate) {
-				$searchCreateDate .= "`tblDocuments`.`date` >= ".$startdate;
-			}
-		}
-		if ($creationenddate) {
-			$stopdate = makeTimeStamp(23, 59, 59, $createenddate["year"], $createenddate["month"], $createenddate["day"]);
-			if ($stopdate) {
-				if($startdate)
-					$searchCreateDate .= " AND ";
-				$searchCreateDate = "`tblDocuments`.`date` <= ".$stopdate;
-			}
-		}
-		
-		// ---------------------- Suche starten ----------------------------------
-		
-		//
-		// Construct the SQL query that will be used to search the database.
-		//
-		
-		if (!$db->createTemporaryTable("ttcontentid") || !$db->createTemporaryTable("ttstatid")) {
-			return false;
-		}
-		
-		$searchQuery = "FROM `tblDocumentContent` ".
-			"LEFT JOIN `tblDocuments` ON `tblDocuments`.`id` = `tblDocumentContent`.`document` ".
-			"LEFT JOIN `tblDocumentStatus` ON `tblDocumentStatus`.`documentID` = `tblDocumentContent`.`document` ".
-			"LEFT JOIN `tblDocumentStatusLog` ON `tblDocumentStatusLog`.`statusID` = `tblDocumentStatus`.`statusID` ".
-			"LEFT JOIN `ttstatid` ON `ttstatid`.`maxLogID` = `tblDocumentStatusLog`.`statusLogID` ".
-			"LEFT JOIN `ttcontentid` ON `ttcontentid`.`maxVersion` = `tblDocumentStatus`.`version` AND `ttcontentid`.`document` = `tblDocumentStatus`.`documentID` ".
-			"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
-			"WHERE `ttstatid`.`maxLogID`=`tblDocumentStatusLog`.`statusLogID` ".
-			"AND `ttcontentid`.`maxVersion` = `tblDocumentContent`.`version`";
-		
-		if (strlen($searchKey)>0) {
-			$searchQuery .= " AND (".$searchKey.")";
-		}
-		if (strlen($searchFolder)>0) {
-			$searchQuery .= " AND ".$searchFolder;
-		}
-		if (strlen($searchOwner)>0) {
-			$searchQuery .= " AND (".$searchOwner.")";
-		}
-		if (strlen($searchCreateDate)>0) {
-			$searchQuery .= " AND (".$searchCreateDate.")";
-		}
-
-		// status
-		if ($status) {
-			$searchQuery .= " AND `tblDocumentStatusLog`.`status` IN (".implode(',', $status).")";
-		}
-
-		// Count the number of rows that the search will produce.
-		$resArr = $db->getResultArray("SELECT COUNT(*) AS num ".$searchQuery);
-		$totalDocs = 0;
-		if (is_numeric($resArr[0]["num"]) && $resArr[0]["num"]>0) {
-			$totalDocs = (integer)$resArr[0]["num"];
-		}
-		if($limit) {
-			$totalPages = (integer)($totalDocs/$limit);
-			if (($totalDocs%$limit) > 0) {
-				$totalPages++;
-			}
-		} else {
-			$totalPages = 1;
-		}
-		
-		// If there are no results from the count query, then there is no real need
-		// to run the full query. TODO: re-structure code to by-pass additional
-		// queries when no initial results are found.
-
-		// Prepare the complete search query, including the LIMIT clause.
-		$searchQuery = "SELECT `tblDocuments`.*, ".
-			"`tblDocumentContent`.`version`, ".
-			"`tblDocumentStatusLog`.`status`, `tblDocumentLocks`.`userID` as `lockUser` ".$searchQuery;
-		
-		if($limit) {
-			$searchQuery .= " LIMIT ".$offset.",".$limit;
-		}
-		
-		// Send the complete search query to the database.
-		$resArr = $db->getResultArray($searchQuery);
-		
-		// ------------------- Ausgabe der Ergebnisse ----------------------------
-		$numResults = count($resArr);
-		if ($numResults == 0) {
-			return array('totalDocs'=>$totalDocs, 'totalPages'=>$totalPages, 'docs'=>array());
-		}
-		
-		foreach ($resArr as $docArr) {
-		
-			$document = new LetoDMS_Document(
-				$docArr["id"], $docArr["name"],
-				$docArr["comment"], $docArr["date"],
-				$docArr["expires"], $docArr["owner"],
-				$docArr["folder"], $docArr["inheritAccess"],
-				$docArr["defaultAccess"], $docArr["lockUser"],
-				$docArr["keywords"], $docArr["sequence"]);
-				
-			$docs[] = $document;
-		}
-		return(array('totalDocs'=>$totalDocs, 'totalPages'=>$totalPages, 'docs'=>$docs));
-	}
-
-	function setDMS($dms) {
+	function setDMS($dms) { /* {{{ */
 		$this->_dms = $dms;
-	}
+	} /* }}} */
 
-	function setNotifier($notifier) {
+	function setNotifier($notifier) { /* {{{ */
 		$this->_notifier = $notifier;
-	}
+	} /* }}} */
 
 	function getDir() {
 		return $this->_dms->contentOffsetDir."/".$this->_id."/";
@@ -295,12 +132,13 @@ class LetoDMS_Document { /* {{{ */
 		$this->getNotifyList();
 		// Send notification to subscribers.
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_renamed_email");
 			$message = getMLText("document_renamed_email")."\r\n";
 			$message .= 
 				getMLText("old").": ".$this->_name."\r\n".
 				getMLText("new").": ".$newName."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -333,11 +171,12 @@ class LetoDMS_Document { /* {{{ */
 		$this->getNotifyList();
 		// Send notification to subscribers.
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("comment_changed_email");
 			$message = getMLText("comment_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$newComment."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -379,7 +218,7 @@ class LetoDMS_Document { /* {{{ */
 	function getFolder()
 	{
 		if (!isset($this->_folder))
-			$this->_folder = getFolder($this->_folderID);
+			$this->_folder = $this->_dms->getFolder($this->_folderID);
 		return $this->_folder;
 	}
 
@@ -409,11 +248,12 @@ class LetoDMS_Document { /* {{{ */
 		$this->getNotifyList();
 		// Send notification to subscribers.
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_moved_email");
 			$message = getMLText("document_moved_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$newComment."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -451,13 +291,14 @@ class LetoDMS_Document { /* {{{ */
 		$this->getNotifyList();
 		// Send notification to subscribers.
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("ownership_changed_email");
 			$message = getMLText("ownership_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
 				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
 				getMLText("new").": ".$newOwner->getFullName()."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->_comment."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -497,12 +338,13 @@ class LetoDMS_Document { /* {{{ */
 
 		$this->getNotifyList();
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			// Send notification to subscribers.
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
 			$message = getMLText("access_permission_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
 			$subject=mydmsDecodeString($subject);
@@ -545,12 +387,13 @@ class LetoDMS_Document { /* {{{ */
 
 		$this->getNotifyList();
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			// Send notification to subscribers.
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
 			$message = getMLText("access_permission_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
 			$subject=mydmsDecodeString($subject);
@@ -610,12 +453,13 @@ class LetoDMS_Document { /* {{{ */
 
 		$this->getNotifyList();
 		if($this->_notifier) {
+			$folder = $this->getFolder();
 			// Send notification to subscribers.
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("expiry_changed_email");
 			$message = getMLText("expiry_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -1252,11 +1096,12 @@ class LetoDMS_Document { /* {{{ */
 		$this->getNotifyList();
 		// Send notification to subscribers.
 		if ($send_email && $this->_notifier){
+			$folder = $this->getFolder();
 			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_updated_email");
 			$message = getMLText("document_updated_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
 
@@ -2033,12 +1878,13 @@ class LetoDMS_DocumentContent { /* {{{ */
 		$nl=$this->_document->getNotifyList();
 		// Send notification to subscribers.
 		if($this->_notifier) {
+			$folder = $this->_document->getFolder();
 			$subject = "###SITENAME###: ".$this->_document->_name." - ".getMLText("document_status_changed_email");
 			$message = getMLText("document_status_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$this->_document->_name."\r\n".
 				getMLText("status").": ".getOverallStatusText($status)."\r\n".
-				getMLText("folder").": ".getFolderPathPlain($this->_document->getFolder())."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$this->_document->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
 
