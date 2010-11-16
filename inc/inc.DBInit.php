@@ -25,4 +25,6 @@ $dms = new LetoDMS_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setAdminID($settings->_adminID);
 $dms->setGuestID($settings->_guestID);
+$dms->setEnableGuestLogin($settings->_enableGuestLogin);
+$dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
 ?>
