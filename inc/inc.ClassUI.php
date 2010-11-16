@@ -582,7 +582,7 @@ class UI {
 	// navigation flag is used for items links (navigation or selection)
 	function printFoldersTree($accessMode, $exclude, $folderID, $currentFolderID=-1, $navigation=false)
 	{	
-		global $user, $form, $settings;
+		global $dms, $user, $form, $settings;
 		
 		if ($settings->_expandFolderTree==2){
 		
@@ -599,7 +599,7 @@ class UI {
 			
 			if ($currentFolderID!=-1){
 				
-				$currentFolder=getFolder($currentFolderID);
+				$currentFolder=$dms->getFolder($currentFolderID);
 				
 				if (is_object($currentFolder)){
 				
@@ -616,7 +616,7 @@ class UI {
 			}
 		}
 		
-		$folder = getFolder($folderID);
+		$folder = $dms->getFolder($folderID);
 		if (!is_object($folder)) return;
 		
 		$subFolders = $folder->getSubFolders();
