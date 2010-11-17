@@ -1378,8 +1378,8 @@ class LetoDMS_Document { /* {{{ */
 		$res = $this->getDocumentFiles();
 		if (is_bool($res) && !$res) return false;
 		
-		for ($i = 0; $i < count($this->_documentFiles); $i++)
-			if (!$this->_documentFiles[$i]->remove())
+		foreach ($res as $documentfile)
+			if(!$this->removeDocumentFile($documentfile->getId()))
 				return false;
 				
 		// TODO: versioning file?
