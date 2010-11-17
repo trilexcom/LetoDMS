@@ -49,7 +49,27 @@ if ($folder->getAccessMode($user) < M_ALL) {
 
 $parent=$folder->getParent();
 
-if (!$folder->remove()) {
+if ($folder->remove()) {
+	// Send notification to subscribers.
+	if ($notifier) {
+		$folder->getNotifyList();
+		$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("folder_deleted_email");
+		$message = getMLText("folder_deleted_email")."\r\n";
+		$message .= 
+			getMLText("name").": ".$folder->_name."\r\n".
+			getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+			getMLText("comment").": ".$folder->_comment."\r\n".
+			"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+		foreach ($folder->_notifyList["groups"] as $grp) {
+			$notifier->toGroup($user, $grp, $subject, $message);
+		}
+	}
+} else {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 }
 

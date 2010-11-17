@@ -72,9 +72,11 @@ if ($action == "delnotify") {
 
 	if (isset($userid)) {
 		$res = $folder->removeNotify($userid, true);
+		$obj = $dms->getUser($userid);
 	}
 	else if (isset($groupid)) {
 		$res = $folder->removeNotify($groupid, false);
+		$obj = $dms->getGroup($groupid);
 	}
 	switch ($res) {
 		case -1:
@@ -90,6 +92,34 @@ if ($action == "delnotify") {
 			UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("internal_error"));
 			break;
 		case 0:
+			if($notifier) {
+				// Email user / group, informing them of subscription.
+				$path="";
+				$folderPath = $folder->getPath();
+				for ($i = 0; $i  < count($folderPath); $i++) {
+					$path .= $folderPath[$i]->getName();
+					if ($i +1 < count($folderPath))
+						$path .= " / ";
+				}
+
+				$subject = "###SITENAME###: ".$folder->getName()." - ".getMLText("notify_deleted_email");
+				$message = getMLText("notify_deleted_email")."\r\n";
+				$message .= 
+					getMLText("name").": ".$folder->getName()."\r\n".
+					getMLText("folder").": ".$path."\r\n".
+					getMLText("comment").": ".$folder->getComment()."\r\n".
+					"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+				$subject=mydmsDecodeString($subject);
+				$message=mydmsDecodeString($message);
+				
+				if ($isUser) {
+					$notifier->toIndividual($user, $obj, $subject, $message);
+				}
+				else {
+					$notifier->toGroup($user, $obj, $subject, $message);
+				}
+			}
 			break;
 	}
 }
@@ -113,6 +143,35 @@ else if ($action == "addnotify") {
 				UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("internal_error"));
 				break;
 			case 0:
+				$obj = $dms->getUser($userid);
+				// Email user / group, informing them of subscription.
+				$path="";
+				$folderPath = $folder->getPath();
+				for ($i = 0; $i  < count($folderPath); $i++) {
+					$path .= $folderPath[$i]->getName();
+					if ($i +1 < count($folderPath))
+						$path .= " / ";
+				}
+				if($notifier) {
+					$subject = "###SITENAME###: ".$folder->getName()." - ".getMLText("notify_added_email");
+					$message = getMLText("notify_added_email")."\r\n";
+					$message .= 
+						getMLText("name").": ".$folder->getName()."\r\n".
+						getMLText("folder").": ".$path."\r\n".
+						getMLText("comment").": ".$folder->getComment()."\r\n".
+						"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+					$subject=mydmsDecodeString($subject);
+					$message=mydmsDecodeString($message);
+					
+					if ($isUser) {
+						$notifier->toIndividual($user, $obj, $subject, $message);
+					}
+					else {
+						$notifier->toGroup($user, $obj, $subject, $message);
+					}
+				}
+
 				break;
 		}
 	}
@@ -132,6 +191,34 @@ else if ($action == "addnotify") {
 				UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("internal_error"));
 				break;
 			case 0:
+				$obj = $dms->getGroup($groupid);
+				// Email user / group, informing them of subscription.
+				$path="";
+				$folderPath = $folder->getPath();
+				for ($i = 0; $i  < count($folderPath); $i++) {
+					$path .= $folderPath[$i]->getName();
+					if ($i +1 < count($folderPath))
+						$path .= " / ";
+				}
+				if($notifier) {
+					$subject = "###SITENAME###: ".$folder->getName()." - ".getMLText("notify_added_email");
+					$message = getMLText("notify_added_email")."\r\n";
+					$message .= 
+						getMLText("name").": ".$folder->getName()."\r\n".
+						getMLText("folder").": ".$path."\r\n".
+						getMLText("comment").": ".$folder->getComment()."\r\n".
+						"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+					$subject=mydmsDecodeString($subject);
+					$message=mydmsDecodeString($message);
+					
+					if ($isUser) {
+						$notifier->toIndividual($user, $obj, $subject, $message);
+					}
+					else {
+						$notifier->toGroup($user, $obj, $subject, $message);
+					}
+				}
 				break;
 		}
 	}

@@ -163,6 +163,28 @@ for ($file_num=0;$file_num<count($_FILES["userfile"]["tmp_name"]);$file_num++){
 	
 	if (is_bool($res) && !$res) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
+	} else {
+		$document = $res[0];
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("new_document_email");
+			$message = getMLText("new_document_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				getMLText("comment_for_current_version").": ".$version_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
 	}
 	
 	add_log_line("?name=".$name."&folderid=".$folderid);

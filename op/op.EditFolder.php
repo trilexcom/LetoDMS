@@ -53,15 +53,63 @@ if (!is_numeric($sequence)) {
 	$sequence = "keep";
 }
 
-if (
-	(($folder->getName() == $name) || $folder->setName($name))
-	&& (($folder->getComment() == $comment) || $folder->setComment($comment))
-	&& ((!strcasecmp($sequence, "keep")) || $folder->setSequence($sequence))
-	)
-{
+$wasupdated = false;
+if(($oldname = $folder->getName()) != $name) {
+	if($folder->setName($name)) {
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("folder_renamed_email");
+			$message = getMLText("folder_renamed_email")."\r\n";
+			$message .= 
+				getMLText("old").": ".$oldname."\r\n".
+				getMLText("new").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	} else {
+		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));	
+	}
 }
-else {
-	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));	
+if(($oldcomment = $folder->getComment()) != $comment) {
+	if($folder->setComment($comment)) {
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("comment_changed_email");
+			$message = getMLText("comment_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	} else {
+		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));	
+	}
+}
+if(strcasecmp($sequence, "keep")) {
+	if($folder->setSequence($sequence)) {
+	} else {
+		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));	
+	}
 }
 
 add_log_line("?folderid=".$folderid);

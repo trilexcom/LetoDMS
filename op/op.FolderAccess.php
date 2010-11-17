@@ -116,16 +116,78 @@ if ($action == "setowner") {
 	if (!is_object($newOwner)) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("unknown_user"));
 	}
-	$folder->setOwner($newOwner);
+	$oldOwner = $folder->getOwner();
+	if($folder->setOwner($newOwner)) {
+		if($notifier) {
+			// Send notification to subscribers.
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("ownership_changed_email");
+			$message = getMLText("ownership_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
+				getMLText("new").": ".$newOwner->getFullName()."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$folder->_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	} else {
+		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("set_owner_error"));
+	}
 }
 
 //Änderung auf nicht erben ------------------------------------------------------------------------
 else if ($action == "notinherit") {
 
 	$defAccess = $folder->getDefaultAccess();
-	$folder->setInheritAccess(false);
-	$folder->setDefaultAccess($defAccess);
+	if($folder->setInheritAccess(false)) {
+		if($notifier) {
+			// Send notification to subscribers.
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
 
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
+	if($folder->setDefaultAccess($defAccess)) {
+		if($notifier) {
+			// Send notification to subscribers.
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 	if ($mode == "copy") {
 		$parent = $folder->getParent();
 		$accessList = $parent->getAccessList();
@@ -142,12 +204,50 @@ else if ($action == "inherit") {
 	if ($folderid == $settings->_rootFolderID || !$folder->getParent()) return;
 
 	$folder->clearAccessList();
-	$folder->setInheritAccess(true);
+	if($folder->setInheritAccess(true)) {
+		if($notifier) {
+			// Send notification to subscribers.
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 }
 
 //Standardberechtigung setzen----------------------------------------------------------------------
 else if ($action == "setdefault") {
-	$folder->setDefaultAccess($mode);
+	if($folder->setDefaultAccess($mode)) {
+		if($notifier) {
+			// Send notification to subscribers.
+			$folder->getNotifyList();
+			$subject = "###SITENAME###: ".$folder->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$folder->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$folder->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $folder->_notifyList["users"], $subject, $message);
+			foreach ($folder->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 }
 
 //Bestehende Berechtigung änndern -----------------------------------------------------------------
