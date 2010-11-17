@@ -39,7 +39,7 @@ if (is_bool($users)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("internal_error"));
 }
 
-$groups = getAllGroups();
+$groups = $dms->getAllGroups();
 
 if (is_bool($groups)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("internal_error"));
