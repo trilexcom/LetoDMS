@@ -27,7 +27,8 @@ if (!isset($_COOKIE["mydms_session"]))
 	exit;
 }
 
-include_once("inc.Utils.php");
+require_once("inc.Utils.php");
+require_once("inc.ClassEmail.php");
 
 $dms_session = sanitizeString($_COOKIE["mydms_session"]);
 
@@ -57,6 +58,8 @@ if (!is_object($user)) {
 }
 
 $dms->setUser($user);
+$notifier = new LetoDMS_Email();
+$notifier->setSender($user);
 
 $theme = $resArr["theme"];
 include $settings->_rootDir . "languages/" . $resArr["language"] . "/lang.inc";
