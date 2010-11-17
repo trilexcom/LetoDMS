@@ -36,7 +36,6 @@ class LetoDMS_Folder {
 	var $_inheritAccess;
 	var $_defaultAccess;
 	var $_sequence;
-	var $_notifier;
 	var $_dms;
 
 	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
@@ -48,7 +47,6 @@ class LetoDMS_Folder {
 		$this->_inheritAccess = $inheritAccess;
 		$this->_defaultAccess = $defaultAccess;
 		$this->_sequence = $sequence;
-		$this->_notifier = null;
 		$this->_dms = null;
 	} /* }}} */
 
@@ -64,10 +62,6 @@ class LetoDMS_Folder {
 	function setDMS($dms) { /* {{{ */
 		$this->_dms = $dms;
 	} /* }}} */
-
-	function setNotifier($notifier) {
-		$this->_notifier = $notifier;
-	}
 
 	/*
 	 * Get the internal id of the folder.
@@ -89,34 +83,12 @@ class LetoDMS_Folder {
 	 * @param string $newName set a new name of the folder
 	 */
 	function setName($newName) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblFolders SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_renamed_email");
-			$message = getMLText("folder_renamed_email")."\r\n";
-			$message .= 
-				getMLText("old").": ".$this->_name."\r\n".
-				getMLText("new").": ".$newName."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-		
 		$this->_name = $newName;
 		
 		return true;
@@ -125,32 +97,11 @@ class LetoDMS_Folder {
 	function getComment() { return $this->_comment; }
 
 	function setComment($newComment) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblFolders SET comment = '" . $newComment . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("comment_changed_email");
-			$message = getMLText("comment_changed_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$newComment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		$this->_comment = $newComment;
 		return true;
@@ -168,7 +119,6 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	function setParent($newParent) { /* {{{ */
-		global $user;
 		$db = $this->_dms->getDB();
 
 		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
@@ -204,26 +154,6 @@ class LetoDMS_Folder {
 			$res = $db->getResult($queryStr);
 		}
 
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_moved_email");
-			$message = getMLText("folder_moved_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->_comment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		return true;
 	} /* }}} */
 
@@ -234,36 +164,11 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	function setOwner($newOwner) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
-
-		$oldOwner = $this->getOwner();
 
 		$queryStr = "UPDATE tblFolders set owner = " . $newOwner->getID() . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		if($this->_notifier) {
-			// Send notification to subscribers.
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("ownership_changed_email");
-			$message = getMLText("ownership_changed_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
-				getMLText("new").": ".$newOwner->getFullName()."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->_comment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		$this->_ownerID = $newOwner->getID();
 		$this->_owner = $newOwner;
@@ -281,31 +186,11 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	function setDefaultAccess($mode) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 
 		$queryStr = "UPDATE tblFolders set defaultAccess = " . $mode . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		if($this->_notifier) {
-			// Send notification to subscribers.
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
-			$message = getMLText("access_permission_changed_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		$this->_defaultAccess = $mode;
 
@@ -328,7 +213,6 @@ class LetoDMS_Folder {
 	function inheritsAccess() { return $this->_inheritAccess; }
 
 	function setInheritAccess($inheritAccess) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 
 		$inheritAccess = ($inheritAccess) ? "1" : "0";
@@ -338,25 +222,6 @@ class LetoDMS_Folder {
 			return false;
 
 		$this->_inheritAccess = $inheritAccess;
-
-		if($this->_notifier) {
-			// Send notification to subscribers.
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
-			$message = getMLText("access_permission_changed_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		// If any of the notification subscribers no longer have read access,
 		// remove their subscription.
@@ -407,7 +272,6 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	function addSubFolder($name, $comment, $owner, $sequence) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 
 		//inheritAccess = true, defaultAccess = M_READ
@@ -417,27 +281,6 @@ class LetoDMS_Folder {
 			return false;
 		$newFolder = $this->_dms->getFolder($db->getInsertID());
 		unset($this->_subFolders);
-
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("new_subfolder_email");
-			$message = getMLText("new_subfolder_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$name."\r\n".
-				getMLText("folder").": ".$newFolder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$comment."\r\n".
-				getMLText("user").": ".$owner->getFullName()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$newFolder->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		return $newFolder;
 	} /* }}} */
@@ -528,7 +371,6 @@ class LetoDMS_Folder {
 
 	// $comment will be used for both document and version leaving empty the version_comment 
 	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 		
 		$expires = (!$expires) ? 0 : $expires;
@@ -560,32 +402,10 @@ class LetoDMS_Folder {
 			return false;
 		}
 
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("new_document_email");
-			$message = getMLText("new_document_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$comment."\r\n".
-				getMLText("comment_for_current_version").": ".$version_comment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		return array($document, $res);
 	} /* }}} */
 	
-	function remove($send_email=TRUE) { /* {{{ */
-		global $user;
+	function remove() { /* {{{ */
 		$db = $this->_dms->getDB();
 
 		// Do not delete the root folder.
@@ -616,27 +436,6 @@ class LetoDMS_Folder {
 		$queryStr = "DELETE FROM tblACLs WHERE target = ". $this->_id. " AND targetType = " . T_FOLDER;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		// Send notification to subscribers.
-		if ($send_email && $this->_notifier) {
-		
-			$this->getNotifyList();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("folder_deleted_email");
-			$message = getMLText("folder_deleted_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$this->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->_comment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		$queryStr = "DELETE FROM tblNotify WHERE target = ". $this->_id. " AND targetType = " . T_FOLDER;
 		if (!$db->getResult($queryStr))
@@ -954,34 +753,6 @@ class LetoDMS_Folder {
 		if (!$db->getResult($queryStr))
 			return -4;
 
-		// Email user / group, informing them of subscription.
-		$path="";
-		$folderPath = $this->getPath();
-		for ($i = 0; $i  < count($folderPath); $i++) {
-			$path .= $folderPath[$i]->getName();
-			if ($i +1 < count($folderPath))
-				$path .= " / ";
-		}
-		if($this->_notifier) {
-			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_added_email");
-			$message = getMLText("notify_added_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->getName()."\r\n".
-				getMLText("folder").": ".$path."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			if ($isUser) {
-				$this->_notifier->toIndividual($user, $obj, $subject, $message);
-			}
-			else {
-				$this->_notifier->toGroup($user, $obj, $subject, $message);
-			}
-		}
-
 		unset($this->_notifyList);
 		return 0;
 	} /* }}} */
@@ -1045,34 +816,6 @@ class LetoDMS_Folder {
 		$queryStr = "DELETE FROM tblNotify WHERE target = " . $this->_id . " AND targetType = " . T_FOLDER . " AND " . $userOrGroup . " = " . $userOrGroupID;
 		if (!$db->getResult($queryStr))
 			return -4;
-
-		// Email user / group, informing them of subscription.
-		$path="";
-		$folderPath = $this->getPath();
-		for ($i = 0; $i  < count($folderPath); $i++) {
-			$path .= $folderPath[$i]->getName();
-			if ($i +1 < count($folderPath))
-				$path .= " / ";
-		}
-		if($this->_notifier) {
-			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_deleted_email");
-			$message = getMLText("notify_deleted_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$this->getName()."\r\n".
-				getMLText("folder").": ".$path."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			if ($isUser) {
-				$this->_notifier->toIndividual($user, $obj, $subject, $message);
-			}
-			else {
-				$this->_notifier->toGroup($user, $obj, $subject, $message);
-			}
-		}
 
 		unset($this->_notifyList);
 		return 0;
