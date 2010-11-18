@@ -80,7 +80,7 @@ function checkForm()
 </script>
 
 <?php
-$allUsers = getAllUsers();
+$allUsers = $dms->getAllUsers();
 
 UI::contentHeading(getMLText("edit_document_access"));
 UI::contentContainerStart();
@@ -210,7 +210,7 @@ foreach ($allUsers as $userObj) {
 <select name="groupid">
 <option value="-1"><?php printMLText("select_one");?></option>
 <?php
-$allGroups = getAllGroups();
+$allGroups = $dms->getAllGroups();
 foreach ($allGroups as $groupObj) {
 	print "<option value=\"".$groupObj->getID()."\">" . $groupObj->getName() . "</option>\n";
 }
