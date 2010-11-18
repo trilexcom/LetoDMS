@@ -57,8 +57,28 @@ if (!is_object($version)) {
 
 $comment =  sanitizeString($_POST["comment"]);
 
-if (($version->getComment() == $comment) || $version->setComment($comment))
-{
+if (($oldcomment = $version->getComment()) == $comment) {
+	if($version->setComment($comment)) {
+		$document->getNotifyList();
+		if($notifier) {
+			$subject = "###SITENAME###: ".$document->getName().", v.".$version->_version." - ".getMLText("comment_changed_email");
+			$message = getMLText("comment_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->getName()."\r\n".
+				getMLText("version").": ".$version->_version."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$version->_version."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 }
 else {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));

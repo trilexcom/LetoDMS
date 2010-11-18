@@ -183,7 +183,33 @@ else if ($_POST["reviewType"] == "grp") {
 
 if ($_POST["reviewStatus"]==-1){
 
-	$content->setStatus(S_REJECTED,$comment,$user);
+	if($content->setStatus(S_REJECTED,$comment,$user)) {
+		$nl=$document->getNotifyList();
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("document_status_changed_email");
+			$message = getMLText("document_status_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("status").": ".getOverallStatusText($status)."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$document->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
+
+			$uu = (is_null($updateUser) ? $document->_dms->getUser($settings->_adminID) : $updateUser);
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($uu, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				$notifier->toGroup($uu, $grp, $subject, $message);
+			}
+		}
+		
+		// TODO: if user os not owner send notification to owner
+	}
 
 }else{
 
@@ -228,7 +254,32 @@ if ($_POST["reviewStatus"]==-1){
 			$newStatus=2;
 		}
 		if ($content->setStatus($newStatus, getMLText("automatic_status_update"), $user)) {
-		
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			if($notifier) {
+				$folder = $document->getFolder();
+				$subject = "###SITENAME###: ".$document->_name." - ".getMLText("document_status_changed_email");
+				$message = getMLText("document_status_changed_email")."\r\n";
+				$message .= 
+					getMLText("document").": ".$document->_name."\r\n".
+					getMLText("status").": ".getOverallStatusText($status)."\r\n".
+					getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+					getMLText("comment").": ".$document->getComment()."\r\n".
+					"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
+
+				$uu = (is_null($updateUser) ? $document->_dms->getUser($settings->_adminID) : $updateUser);
+
+				$subject=mydmsDecodeString($subject);
+				$message=mydmsDecodeString($message);
+				
+				$notifier->toList($uu, $nl["users"], $subject, $message);
+				foreach ($nl["groups"] as $grp) {
+					$notifier->toGroup($uu, $grp, $subject, $message);
+				}
+			}
+			
+			// TODO: if user os not owner send notification to owner
+
 			// Notify approvers, if necessary.
 			if ($newStatus == S_DRAFT_APP) {
 				$requestUser = $document->getOwner();

@@ -142,13 +142,58 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 
 	$contentResult=$document->addContent($comment, $user, $userfiletmp, basename($userfilename), $fileType, $userfiletype, $reviewers, $approvers);
 	if (is_bool($contentResult) && !$contentResult) {
-	
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 	}
 	else {
+		// Send notification to subscribers.
+		$document->getNotifyList();
+		if ($notifier){
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("document_updated_email");
+			$message = getMLText("document_updated_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$document->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		
+			// if user is not owner send notification to owner
+			if ($user->getID()!= $document->_ownerID) 
+				$notifier->toIndividual($user, $document->getOwner(), $subject, $message);
+		}
+
 		$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, $_POST["expmonth"], $_POST["expday"], $_POST["expyear"]) : false;
 			
-		if (!$document->setExpires($expires)) {
+		if ($document->setExpires($expires)) {
+			$document->getNotifyList();
+			if($notifier) {
+				$folder = $document->getFolder();
+				// Send notification to subscribers.
+				$subject = "###SITENAME###: ".$document->_name." - ".getMLText("expiry_changed_email");
+				$message = getMLText("expiry_changed_email")."\r\n";
+				$message .= 
+					getMLText("document").": ".$document->_name."\r\n".
+					getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+					getMLText("comment").": ".$document->getComment()."\r\n".
+					"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+				$subject=mydmsDecodeString($subject);
+				$message=mydmsDecodeString($message);
+				
+				$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+				foreach ($document->_notifyList["groups"] as $grp) {
+					$notifier->toGroup($user, $grp, $subject, $message);
+				}
+			}
+		} else {
 			UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 		}
 	}

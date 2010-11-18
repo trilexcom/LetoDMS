@@ -66,7 +66,7 @@ if (is_object($subFolder)) {
 			getMLText("name").": ".$name."\r\n".
 			getMLText("folder").": ".$subFolder->getFolderPathPlain()."\r\n".
 			getMLText("comment").": ".$comment."\r\n".
-			getMLText("user").": ".$owner->getFullName()."\r\n".
+			getMLText("user").": ".$user->getFullName()."\r\n".
 			"URL: ###URL_PREFIX###out/out.ViewFolder.php?folderid=".$subFolder->getID()."\r\n";
 
 		$subject=mydmsDecodeString($subject);

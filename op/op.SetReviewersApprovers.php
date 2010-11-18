@@ -119,6 +119,22 @@ foreach ($pIndRev as $p) {
 				
 				switch ($res) {
 					case 0:
+						// Send an email notification to the new reviewer.
+						if ($notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
+							$message = getMLText("review_request_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$this->_version."\r\n".
+								getMLText("comment").": ".$this->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$this->_version."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toIndividual($user, $docAccess["users"][$accessIndex["i"][$p]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -161,6 +177,22 @@ if (count($reviewIndex["i"]) > 0) {
 				$uml = $docAccess["users"][$accessIndex["i"][$rx]]->getEmail();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the reviewer.
+						if ($notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("review_deletion_email");
+							$message = getMLText("review_deletion_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toIndividual($user, $docAccess["users"][$accessIndex["i"][$rx]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -190,6 +222,22 @@ foreach ($pGrpRev as $p) {
 				$gnm = $docAccess["groups"][$accessIndex["g"][$p]]->getName();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the new reviewer.
+						if ($notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("review_request_email");
+							$message = getMLText("review_request_email")."\r\n";
+							$message .=
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toGroup($user, $docAccess["groups"][$accessIndex["g"][$p]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -229,6 +277,23 @@ if (count($reviewIndex["g"]) > 0) {
 				$gnm = $docAccess["groups"][$accessIndex["g"][$rx]]->getName();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the review group.
+						if ($notifier) {
+						
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("review_deletion_email");
+							$message = getMLText("review_deletion_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toGroup($user, $docAccess["groups"][$accessIndex["g"][$rx]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -263,6 +328,22 @@ foreach ($pIndApp as $p) {
 				$uml = $docAccess["users"][$accessIndex["i"][$p]]->getEmail();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the new approver.
+						if ($overallStatus["status"]!=0 && $notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("approval_request_email");
+							$message = getMLText("approval_request_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toIndividual($user, $docAccess["users"][$accessIndex["i"][$p]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -302,6 +383,22 @@ if (count($approvalIndex["i"]) > 0) {
 				$uml = $docAccess["users"][$accessIndex["i"][$rx]]->getEmail();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the approver.
+						if ($notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("approval_deletion_email");
+							$message = getMLText("approval_deletion_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toIndividual($user, $docAccess["users"][$accessIndex["i"][$rx]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -331,6 +428,22 @@ foreach ($pGrpApp as $p) {
 				$gnm = $docAccess["groups"][$accessIndex["g"][$p]]->getName();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the new approver.
+						if ($overallStatus["status"]!=0 && $notifier) {
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("approval_request_email");
+							$message = getMLText("approval_request_email")."\r\n";
+							$message .=
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toGroup($user, $docAccess["groups"][$accessIndex["g"][$p]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
@@ -370,6 +483,23 @@ if (count($approvalIndex["g"]) > 0) {
 				$gnm = $docAccess["groups"][$accessIndex["g"][$rx]]->getName();
 				switch ($res) {
 					case 0:
+						// Send an email notification to the approval group.
+						if ($notifier) {
+						
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("approval_deletion_email");
+							$message = getMLText("approval_deletion_email")."\r\n";
+							$message .= 
+								getMLText("document").": ".$document->getName()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
+								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".			
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+							$subject=mydmsDecodeString($subject);
+							$message=mydmsDecodeString($message);
+							
+							$notifier->toGroup($user, $docAccess["groups"][$accessIndex["g"][$rx]], $subject, $message);
+						}
 						break;
 					case -1:
 						UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));

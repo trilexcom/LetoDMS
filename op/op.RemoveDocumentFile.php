@@ -57,6 +57,26 @@ if (($document->getAccessMode($user) < M_ALL)&&($user->getID()!=$file->getUserID
 
 if (!$document->removeDocumentFile($fileid)) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+} else {
+	// Send notification to subscribers.
+	$document->getNotifyList();
+	if($notifier) {
+		$subject = "###SITENAME###: ".$document->_name." - ".getMLText("removed_file_email");
+		$message = getMLText("removed_file_email")."\r\n";
+		$message .= 
+			getMLText("name").": ".$name."\r\n".
+			getMLText("comment").": ".$comment."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
+			"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+		foreach ($document->_notifyList["groups"] as $grp) {
+			$notifier->toGroup($user, $grp, $subject, $message);
+		}
+	}
 }
 
 add_log_line("?documentid=".$documentid."&fileid=".$fileid);

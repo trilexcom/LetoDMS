@@ -47,6 +47,34 @@ $folder = $document->getFolder();
 
 if (!$document->remove()) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("error_occured"));
+} else {
+	$document->getNotifyList();
+	if ($notifier){
+		$path = "";
+		$folderPath = $folder->getPath();
+		for ($i = 0; $i  < count($folderPath); $i++) {
+			$path .= $folderPath[$i]->getName();
+			if ($i +1 < count($folderPath))
+				$path .= " / ";
+		}
+	
+		$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("document_deleted_email");
+		$message = getMLText("document_deleted_email")."\r\n";
+		$message .= 
+			getMLText("document").": ".$document->getName()."\r\n".
+			getMLText("folder").": ".$path."\r\n".
+			getMLText("comment").": ".$document->getComment()."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		// Send notification to subscribers.
+		$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+		foreach ($document->_notifyList["groups"] as $grp) {
+			$notifier->toGroup($user, $grp, $subject, $message);
+		}
+	}
 }
 
 add_log_line("?documentid=".$documentid);

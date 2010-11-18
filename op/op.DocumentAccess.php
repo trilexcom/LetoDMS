@@ -118,15 +118,81 @@ if ($action == "setowner") {
 	if (!is_object($newOwner)) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("unknown_user"));	
 	}
-	$document->setOwner($newOwner);
+	$oldOwner = $document->getOwner();
+	if($document->setOwner($newOwner)) {
+		$document->getNotifyList();
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("ownership_changed_email");
+			$message = getMLText("ownership_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
+				getMLText("new").": ".$newOwner->getFullName()."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$document->_comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+			// Send notification to previous owner.
+			$notifier->toIndividual($user, $oldOwner, $subject, $message);
+		}
+	}
 }
 
 //Änderung auf nicht erben ------------------------------------------------------------------------
 else if ($action == "notinherit") {
 
 	$defAccess = $document->getDefaultAccess();
-	$document->setInheritAccess(false);
-	$document->setDefaultAccess($defAccess);
+	if($document->setInheritAccess(false)) {
+		$document->getNotifyList();
+		if($notifier) {
+			$folder = $document->getFolder();
+			// Send notification to subscribers.
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
+	if($document->setDefaultAccess($defAccess)) {
+		$document->getNotifyList();
+		if($notifier) {
+			$folder = $document->getFolder();
+			// Send notification to subscribers.
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 
 	//copy ACL of parent folder
 	if ($mode == "copy") {
@@ -146,10 +212,30 @@ else if ($action == "inherit") {
 
 //Standardberechtigung setzen----------------------------------------------------------------------
 else if ($action == "setdefault") {
-	$document->setDefaultAccess($mode);
+	if($document->setDefaultAccess($mode)) {
+		$document->getNotifyList();
+		if($notifier) {
+			$folder = $document->getFolder();
+			// Send notification to subscribers.
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("access_permission_changed_email");
+			$message = getMLText("access_permission_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
+	}
 }
 
-//Bestehende Berechtigung änndern -----------------------------------------------------------------
+// Bestehende Berechtigung ändern --------------------------------------------
 else if ($action == "editaccess") {
 	if (isset($userid)) {
 		$document->changeAccess($mode, $userid, true);

@@ -68,6 +68,26 @@ $res = $document->addDocumentFile($name, $comment, $user, $userfiletmp,
                                 
 if (is_bool($res) && !$res) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
+} else {
+	$document->getNotifyList();
+	// Send notification to subscribers.
+	if($notifier) {
+		$subject = "###SITENAME###: ".$document->_name." - ".getMLText("new_file_email");
+		$message = getMLText("new_file_email")."\r\n";
+		$message .= 
+			getMLText("name").": ".$name."\r\n".
+			getMLText("comment").": ".$comment."\r\n".
+			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
+			"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+		$subject=mydmsDecodeString($subject);
+		$message=mydmsDecodeString($message);
+		
+		$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+		foreach ($document->_notifyList["groups"] as $grp) {
+			$notifier->toGroup($user, $grp, $subject, $message);
+		}
+	}
 }
 
 add_log_line("?name=".$name."&documentid=".$documentid);

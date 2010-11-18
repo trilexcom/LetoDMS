@@ -25,6 +25,15 @@ define("S_REJECTED", -1);
 define("S_OBSOLETE", -2);
 define("S_EXPIRED",  -3);
 
+/**
+ * Class to represent a folder in the document management system
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli, Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 // these are the document information (all versions)
 class LetoDMS_Document { /* {{{ */
 	var $_id;
@@ -38,11 +47,9 @@ class LetoDMS_Document { /* {{{ */
 	var $_locked;
 	var $_keywords;
 	var $_sequence;
-	var $_notifier;
 	var $_dms;
 	
-	function LetoDMS_Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence)
-	{
+	function LetoDMS_Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_comment = $comment;
@@ -55,44 +62,7 @@ class LetoDMS_Document { /* {{{ */
 		$this->_locked = ($locked == null || $locked == '' ? -1 : $locked);
 		$this->_keywords = $keywords;
 		$this->_sequence = $sequence;
-		$this->_notifier = null;
 		$this->_dms = null;
-	}
-
-	/**
-	 * Return a document by its id
-	 *
-	 * This function retrieves a document from the database by its id.
-	 *
-	 * @param integer $id internal id of document
-	 * @return object instance of LetoDMS_Document or false
-	 */
-	function getDocument($id) { /* {{{ */
-		GLOBAL $db;
-		
-		if (!is_numeric($id)) return false;
-		
-		$queryStr = "SELECT * FROM tblDocuments WHERE id = " . $id;
-		$resArr = $db->getResultArray($queryStr);
-		if (is_bool($resArr) && $resArr == false)
-			return false;
-		if (count($resArr) != 1)
-			return false;
-		$resArr = $resArr[0];
-	
-		// New Locking mechanism uses a separate table to track the lock.
-		$queryStr = "SELECT * FROM tblDocumentLocks WHERE document = " . $id;
-		$lockArr = $db->getResultArray($queryStr);
-		if ((is_bool($lockArr) && $lockArr==false) || (count($lockArr)==0)) {
-			// Could not find a lock on the selected document.
-			$lock = -1;
-		}
-		else {
-			// A lock has been identified for this document.
-			$lock = $lockArr[0]["userID"];
-		}
-	
-		return new LetoDMS_Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
 	} /* }}} */
 
 	/*
@@ -109,98 +79,73 @@ class LetoDMS_Document { /* {{{ */
 		$this->_dms = $dms;
 	} /* }}} */
 
-	function setNotifier($notifier) { /* {{{ */
-		$this->_notifier = $notifier;
+	/*
+	 * Return the directory of the document in th file system relativ
+	 * to the contentDir
+	 *
+	 * @return string directory of document
+	 */
+	function getDir() { /* {{{ */
+		return $this->_dms->contentOffsetDir."/".$this->_id."/";
 	} /* }}} */
 
-	function getDir() {
-		return $this->_dms->contentOffsetDir."/".$this->_id."/";
-	}
-
-
+	/*
+	 * Return the internal id of the document
+	 *
+	 * @return integer id of document
+	 */
 	function getID() { return $this->_id; }
 
+	/*
+	 * Return the name of the document
+	 *
+	 * @return string name of document
+	 */
 	function getName() { return $this->_name; }
 
-	function setName($newName) {
-		GLOBAL $db, $user;
+	/*
+	 * Set the name of the document
+	 *
+	 * @param $newName string new name of document
+	 */
+	function setName($newName) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_renamed_email");
-			$message = getMLText("document_renamed_email")."\r\n";
-			$message .= 
-				getMLText("old").": ".$this->_name."\r\n".
-				getMLText("new").": ".$newName."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-			
-			// if user is not owner send notification to owner
-			if ($user->getID()!= $this->_ownerID) 
-				$this->_notifier->toIndividual($user, $this->getOwner(), $subject, $message);		
-		}
-
 		$this->_name = $newName;
 		return true;
-	}
+	} /* }}} */
 
+	/*
+	 * Return the comment of the document
+	 *
+	 * @return string comment of document
+	 */
 	function getComment() { return $this->_comment; }
 
-	function setComment($newComment) {
-		GLOBAL $db, $user;
+	/*
+	 * Set the comment of the document
+	 *
+	 * @param $newComment string new comment of document
+	 */
+	function setComment($newComment) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$queryStr = "UPDATE tblDocuments SET comment = '" . $newComment . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("comment_changed_email");
-			$message = getMLText("comment_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$newComment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-
-			// if user is not owner send notification to owner
-			if ($user->getID()!= $this->_ownerID) 
-				$this->_notifier->toIndividual($user, $this->getOwner(), $subject, $message);		
-		}
 		$this->_comment = $newComment;
 		return true;
-	}
+	} /* }}} */
 
 	function getKeywords() { return $this->_keywords; }
 
-	function setKeywords($newKeywords)
-	{
-		GLOBAL $db;
+	function setKeywords($newKeywords) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments SET keywords = '" . $newKeywords . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
@@ -208,23 +153,20 @@ class LetoDMS_Document { /* {{{ */
 		
 		$this->_keywords = $newKeywords;
 		return true;
-	}
+	} /* }}} */
 
-	function getDate()
-	{
+	function getDate() { /* {{{ */
 		return $this->_date;
-	}
+	} /* }}} */
 
-	function getFolder()
-	{
+	function getFolder() { /* {{{ */
 		if (!isset($this->_folder))
 			$this->_folder = $this->_dms->getFolder($this->_folderID);
 		return $this->_folder;
-	}
+	} /* }}} */
 
-	function setFolder($newFolder)
-	{
-		GLOBAL $db, $user;
+	function setFolder($newFolder) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments SET folder = " . $newFolder->getID() . " WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
@@ -245,116 +187,42 @@ class LetoDMS_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_moved_email");
-			$message = getMLText("document_moved_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$newComment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-			
-			// if user is not owner send notification to owner
-			if ($user->getID()!= $this->_ownerID) 
-				$this->_notifier->toIndividual($user, $this->getOwner(), $subject, $message);		
-		}
-
 		return true;
-	}
+	} /* }}} */
 
-	function getOwner() {
+	function getOwner() { /* {{{ */
 		if (!isset($this->_owner))
 			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
-	}
+	} /* }}} */
 
-	function setOwner($newOwner) {
-		GLOBAL $db, $user;
-
-		$oldOwner = $this->getOwner();
+	function setOwner($newOwner) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$queryStr = "UPDATE tblDocuments set owner = " . $newOwner->getID() . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("ownership_changed_email");
-			$message = getMLText("ownership_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("old").": ".$oldOwner->getFullName()."\r\n".
-				getMLText("new").": ".$newOwner->getFullName()."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->_comment."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-			// Send notification to previous owner.
-			$this->_notifier->toIndividual($user, $oldOwner, $subject, $message);
-		}
-
 		$this->_ownerID = $newOwner->getID();
 		$this->_owner = $newOwner;
 		return true;
-	}
+	} /* }}} */
 
-	function getDefaultAccess()
-	{
-		if ($this->inheritsAccess())
-		{
+	function getDefaultAccess() { /* {{{ */
+		if ($this->inheritsAccess()) {
 			$res = $this->getFolder();
 			if (!$res) return false;
 			return $this->_folder->getDefaultAccess();
 		}
 		return $this->_defaultAccess;
-	}
+	} /* }}} */
 
-	function setDefaultAccess($mode) {
-		GLOBAL $db, $user;
+	function setDefaultAccess($mode) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments set defaultAccess = " . $mode . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-
-		$this->getNotifyList();
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			// Send notification to subscribers.
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
-			$message = getMLText("access_permission_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
 
 		$this->_defaultAccess = $mode;
 
@@ -372,12 +240,12 @@ class LetoDMS_Document { /* {{{ */
 		}
 
 		return true;
-	}
+	} /* }}} */
 
 	function inheritsAccess() { return $this->_inheritAccess; }
 
-	function setInheritAccess($inheritAccess) {
-		GLOBAL $db, $user;
+	function setInheritAccess($inheritAccess) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments SET inheritAccess = " . ($inheritAccess ? "1" : "0") . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -385,60 +253,42 @@ class LetoDMS_Document { /* {{{ */
 		
 		$this->_inheritAccess = ($inheritAccess ? "1" : "0");
 
-		$this->getNotifyList();
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			// Send notification to subscribers.
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("access_permission_changed_email");
-			$message = getMLText("access_permission_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		// If any of the notification subscribers no longer have read access,
 		// remove their subscription.
-		foreach ($this->_notifyList["users"] as $u) {
-			if ($this->getAccessMode($u) < M_READ) {
-				$this->removeNotify($u->getID(), true);
+		if($this->_notifyList["users"]) {
+			foreach ($this->_notifyList["users"] as $u) {
+				if ($this->getAccessMode($u) < M_READ) {
+					$this->removeNotify($u->getID(), true);
+				}
 			}
 		}
-		foreach ($this->_notifyList["groups"] as $g) {
-			if ($this->getGroupAccessMode($g) < M_READ) {
-				$this->removeNotify($g->getID(), false);
+		if($this->_notifyList["groups"]) {
+			foreach ($this->_notifyList["groups"] as $g) {
+				if ($this->getGroupAccessMode($g) < M_READ) {
+					$this->removeNotify($g->getID(), false);
+				}
 			}
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function expires()
-	{
+	function expires() { /* {{{ */
 		if (intval($this->_expires) == 0)
 			return false;
 		else
 			return true;
-	}
+	} /* }}} */
 
-	function getExpires()
-	{
+	function getExpires() { /* {{{ */
 		if (intval($this->_expires) == 0)
 			return false;
 		else
 			return $this->_expires;
-	}
+	} /* }}} */
 
-	function setExpires($expires) {
-		GLOBAL $db, $user;
+	function setExpires($expires) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$expires = (!$expires) ? 0 : $expires;
 
@@ -451,41 +301,18 @@ class LetoDMS_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->getNotifyList();
-		if($this->_notifier) {
-			$folder = $this->getFolder();
-			// Send notification to subscribers.
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("expiry_changed_email");
-			$message = getMLText("expiry_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		$this->_expires = $expires;
 		return true;
-	}
+	} /* }}} */
 
-	function hasExpired(){
-	
+	function hasExpired() { /* {{{ */
 		if (intval($this->_expires) == 0) return false;
 		if (time()>$this->_expires+24*60*60) return true;
 		return false;
-	}
+	} /* }}} */
 	
 	// return true if status has changed (to reload page)
-	function verifyLastestContentExpriry(){
-		
+	function verifyLastestContentExpriry(){ /* {{{ */
 		$lc=$this->getLatestContent();
 		$st=$lc->getStatus();
 		
@@ -498,13 +325,12 @@ class LetoDMS_Document { /* {{{ */
 			return true;
 		}
 		return false;
-	}
+	} /* }}} */
 	
 	function isLocked() { return $this->_locked != -1; }
 
-	function setLocked($falseOrUser)
-	{
-		GLOBAL $db;
+	function setLocked($falseOrUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$lockUserID = -1;
 		if (is_bool($falseOrUser) && !$falseOrUser) {
@@ -523,23 +349,21 @@ class LetoDMS_Document { /* {{{ */
 		unset($this->_lockingUser);
 		$this->_locked = $lockUserID;
 		return true;
-	}
+	} /* }}} */
 
-	function getLockingUser()
-	{
+	function getLockingUser() { /* {{{ */
 		if (!$this->isLocked())
 			return false;
 		
 		if (!isset($this->_lockingUser))
 			$this->_lockingUser = $this->_dms->getUser($this->_locked);
 		return $this->_lockingUser;
-	}
+	} /* }}} */
 
 	function getSequence() { return $this->_sequence; }
 
-	function setSequence($seq)
-	{
-		GLOBAL $db;
+	function setSequence($seq) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "UPDATE tblDocuments SET sequence = " . $seq . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -547,11 +371,10 @@ class LetoDMS_Document { /* {{{ */
 		
 		$this->_sequence = $seq;
 		return true;
-	}
+	} /* }}} */
 
-	function clearAccessList()
-	{
-		GLOBAL $db;
+	function clearAccessList() { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "DELETE FROM tblACLs WHERE targetType = " . T_DOCUMENT . " AND target = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -559,21 +382,18 @@ class LetoDMS_Document { /* {{{ */
 		
 		unset($this->_accessList);
 		return true;
-	}
+	} /* }}} */
 
-	function getAccessList($mode = M_ANY, $op = O_EQ)
-	{
-		GLOBAL $db;
+	function getAccessList($mode = M_ANY, $op = O_EQ) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
-		if ($this->inheritsAccess())
-		{
+		if ($this->inheritsAccess()) {
 			$res = $this->getFolder();
 			if (!$res) return false;
 			return $this->_folder->getAccessList($mode, $op);
 		}
 		
-		if (!isset($this->_accessList[$mode]))
-		{
+		if (!isset($this->_accessList[$mode])) {
 			if ($op!=O_GTEQ && $op!=O_LTEQ && $op!=O_EQ) {
 				return false;
 			}
@@ -591,17 +411,17 @@ class LetoDMS_Document { /* {{{ */
 			foreach ($resArr as $row)
 			{
 				if ($row["userID"] != -1)
-					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($row["userID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($this->_dms->getUser($row["userID"]), $row["mode"]));
 				else //if ($row["groupID"] != -1)
-					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($row["groupID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($this->_dms->getGroup($row["groupID"]), $row["mode"]));
 			}
 		}
 		
 		return $this->_accessList[$mode];
-	}
+	} /* }}} */
 
-	function addAccess($mode, $userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function addAccess($mode, $userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 		
@@ -618,10 +438,10 @@ class LetoDMS_Document { /* {{{ */
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function changeAccess($newMode, $userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function changeAccess($newMode, $userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
@@ -637,10 +457,10 @@ class LetoDMS_Document { /* {{{ */
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function removeAccess($userOrGroupID, $isUser) {
-		GLOBAL $db;
+	function removeAccess($userOrGroupID, $isUser) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
@@ -657,7 +477,7 @@ class LetoDMS_Document { /* {{{ */
 		}
 
 		return true;
-	}
+	} /* }}} */
 
 	/*
 	 * Liefert die Art der Zugriffsberechtigung für den User $user; Mögliche Rechte: n (keine), r (lesen), w (schreiben+lesen), a (alles)
@@ -666,10 +486,7 @@ class LetoDMS_Document { /* {{{ */
 	 * Wird bei den ACLs nicht gefunden, wird die Standard-Berechtigung zurückgegeben.
 	 * Ach ja: handelt es sich bei $user um den Besitzer ist die Berechtigung automatisch "a".
 	 */
-	function getAccessMode($user)
-	{
-		GLOBAL $settings;
-		
+	function getAccessMode($user) { /* {{{ */
 		//Administrator??
 		if ($user->isAdmin()) return M_ALL;
 		
@@ -677,7 +494,7 @@ class LetoDMS_Document { /* {{{ */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
 		
 		//Gast-Benutzer??
-		if (($user->getID() == $settings->_guestID) && ($settings->_enableGuestLogin))
+		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin))
 		{
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
@@ -714,10 +531,9 @@ class LetoDMS_Document { /* {{{ */
 			}
 		}
 		return $this->getDefaultAccess();
-	}
+	} /* }}} */
 
-
-	function getGroupAccessMode($group) {
+	function getGroupAccessMode($group) { /* {{{ */
 		$highestPrivileged = M_NONE;
 		
 		//ACLs durchforsten
@@ -741,12 +557,11 @@ class LetoDMS_Document { /* {{{ */
 		
 		//Standard-Berechtigung verwenden
 		return $this->getDefaultAccess();
-	}
+	} /* }}} */
 
-	function getNotifyList() {
-		if (!isset($this->_notifyList))
-		{
-			GLOBAL $db;
+	function getNotifyList() { /* {{{ */
+		if (!isset($this->_notifyList)) {
+			$db = $this->_dms->getDB();
 			
 			$queryStr ="SELECT * FROM tblNotify WHERE targetType = " . T_DOCUMENT . " AND target = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
@@ -763,9 +578,9 @@ class LetoDMS_Document { /* {{{ */
 			}
 		}
 		return $this->_notifyList;
-	}
+	} /* }}} */
 
-	function addNotify($userOrGroupID, $isUser,$send_email=TRUE) {
+	function addNotify($userOrGroupID, $isUser,$send_email=TRUE) { /* {{{ */
 
 		// Return values:
 		// -1: Invalid User/Group ID.
@@ -774,23 +589,21 @@ class LetoDMS_Document { /* {{{ */
 		// -4: Database / internal error.
 		//  0: Update successful.
 
-		global $db, $settings, $user;
+		global $user;
+		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser ? "userID" : "groupID");
 
-		//
-		// Verify that user / group exists.
-		//
+		/* Verify that user / group exists. */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
 		}
 
-		//
-		// Verify that the requesting user has permission to add the target to
-		// the notification system.
-		//
-		if ($user->getID() == $settings->_guestID) {
+		/* Verify that the requesting user has permission to add the target to
+		 * the notification system.
+		 */
+		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -869,40 +682,11 @@ class LetoDMS_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return -4;
 
-		// Email user / group, informing them of subscription.
-		if ($send_email && $this->_notifier){
-			$path="";
-			$folder = $this->getFolder();
-			$folderPath = $folder->getPath();
-			for ($i = 0; $i  < count($folderPath); $i++) {
-				$path .= $folderPath[$i]->getName();
-				if ($i +1 < count($folderPath))
-					$path .= " / ";
-			}
-			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_added_email");
-			$message = getMLText("notify_added_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->getName()."\r\n".
-				getMLText("folder").": ".$path."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			if ($isUser) {
-				$this->_notifier->toIndividual($user, $obj, $subject, $message);
-			}
-			else {
-				$this->_notifier->toGroup($user, $obj, $subject, $message);
-			}
-		}
-
 		unset($this->_notifyList);
 		return 0;
-	}
+	} /* }}} */
 
-	function removeNotify($userOrGroupID, $isUser) {
+	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
 
 		// Return values:
 		// -1: Invalid User/Group ID.
@@ -910,7 +694,8 @@ class LetoDMS_Document { /* {{{ */
 		// -4: Database / internal error.
 		//  0: Update successful.
 
-		GLOBAL $db, $settings, $user;
+		GLOBAL $user;
+		$db = $this->_dms->getDB();
 		
 		//
 		// Verify that user / group exists.
@@ -926,7 +711,7 @@ class LetoDMS_Document { /* {{{ */
 		// Verify that the requesting user has permission to add the target to
 		// the notification system.
 		//
-		if ($user->getID() == $settings->_guestID) {
+		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -960,42 +745,12 @@ class LetoDMS_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return -4;
 		
-		// Email user / group, informing them of subscription change.
-		$path="";
-		$folder = $this->getFolder();
-		$folderPath = $folder->getPath();
-		for ($i = 0; $i  < count($folderPath); $i++) {
-			$path .= $folderPath[$i]->getName();
-			if ($i +1 < count($folderPath))
-				$path .= " / ";
-		}
-		if($this->_notifier) {
-			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("notify_deleted_email");
-			$message = getMLText("notify_deleted_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->getName()."\r\n".
-				getMLText("folder").": ".$path."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-	
-			if ($isUser) {
-				$this->_notifier->toIndividual($user, $obj, $subject, $message);
-			}
-			else {
-				$this->_notifier->toGroup($user, $obj, $subject, $message);
-			}
-		}
-
 		unset($this->_notifyList);
 		return 0;
-	}
+	} /* }}} */
 	
-	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$version=0,$send_email=TRUE)
-	{
-		GLOBAL $db, $settings;
+	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$version=0,$send_email=TRUE) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		// the doc path is id/version.filetype
 		$dir = $this->getDir();
@@ -1011,7 +766,7 @@ class LetoDMS_Document { /* {{{ */
 
 			$version = $db->getInsertID();
 		
-		}else{		
+		}else{
 			$queryStr = "INSERT INTO tblDocumentContent (document, version, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
 						"(".$this->_id.", ".(int)$version.",'".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
 			if (!$db->getResult($queryStr)) return false;
@@ -1026,7 +781,7 @@ class LetoDMS_Document { /* {{{ */
 		$docResultSet = new LetoDMS_AddContentResultSet(new LetoDMS_DocumentContent($this, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
 
 		// TODO - verify
-		if ($settings->_enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($settings->_convertFileTypes)))
+		if ($this->_dms->enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($this->_dms->convertFileTypes)))
 			$docResultSet->_content->convert(); //Auch wenn das schiefgeht, wird deswegen nicht gleich alles "hingeschmissen" (sprich: false zurückgegeben)
 
 		$queryStr = "INSERT INTO `tblDocumentStatus` (`documentID`, `version`) ".
@@ -1093,40 +848,13 @@ class LetoDMS_Document { /* {{{ */
 
 		$docResultSet->setStatus($status,$comment,$user);
 
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if ($send_email && $this->_notifier){
-			$folder = $this->getFolder();
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("document_updated_email");
-			$message = getMLText("document_updated_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_name."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_id."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		
-			// if user is not owner send notification to owner
-			if ($user->getID()!= $this->_ownerID) 
-				$this->_notifier->toIndividual($user, $this->getOwner(), $subject, $message);
-		}
-
 		return $docResultSet;
-	}
+	} /* }}} */
 
-	function getContent()
-	{
-		GLOBAL $db;
+	function getContent() { /* {{{ */
+		$db = $this->_dms->getDB();
 		
-		if (!isset($this->_content))
-		{
+		if (!isset($this->_content)) {
 			$queryStr = "SELECT * FROM tblDocumentContent WHERE document = ".$this->_id." ORDER BY version";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$res)
@@ -1138,23 +866,20 @@ class LetoDMS_Document { /* {{{ */
 		}
 		
 		return $this->_content;
-	}
+	} /* }}} */
 
-	function getContentByVersion($version)
-	{
+	function getContentByVersion($version) { /* {{{ */
 		if (!is_numeric($version)) return false;
 		
-		if (isset($this->_content))
-		{
-			foreach ($this->_content as $revision)
-			{
+		if (isset($this->_content)) {
+			foreach ($this->_content as $revision) {
 				if ($revision->getVersion() == $version)
 					return $revision;
 			}
 			return false;
 		}
 		
-		GLOBAL $db;
+		$db = $this->_dms->getDB();
 		$queryStr = "SELECT * FROM tblDocumentContent WHERE document = ".$this->_id." AND version = " . $version;
 		$resArr = $db->getResultArray($queryStr);
 		if (is_bool($resArr) && !$res)
@@ -1164,13 +889,11 @@ class LetoDMS_Document { /* {{{ */
 		
 		$resArr = $resArr[0];
 		return new LetoDMS_DocumentContent($this, $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
-	}
+	} /* }}} */
 
-	function getLatestContent()
-	{
-		if (!isset($this->_latestContent))
-		{
-			GLOBAL $db;
+	function getLatestContent() { /* {{{ */
+		if (!isset($this->_latestContent)) {
+			$db = $this->_dms->getDB();
 			$queryStr = "SELECT * FROM tblDocumentContent WHERE document = ".$this->_id." ORDER BY version DESC LIMIT 0,1";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr)
@@ -1182,11 +905,71 @@ class LetoDMS_Document { /* {{{ */
 			$this->_latestContent = new LetoDMS_DocumentContent($this, $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
 		}
 		return $this->_latestContent;
-	}
+	} /* }}} */
 
-	function getDocumentLink($linkID) {
-	
-		GLOBAL $db;
+	function removeContent($version) { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		$emailList = array();
+		$emailList[] = $version->_userID;
+
+		if (file_exists( $this->_dms->contentDir.$version->getPath() ))
+			if (!removeFile( $this->_dms->contentDir.$version->getPath() ))
+				return false;
+			
+		$status = $version->getStatus();
+		$stID = $status["statusID"];
+			
+		$queryStr = "DELETE FROM tblDocumentContent WHERE `document` = " . $this->getID() .	" AND `version` = " . $version->_version;
+		if (!$db->getResult($queryStr))
+			return false;
+		
+		$queryStr = "DELETE FROM `tblDocumentStatusLog` WHERE `statusID` = '".$stID."'";
+		if (!$db->getResult($queryStr))
+			return false;
+			
+		$queryStr = "DELETE FROM `tblDocumentStatus` WHERE `documentID` = '". $this->getID() ."' AND `version` = '" . $version->_version."'";
+		if (!$db->getResult($queryStr))
+			return false;
+
+		$status = $version->getReviewStatus();
+		$stList = "";
+		foreach ($status as $st) {
+			$stList .= (strlen($stList)==0 ? "" : ", "). "'".$st["reviewID"]."'";
+			if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
+				$emailList[] = $st["required"];
+			}
+		}
+		if (strlen($stList)>0) {
+			$queryStr = "DELETE FROM `tblDocumentReviewLog` WHERE `tblDocumentReviewLog`.`reviewID` IN (".$stList.")";
+			if (!$db->getResult($queryStr))
+				return false;
+		}
+		$queryStr = "DELETE FROM `tblDocumentReviewers` WHERE `documentID` = '". $this->getID() ."' AND `version` = '" . $version->_version."'";
+		if (!$db->getResult($queryStr))
+			return false;
+		$status = $version->getApprovalStatus();
+		$stList = "";
+		foreach ($status as $st) {
+			$stList .= (strlen($stList)==0 ? "" : ", "). "'".$st["approveID"]."'";
+			if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
+				$emailList[] = $st["required"];
+			}
+		}
+		if (strlen($stList)>0) {
+			$queryStr = "DELETE FROM `tblDocumentApproveLog` WHERE `tblDocumentApproveLog`.`approveID` IN (".$stList.")";
+			if (!$db->getResult($queryStr))
+				return false;
+		}
+		$queryStr = "DELETE FROM `tblDocumentApprovers` WHERE `documentID` = '". $this->getID() ."' AND `version` = '" . $version->_version."'";
+		if (!$db->getResult($queryStr))
+			return false;
+
+		return true;
+	} /* }}} */
+
+	function getDocumentLink($linkID) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		if (!is_numeric($linkID)) return false;
 	
@@ -1199,13 +982,11 @@ class LetoDMS_Document { /* {{{ */
 		$document = $this->_dms->getDocument($resArr["document"]);
 		$target = $this->_dms->getDocument($resArr["target"]);
 		return new LetoDMS_DocumentLink($resArr["id"], $document, $target, $resArr["userID"], $resArr["public"]);
-	}
+	} /* }}} */
 
-	function getDocumentLinks()
-	{
-		if (!isset($this->_documentLinks))
-		{
-			GLOBAL $db;
+	function getDocumentLinks() { /* {{{ */
+		if (!isset($this->_documentLinks)) {
+			$db = $this->_dms->getDB();
 			
 			$queryStr = "SELECT * FROM tblDocumentLinks WHERE document = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
@@ -1219,11 +1000,10 @@ class LetoDMS_Document { /* {{{ */
 			}
 		}
 		return $this->_documentLinks;
-	}
+	} /* }}} */
 
-	function addDocumentLink($targetID, $userID, $public)
-	{
-		GLOBAL $db;
+	function addDocumentLink($targetID, $userID, $public) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$public = ($public) ? "1" : "0";
 		
@@ -1233,20 +1013,19 @@ class LetoDMS_Document { /* {{{ */
 		
 		unset($this->_documentLinks);
 		return true;
-	}
+	} /* }}} */
 
-	function removeDocumentLink($linkID)
-	{
-		GLOBAL $db;
+	function removeDocumentLink($linkID) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE document = " . $this->_id ." AND id = " . $linkID;
 		if (!$db->getResult($queryStr)) return false;
 		unset ($this->_documentLinks);
 		return true;
-	}
+	} /* }}} */
 	
-	function getDocumentFile($ID) {
-		GLOBAL $db;
+	function getDocumentFile($ID) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		if (!is_numeric($ID)) return false;
 	
@@ -1256,13 +1035,11 @@ class LetoDMS_Document { /* {{{ */
 	
 		$resArr = $resArr[0];
 		return new LetoDMS_DocumentFile($resArr["id"], $this, $resArr["userID"], $resArr["comment"], $resArr["date"], $resArr["dir"], $resArr["fileType"], $resArr["mimeType"], $resArr["orgFileName"], $resArr["name"]);
-	}
+	} /* }}} */
 
-	function getDocumentFiles()
-	{
-		if (!isset($this->_documentFiles))
-		{
-			GLOBAL $db;
+	function getDocumentFiles() { /* {{{ */
+		if (!isset($this->_documentFiles)) {
+			$db = $this->_dms->getDB();
 			
 			$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id." ORDER BY `date` DESC";
 			$resArr = $db->getResultArray($queryStr);
@@ -1275,11 +1052,10 @@ class LetoDMS_Document { /* {{{ */
 			}
 		}
 		return $this->_documentFiles;		
-	}
+	} /* }}} */
 
-	function addDocumentFile($name, $comment, $user, $tmpFile, $orgFileName,$fileType, $mimeType )
-	{
-		GLOBAL $db;
+	function addDocumentFile($name, $comment, $user, $tmpFile, $orgFileName,$fileType, $mimeType ) { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$dir = $this->getDir();
 	
@@ -1296,32 +1072,11 @@ class LetoDMS_Document { /* {{{ */
 		if (!makeDir($this->_dms->contentDir . $dir)) return false;
 		if (!copyFile($tmpFile, $this->_dms->contentDir . $file->getPath() )) return false;
 		
-		$this->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("new_file_email");
-			$message = getMLText("new_file_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$name."\r\n".
-				getMLText("comment").": ".$comment."\r\n".
-				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-		
 		return true;
-	}
+	} /* }}} */
 	
-	function removeDocumentFile($ID)
-	{
-		global $db, $user;
+	function removeDocumentFile($ID) { /* {{{ */
+		$db = $this->_dms->getDB();
 	
 		$file = $this->getDocumentFile($ID);
 		if (is_bool($file) && !$file) return false;
@@ -1340,40 +1095,20 @@ class LetoDMS_Document { /* {{{ */
 
 		unset ($this->_documentFiles);
 		
-		$this->getNotifyList();
-		if($this->_notifier) {
-			// Send notification to subscribers.
-			$subject = "###SITENAME###: ".$this->_name." - ".getMLText("removed_file_email");
-			$message = getMLText("removed_file_email")."\r\n";
-			$message .= 
-				getMLText("name").": ".$name."\r\n".
-				getMLText("comment").": ".$comment."\r\n".
-				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".	
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		return true;
-	}
+	} /* }}} */
 
-	function remove($send_email=TRUE)
-	{
-		GLOBAL $db, $user;
+	function remove() { /* {{{ */
+		$db = $this->_dms->getDB();
 		
 		$res = $this->getContent();
 		if (is_bool($res) && !$res) return false;
-		
-		for ($i = 0; $i < count($this->_content); $i++)
-			if (!$this->_content[$i]->remove(FALSE))
+
+		// FIXME: call a new function removeContent instead
+		foreach ($this->_content as $version)
+			if (!$this->removeContent($version))
 				return false;
-				
+
 		// remove document file
 		$res = $this->getDocumentFiles();
 		if (is_bool($res) && !$res) return false;
@@ -1404,47 +1139,16 @@ class LetoDMS_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$path = "";
-		$folder = $this->getFolder();
-		$folderPath = $folder->getPath();
-		for ($i = 0; $i  < count($folderPath); $i++) {
-			$path .= $folderPath[$i]->getName();
-			if ($i +1 < count($folderPath))
-				$path .= " / ";
-		}
-		
-		$this->getNotifyList();
-		if ($send_email && $this->_notifier){
-	
-			$subject = "###SITENAME###: ".$this->getName()." - ".getMLText("document_deleted_email");
-			$message = getMLText("document_deleted_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->getName()."\r\n".
-				getMLText("folder").": ".$path."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			// Send notification to subscribers.
-			$this->_notifier->toList($user, $this->_notifyList["users"], $subject, $message);
-			foreach ($this->_notifyList["groups"] as $grp) {
-				$this->_notifier->toGroup($user, $grp, $subject, $message);
-			}
-		}
-		
 		// Delete the notification list.
 		$queryStr = "DELETE FROM tblNotify WHERE target = " . $this->_id . " AND targetType = " . T_DOCUMENT;
 		if (!$db->getResult($queryStr))
 			return false;
 
 		return true;
-	}
+	} /* }}} */
 
-	function getApproversList() {
-
-		GLOBAL $db, $settings;
+	function getApproversList() { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!isset($this->_approversList)) {
 		
@@ -1468,7 +1172,7 @@ class LetoDMS_Document { /* {{{ */
 			}
 			foreach ($tmpList["users"] as $c_user) {
 			
-				if (!$settings->_enableAdminRevApp && $c_user->getUserID()==$settings->_adminID) continue;
+				if (!$this->_dms->enableAdminRevApp && $c_user->getUserID()==$this->_dms->adminID) continue;
 				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $c_user->getUserID();
 			}
 
@@ -1482,11 +1186,11 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`id` !='".$settings->_guestID."')";
+						"AND `tblUsers`.`id` !='".$this->_dms->guestID."')";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`id` !='".$settings->_guestID."') ".
+					"WHERE (`tblUsers`.`id` !='".$this->_dms->guestID."') ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
 					"OR (`tblUsers`.`isAdmin` = 1)".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
@@ -1497,7 +1201,7 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`id` != '".$settings->_guestID."' ".
+						"AND `tblUsers`.`id` != '".$this->_dms->guestID."' ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
@@ -1506,14 +1210,14 @@ class LetoDMS_Document { /* {{{ */
 					"OR (`tblUsers`.`isAdmin` = 1))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`id` != '".$settings->_guestID."' ".
+					"WHERE `tblUsers`.`id` != '".$this->_dms->guestID."' ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$settings->_enableAdminRevApp) && ($row["id"]==$settings->_adminID)) continue;					
+					if ((!$this->_dms->enableAdminRevApp) && ($row["id"]==$this->_dms->adminID)) continue;					
 					$this->_approversList["users"][] = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				}
 			}
@@ -1545,7 +1249,7 @@ class LetoDMS_Document { /* {{{ */
 			}
 		}
 		return $this->_approversList;
-	}
+	} /* }}} */
 } /* }}} */
 
  /* --------------------------------------------------------------------- */
@@ -1564,7 +1268,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 	// if status is released and there are reviewers set status draft_rev	
 	// if status is released or draft_rev and there are approves set status draft_app
 	// if status is draft and there are no approver and no reviewers set status to release	
-	function verifyStatus($ignorecurrentstatus=false,$user=null){
+	function verifyStatus($ignorecurrentstatus=false,$user=null) { /* {{{ */
 	
 		unset($this->_status);
 		$st=$this->getStatus();
@@ -1596,10 +1300,9 @@ class LetoDMS_DocumentContent { /* {{{ */
 		if ($pendingReview) $this->setStatus(S_DRAFT_REV,"",$user);
 		else if ($pendingApproval) $this->setStatus(S_DRAFT_APP,"",$user);
 		else $this->setStatus(S_RELEASED,"",$user);
-	}
+	} /* }}} */
 
-	function LetoDMS_DocumentContent($document, $version, $comment, $date, $userID, $dir, $orgFileName, $fileType, $mimeType)
-	{
+	function LetoDMS_DocumentContent($document, $version, $comment, $date, $userID, $dir, $orgFileName, $fileType, $mimeType) { /* {{{ */
 		$this->_document = $document;
 		$this->_version = $version;
 		$this->_comment = $comment;
@@ -1609,12 +1312,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		$this->_orgFileName = $orgFileName;
 		$this->_fileType = $fileType;
 		$this->_mimeType = $mimeType;
-		$this->_notifier = null;
-	}
-
-	function setNotifier($notifier) {
-		$this->_notifier = $notifier;
-	}
+	} /* }}} */
 
 	function getVersion() { return $this->_version; }
 	function getComment() { return $this->_comment; }
@@ -1624,17 +1322,15 @@ class LetoDMS_DocumentContent { /* {{{ */
 	function getFileName(){ return "data" . $this->_fileType; }
 	function getDir() { return $this->_dir; }
 	function getMimeType() { return $this->_mimeType; }
-	function getUser()
-	{
+	function getUser() { /* {{{ */
 		if (!isset($this->_user))
 			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
-	}
+	} /* }}} */
 	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
 	
-	function setComment($newComment) {
-	
-		GLOBAL $db, $user;
+	function setComment($newComment) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$queryStr = "UPDATE tblDocumentContent SET comment = '" . $newComment . "' WHERE `document` = " . $this->_document->getID() .	" AND `version` = " . $this->_version;
 		if (!$db->getResult($queryStr))
@@ -1642,47 +1338,22 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 		$this->_comment = $newComment;
 		
-		$nl=$this->_document->getNotifyList();
-
-		if($this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("comment_changed_email");
-			$message = getMLText("comment_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$newComment."\r\n".
-				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-			foreach ($nl["groups"] as $grp) {
-				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
-			}
-		}
-
 		return true;
-	}
+	} /* }}} */
 
-
-	function convert()
-	{
-		GLOBAL $settings;
-		
-		if (file_exists($this->_document->dms->contentDir . $this->_dir . "index.html"))
+	function convert() { /* {{{ */
+		if (file_exists($this->_document->_dms->contentDir . $this->_dir . "index.html"))
 			return true;
 		
-		if (!in_array($this->_fileType, array_keys($settings->_convertFileTypes)))
+		if (!in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
 			return false;
 		
-		$source = $this->_document->dms->contentDir . $this->_dir . $this->getFileName();
-		$target = $this->_document->dms->contentDir . $this->_dir . "index.html";
+		$source = $this->_document->_dms->contentDir . $this->_dir . $this->getFileName();
+		$target = $this->_document->_dms->contentDir . $this->_dir . "index.html";
 	//	$source = str_replace("/", "\\", $source);
 	//	$target = str_replace("/", "\\", $target);
 		
-		$command = $settings->_convertFileTypes[$this->_fileType];
+		$command = $this->_document->_dms->convertFileTypes[$this->_fileType];
 		$command = str_replace("{SOURCE}", "\"$source\"", $command);
 		$command = str_replace("{TARGET}", "\"$target\"", $command);
 		
@@ -1690,36 +1361,37 @@ class LetoDMS_DocumentContent { /* {{{ */
 		$res = 0;
 		exec($command, $output, $res);
 		
-		if ($res != 0)
-		{
+		if ($res != 0) {
 			print (implode("\n", $output));
 			return false;
 		}
 		return true;
-	}
+	} /* }}} */
 
-	function viewOnline()
-	{
+	/* FIXME: this function should not be part of the DMS. It lies in the duty
+	 * of the application whether a file can viewed online or not.
+	 */
+	function viewOnline() { /* {{{ */
 		GLOBAL $settings;
 
 		if (!isset($settings->_viewOnlineFileTypes) || !is_array($settings->_viewOnlineFileTypes)) {
 			return false;
 		}
 
-		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes)) return true;
+		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes))
+			return true;
 		
-		if ($settings->_enableConverting && in_array($this->_fileType, array_keys($settings->_convertFileTypes)))
+		if ($this->_document->_dms->enableConverting && in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
 			if ($this->wasConverted()) return true;
 		
 		return false;
-	}
+	} /* }}} */
 
-	function wasConverted() {
-		return file_exists($this->_document->dms->contentDir . $this->_dir . "index.html");
-	}
+	function wasConverted() { /* {{{ */
+		return file_exists($this->_document->_dms->contentDir . $this->_dir . "index.html");
+	} /* }}} */
 
-	function getURL()
-	{
+	function getURL() { /* {{{ */
 		GLOBAL $settings;
 		
 		if (!$this->viewOnline())return false;
@@ -1728,19 +1400,20 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/" . $this->getOriginalFileName();
 		else
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/index.html";
-	}
+	} /* }}} */
 
 	// $send_email=FALSE is used when removing entire document 
 	// to avoid one email for every version
-	function remove($send_email=TRUE)
-	{
-		GLOBAL $db, $user;
+	// This function is deprecated. It was replaced by LetoDMS_Document::removeContent()
+	function __remove($send_email=TRUE) { /* {{{ */
+		GLOBAL $user;
+		$db = $this->_document->_dms->getDB();
 
 		$emailList = array();
 		$emailList[] = $this->_userID;
 
-		if (file_exists( $this->_document->_dms->contentDir.$this->getPath() ))
-			if (!removeFile( $this->_document->_dms->contentDir.$this->getPath() ))
+		if (file_exists( $this->_document->_dms->contentDir.$version->getPath() ))
+			if (!removeFile( $this->_document->_dms->contentDir.$version->getPath() ))
 				return false;
 			
 		$status = $this->getStatus();
@@ -1821,10 +1494,10 @@ class LetoDMS_DocumentContent { /* {{{ */
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function getStatus($forceTemporaryTable=false) {
-		GLOBAL $db;
+	function getStatus($forceTemporaryTable=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		// Retrieve the current overall status of the content represented by
 		// this object.
@@ -1849,11 +1522,10 @@ class LetoDMS_DocumentContent { /* {{{ */
 			$this->_status = $res[0];
 		}
 		return $this->_status;
-	}
+	} /* }}} */
 
-	function setStatus($status, $comment, $updateUser = null) {
-		
-		GLOBAL $db, $user, $settings;
+	function setStatus($status, $comment, $updateUser = null) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		// If the supplied value lies outside of the accepted range, return an
 		// error.
@@ -1870,42 +1542,16 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return false;
 		}
 		$queryStr = "INSERT INTO `tblDocumentStatusLog` (`statusID`, `status`, `comment`, `date`, `userID`) ".
-			"VALUES ('". $this->_status["statusID"] ."', '". $status ."', '". $comment ."', NOW(), '". (is_null($updateUser) ? $settings->_adminID : $updateUser->getID()) ."')";
+			"VALUES ('". $this->_status["statusID"] ."', '". $status ."', '". $comment ."', NOW(), '". (is_null($updateUser) ? $this->_document->_dms->adminID : $updateUser->getID()) ."')";
 		$res = $db->getResult($queryStr);
 		if (is_bool($res) && !$res)
 			return false;
 
-		$nl=$this->_document->getNotifyList();
-		// Send notification to subscribers.
-		if($this->_notifier) {
-			$folder = $this->_document->getFolder();
-			$subject = "###SITENAME###: ".$this->_document->_name." - ".getMLText("document_status_changed_email");
-			$message = getMLText("document_status_changed_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->_name."\r\n".
-				getMLText("status").": ".getOverallStatusText($status)."\r\n".
-				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
-				getMLText("comment").": ".$this->_document->getComment()."\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$uu = (is_null($updateUser) ? $this->_document->_dms->getUser($settings->_adminID) : $updateUser);
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			LetoDMS_Email::toList($uu, $nl["users"], $subject, $message);
-			foreach ($nl["groups"] as $grp) {
-				LetoDMS_Email::toGroup($uu, $grp, $subject, $message);
-			}
-		}
-		
-		// TODO: if user os not owner send notification to owner
-
 		return true;
-	}
+	} /* }}} */
 
-	function getReviewStatus($forceTemporaryTable=false) {
-		GLOBAL $db;
+	function getReviewStatus($forceTemporaryTable=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		// Retrieve the current status of each assigned reviewer for the content
 		// represented by this object.
@@ -1932,10 +1578,10 @@ class LetoDMS_DocumentContent { /* {{{ */
 			$this->_reviewStatus = $res;
 		}
 		return $this->_reviewStatus;
-	}
+	} /* }}} */
 
-	function getApprovalStatus($forceTemporaryTable=false) {
-		GLOBAL $db;
+	function getApprovalStatus($forceTemporaryTable=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		// Retrieve the current status of each assigned approver for the content
 		// represented by this object.
@@ -1960,11 +1606,10 @@ class LetoDMS_DocumentContent { /* {{{ */
 			$this->_approvalStatus = $res;
 		}
 		return $this->_approvalStatus;
-	}
+	} /* }}} */
 
-	function addIndReviewer($user, $requestUser, $sendEmail=false) {
-
-		GLOBAL $db;
+	function addIndReviewer($user, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$userID = $user->getID();
 
@@ -2017,27 +1662,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 		// Add reviewer to event notification table.
 		//$this->_document->addNotify($userID, true);
 
-		// Send an email notification to the new reviewer.
-		if ($sendEmail && $this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
-			$message = getMLText("review_request_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function addGrpReviewer($group, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function addGrpReviewer($group, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$groupID = $group->getID();
 
@@ -2091,27 +1720,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 		// Add reviewer to event notification table.
 		//$this->_document->addNotify($groupID, false);
 
-		// Send an email notification to the new reviewer.
-		if ($sendEmail && $this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
-			$message = getMLText("review_request_email")."\r\n";
-			$message .=
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function addIndApprover($user, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function addIndApprover($user, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$userID = $user->getID();
 
@@ -2162,27 +1775,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return -1;
 		}
 
-		// Send an email notification to the new approver.
-		if ($sendEmail && $this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_request_email");
-			$message = getMLText("approval_request_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function addGrpApprover($group, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function addGrpApprover($group, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$groupID = $group->getID();
 
@@ -2236,27 +1833,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 		// Add approver to event notification table.
 		//$this->_document->addNotify($groupID, false);
 
-		// Send an email notification to the new approver.
-		if ($sendEmail && $this->_notifier) {
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_request_email");
-			$message = getMLText("approval_request_email")."\r\n";
-			$message .=
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."&version=".$this->_version."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function delIndReviewer($user, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function delIndReviewer($user, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$userID = $user->getID();
 
@@ -2283,28 +1864,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return -1;
 		}
 
-		// Send an email notification to the reviewer.
-		if ($sendEmail && $this->_notifier) {
-		
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_deletion_email");
-			$message = getMLText("review_deletion_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function delGrpReviewer($group, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function delGrpReviewer($group, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$groupID = $group->getID();
 
@@ -2331,28 +1895,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return -1;
 		}
 
-		// Send an email notification to the review group.
-		if ($sendEmail && $this->_notifier) {
-		
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("review_deletion_email");
-			$message = getMLText("review_deletion_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function delIndApprover($user, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function delIndApprover($user, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$userID = $user->getID();
 
@@ -2379,28 +1926,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return -1;
 		}
 
-		// Send an email notification to the approver.
-		if ($sendEmail && $this->_notifier) {
-		
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_deletion_email");
-			$message = getMLText("approval_deletion_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toIndividual($requestUser, $user, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 
-	function delGrpApprover($group, $requestUser, $sendEmail=false) {
-		GLOBAL $db;
+	function delGrpApprover($group, $requestUser, $sendEmail=false) { /* {{{ */
+		$db = $this->_document->_dms->getDB();
 
 		$groupID = $group->getID();
 
@@ -2427,32 +1957,14 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return -1;
 		}
 
-		// Send an email notification to the approval group.
-		if ($sendEmail && $this->_notifier) {
-		
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("approval_deletion_email");
-			$message = getMLText("approval_deletion_email")."\r\n";
-			$message .= 
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$requestUser->getFullName()." <". $requestUser->getEmail() .">\r\n".			
-				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$this->_document->getID()."\r\n";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-			
-			return (LetoDMS_Email::toGroup($requestUser, $group, $subject, $message) < 0 ? -4 : 0);
-		}
 		return 0;
-	}
+	} /* }}} */
 } /* }}} */
 
 
 /* ----------------------------------------------------------------------- */
  
-function filterDocumentLinks($user, $links)
-{
+function filterDocumentLinks($user, $links) {
 	GLOBAL $settings;
 	
 	$tmp = array();
@@ -2469,8 +1981,7 @@ class LetoDMS_DocumentLink { /* {{{ */
 	var $_userID;
 	var $_public;
 
-	function LetoDMS_DocumentLink($id, $document, $target, $userID, $public)
-	{
+	function LetoDMS_DocumentLink($id, $document, $target, $userID, $public) {
 		$this->_id = $id;
 		$this->_document = $document;
 		$this->_target = $target;
@@ -2480,18 +1991,15 @@ class LetoDMS_DocumentLink { /* {{{ */
 
 	function getID() { return $this->_id; }
 
-	function getDocument()
-	{
+	function getDocument() {
 		return $this->_document;
 	}
 
-	function getTarget()
-	{
+	function getTarget() {
 		return $this->_target;
 	}
 
-	function getUser()
-	{
+	function getUser() {
 		if (!isset($this->_user))
 			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
@@ -2499,8 +2007,7 @@ class LetoDMS_DocumentLink { /* {{{ */
 
 	function isPublic() { return $this->_public; }
 
-	function __remove() // Do not use anymore
-	{
+	function __remove() { // Do not use anymore
 		GLOBAL $db;
 		
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $this->_id;
@@ -2525,8 +2032,7 @@ class LetoDMS_DocumentFile { /* {{{ */
 	var $_orgFileName;
 	var $_name;
 
-	function LetoDMS_DocumentFile($id, $document, $userID, $comment, $date, $dir, $fileType, $mimeType, $orgFileName,$name)
-	{
+	function LetoDMS_DocumentFile($id, $document, $userID, $comment, $date, $dir, $fileType, $mimeType, $orgFileName,$name) {
 		$this->_id = $id;
 		$this->_document = $document;
 		$this->_userID = $userID;
@@ -2550,19 +2056,17 @@ class LetoDMS_DocumentFile { /* {{{ */
 	function getOriginalFileName() { return $this->_orgFileName; }
 	function getName() { return $this->_name; }
 	
-	function getUser()
-	{
+	function getUser() {
 		if (!isset($this->_user))
-			$this->_user = $this->_dms->getUser($this->_userID);
+			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
 	}
 	
-	function getPath()
-	{
+	function getPath() {
 		return $this->_dir . "f" .$this->_id . $this->_fileType;
 	}
 
-	function __remove() // do not use anymore, will be called from document->removeDocumentFile
+	function __remove() // do not use anymore, will be called from document->removeDocumentFile
 	{
 		GLOBAL $db;
 		

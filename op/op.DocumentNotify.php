@@ -74,10 +74,14 @@ if ($document->getAccessMode($user) < M_READ) {
 //Benachrichtigung löschen ------------------------------------------------------------------------
 if ($action == "delnotify"){
 	if (isset($userid)) {
-		$res = $document->removeNotify($userid, true);
+		if($res = $document->removeNotify($userid, true)) {
+			$obj = $dms->getUser($userid);
+		}
 	}
 	else if (isset($groupid)) {
-		$res = $document->removeNotify($groupid, false);
+		if($res = $document->removeNotify($groupid, false)) {
+			$obj = $dms->getGroup($groupid);
+		}
 	}
 	switch ($res) {
 		case -1:
@@ -93,6 +97,34 @@ if ($action == "delnotify"){
 			UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
 			break;
 		case 0:
+			// Email user / group, informing them of subscription change.
+			if($notifier) {
+				$path="";
+				$folder = $document->getFolder();
+				$folderPath = $folder->getPath();
+				for ($i = 0; $i  < count($folderPath); $i++) {
+					$path .= $folderPath[$i]->getName();
+					if ($i +1 < count($folderPath))
+						$path .= " / ";
+				}
+				$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("notify_deleted_email");
+				$message = getMLText("notify_deleted_email")."\r\n";
+				$message .= 
+					getMLText("document").": ".$document->getName()."\r\n".
+					getMLText("folder").": ".$path."\r\n".
+					getMLText("comment").": ".$document->getComment()."\r\n".
+					"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+				$subject=mydmsDecodeString($subject);
+				$message=mydmsDecodeString($message);
+		
+				if ($isUser) {
+					$notifier->toIndividual($user, $obj, $subject, $message);
+				}
+				else {
+					$notifier->toGroup($user, $obj, $subject, $message);
+				}
+			}
 			break;
 	}
 }
@@ -116,6 +148,31 @@ else if ($action == "addnotify") {
 				UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
 				break;
 			case 0:
+				// Email user / group, informing them of subscription.
+				if ($notifier){
+					$path="";
+					$folder = $document->getFolder();
+					$folderPath = $folder->getPath();
+					for ($i = 0; $i  < count($folderPath); $i++) {
+						$path .= $folderPath[$i]->getName();
+						if ($i +1 < count($folderPath))
+							$path .= " / ";
+					}
+					$obj = $dms->getUser($userid);
+					$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("notify_added_email");
+					$message = getMLText("notify_added_email")."\r\n";
+					$message .= 
+						getMLText("document").": ".$document->getName()."\r\n".
+						getMLText("folder").": ".$path."\r\n".
+						getMLText("comment").": ".$document->getComment()."\r\n".
+						"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+					$subject=mydmsDecodeString($subject);
+					$message=mydmsDecodeString($message);
+					
+					$notifier->toIndividual($user, $obj, $subject, $message);
+				}
+
 				break;
 		}
 	}
@@ -135,6 +192,29 @@ else if ($action == "addnotify") {
 				UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("internal_error"));
 				break;
 			case 0:
+				if ($notifier){
+					$path="";
+					$folder = $document->getFolder();
+					$folderPath = $folder->getPath();
+					for ($i = 0; $i  < count($folderPath); $i++) {
+						$path .= $folderPath[$i]->getName();
+						if ($i +1 < count($folderPath))
+							$path .= " / ";
+					}
+					$obj = $dms->getGroup($groupid);
+					$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("notify_added_email");
+					$message = getMLText("notify_added_email")."\r\n";
+					$message .= 
+						getMLText("document").": ".$document->getName()."\r\n".
+						getMLText("folder").": ".$path."\r\n".
+						getMLText("comment").": ".$document->getComment()."\r\n".
+						"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->_id."\r\n";
+
+					$subject=mydmsDecodeString($subject);
+					$message=mydmsDecodeString($message);
+					
+					$notifier->toGroup($user, $obj, $subject, $message);
+				}
 				break;
 		}
 	}

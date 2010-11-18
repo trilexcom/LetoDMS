@@ -110,7 +110,7 @@ if (isset($_GET["version"])){
 	header("Content-Length: " . filesize($settings->_contentDir . $file->getPath() ));
 	header("Content-Disposition: attachment; filename=\"" . mydmsDecodeString($file->getOriginalFileName()) . "\"");
 	//header("Expires: 0");
-	//header("Content-Type: " . $content->getMimeType());
+	header("Content-Type: " . $file->getMimeType());
 	//header("Cache-Control: no-cache, must-revalidate");
 	header("Cache-Control: must-revalidate");
 	//header("Pragma: no-cache");
@@ -170,7 +170,7 @@ if (isset($_GET["version"])){
 	// versioning info download
 	
 	$documentid = $_GET["documentid"];
-	$document = getDocument($documentid);
+	$document = $dms->getDocument($documentid);
 
 	if (!is_object($document)) {
 		UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));

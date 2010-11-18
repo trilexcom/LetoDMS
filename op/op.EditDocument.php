@@ -52,7 +52,6 @@ if ($document->getAccessMode($user) < M_READWRITE) {
  */
 $notifier = new LetoDMS_Email();
 $notifier->setSender($user);
-$document->setNotifier($notifier);
 
 $name =     sanitizeString($_POST["name"]);
 $comment =  sanitizeString($_POST["comment"]);
@@ -62,16 +61,86 @@ if (!is_numeric($sequence)) {
 	$sequence="keep";
 }
 
-if (
-		(($document->getName() == $name) || $document->setName($name))
-		&& (($document->getComment() == $comment) || $document->setComment($comment))
-		&& (($document->getKeywords() == $keywords) || $document->setKeywords($keywords))
-		&& (($sequence == "keep") || $document->setSequence($sequence))
-	)
-{
+if (($oldname = $document->getName()) == $name) {
+	if($document->setName($name)) {
+		// Send notification to subscribers.
+		$document->getNotifyList();
+		if($notifier) {
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("document_renamed_email");
+			$message = getMLText("document_renamed_email")."\r\n";
+			$message .= 
+				getMLText("old").": ".$oldname."\r\n".
+				getMLText("new").": ".$name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$document->getComment()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+			
+			// if user is not owner send notification to owner
+			if ($user->getID()!= $document->_ownerID) 
+				$notifier->toIndividual($user, $document->getOwner(), $subject, $message);		
+		}
+
+	}
 }
 else {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+}
+
+if (($oldcomment = $document->getComment()) != $comment) {
+	if($document->setComment($comment)) {
+		// Send notification to subscribers.
+		$document->getNotifyList();
+		if($notifier) {
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("comment_changed_email");
+			$message = getMLText("comment_changed_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->getName()."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+
+			// if user is not owner send notification to owner
+			if ($user->getID() != $document->getOwner()) 
+				$notifier->toIndividual($user, $document->getOwner(), $subject, $message);		
+		}
+	}
+	else {
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
+}
+
+if (($oldkeywords = $document->getKeywords()) != $keywords) {
+	if($document->setKeywords($keywords)) {
+	}
+	else {
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
+}
+
+if($sequence != "keep") {
+ 	if($document->setSequence($sequence)) {
+	}
+	else {
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
 }
 
 add_log_line("?documentid=".$documentid);

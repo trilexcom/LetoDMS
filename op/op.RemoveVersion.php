@@ -57,11 +57,87 @@ if (!is_object($version)) {
 if (count($document->getContent())==1) {
 	if (!$document->remove()) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	} else {
+		$document->getNotifyList();
+		if ($notifier){
+			$path = "";
+			$folder = $document->getFolder();
+			$folderPath = $folder->getPath();
+			for ($i = 0; $i  < count($folderPath); $i++) {
+				$path .= $folderPath[$i]->getName();
+				if ($i +1 < count($folderPath))
+					$path .= " / ";
+			}
+		
+			$subject = "###SITENAME###: ".$document->getName()." - ".getMLText("document_deleted_email");
+			$message = getMLText("document_deleted_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->getName()."\r\n".
+				getMLText("folder").": ".$path."\r\n".
+				getMLText("comment").": ".$document->getComment()."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			// Send notification to subscribers.
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+		}
 	}
 }
 else {
-	if (!$version->remove()) {
+	/* Before deleting the content get a list of all users that should
+	 * be informed about the removal.
+	 */
+	$emailList = array();
+	$emailList[] = $version->_userID;
+	$status = $version->getReviewStatus();
+	foreach ($status as $st) {
+		if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
+			$emailList[] = $st["required"];
+		}
+	}
+	$status = $version->getApprovalStatus();
+	foreach ($status as $st) {
+		if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
+			$emailList[] = $st["required"];
+		}
+	}
+
+	if (!$document->removeContent($version)) {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	} else {
+		// Notify affected users.
+		if ($notifier){
+		
+			$recipients = array();
+			foreach ($emailList as $eID) {
+				$eU = $version->_document->_dms->getUser($eID);
+				$recipients[] = $eU;
+			}
+			$subject = "###SITENAME###: ".$document->getName().", v.".$version->_version." - ".getMLText("version_deleted_email");
+			$message = getMLText("version_deleted_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->getName()."\r\n".
+				getMLText("version").": ".$version->_version."\r\n".
+				getMLText("comment").": ".$version->getComment()."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $recipients, $subject, $message);
+			
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			}
+		}
 	}
 }
 

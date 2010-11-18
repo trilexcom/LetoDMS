@@ -58,7 +58,33 @@ if (($document->getAccessMode($user) < M_READWRITE) || ($targetFolder->getAccess
 }
 
 if ($targetid != $oldFolder->getID()) {
-	if (!$document->setFolder($targetFolder)) {
+	if ($document->setFolder($targetFolder)) {
+		$document->getNotifyList();
+		// Send notification to subscribers.
+		if($notifier) {
+			$folder = $document->getFolder();
+			$subject = "###SITENAME###: ".$document->_name." - ".getMLText("document_moved_email");
+			$message = getMLText("document_moved_email")."\r\n";
+			$message .= 
+				getMLText("document").": ".$document->_name."\r\n".
+				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
+				getMLText("new_folder").": ".$targetFolder->getFolderPathPlain()."\r\n".
+				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			foreach ($document->_notifyList["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
+			
+			// if user is not owner send notification to owner
+			if ($user->getID()!= $document->getOwner()) 
+				$notifier->toIndividual($user, $document->getOwner(), $subject, $message);		
+		}
+
+	} else {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
 	}
 }
