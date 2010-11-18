@@ -84,6 +84,18 @@ class LetoDMS_DMS {
 	 */
 	public $enableGuestLogin;
 
+	/**
+	 * @var boolean $enableConverting set to true if conversion of content is desired
+	 * @access public
+	 */
+	public $enableConverting;
+
+	/**
+	 * @var array $convertFileTypes list of files types that shall be converted
+	 * @access public
+	 */
+	public $convertFileTypes;
+
 	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
 		$this->db = $db;
 		$this->contentDir = $contentDir;
@@ -91,6 +103,9 @@ class LetoDMS_DMS {
 		$this->rootFolderID = 1;
 		$this->adminID = 1;
 		$this->guestID = 2;
+		$this->enableAdminRevApp = false;
+		$this->enableConverting = false;
+		$this->convertFileTypes = array();
 	} /* }}} */
 
 	function getDB() { /* {{{ */
@@ -115,6 +130,14 @@ class LetoDMS_DMS {
 
 	function setEnableAdminRevApp($enable) { /* {{{ */
 		$this->enableAdminRevApp = $enable;
+	} /* }}} */
+
+	function setEnableConverting($enable) { /* {{{ */
+		$this->enableConverting = $enable;
+	} /* }}} */
+
+	function setConvertFileTypes($types) { /* {{{ */
+		$this->convertFileTypes = $types;
 	} /* }}} */
 
 	/**
