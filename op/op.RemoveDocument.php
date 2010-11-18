@@ -45,10 +45,11 @@ if ($document->getAccessMode($user) < M_ALL) {
 
 $folder = $document->getFolder();
 
+/* Get the notify list before removing the document */
+$nl =	$document->getNotifyList();
 if (!$document->remove()) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("error_occured"));
 } else {
-	$document->getNotifyList();
 	if ($notifier){
 		$path = "";
 		$folderPath = $folder->getPath();
@@ -70,8 +71,8 @@ if (!$document->remove()) {
 		$message=mydmsDecodeString($message);
 		
 		// Send notification to subscribers.
-		$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
-		foreach ($document->_notifyList["groups"] as $grp) {
+		$notifier->toList($user, $nl["users"], $subject, $message);
+		foreach ($nl["groups"] as $grp) {
 			$notifier->toGroup($user, $grp, $subject, $message);
 		}
 	}
