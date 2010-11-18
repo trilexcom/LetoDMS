@@ -41,7 +41,7 @@ if (!is_object($document)) {
 }
 
 $folder = $document->getFolder();
-$docPathHTML = getFolderPathHTML($folder, true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
+$docPathHTML = $folder->getFolderPathHTML($folder, true). " / <a href=\"../out/out.ViewDocument.php?documentid=".$documentid."\">".$document->getName()."</a>";
 
 if ($document->getAccessMode($user) < M_READ) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
@@ -120,7 +120,7 @@ print "</table>\n";
 				<option value="-1"><?php printMLText("select_one");?>
 				<?php
 					if ($user->isAdmin()) {
-						$allUsers = getAllUsers();
+						$allUsers = $dms->getAllUsers();
 						foreach ($allUsers as $userObj) {
 							if ($userObj->getID() != $settings->_guestID && !in_array($userObj->getID(), $userNotifyIDs))
 								print "<option value=\"".$userObj->getID()."\">" . $userObj->getFullName() . "\n";
@@ -139,7 +139,7 @@ print "</table>\n";
 			<select name="groupid">
 				<option value="-1"><?php printMLText("select_one");?>
 				<?php
-					$allGroups = getAllGroups();
+					$allGroups = $dms->getAllGroups();
 					foreach ($allGroups as $groupObj) {
 						if (($user->isAdmin() || $groupObj->isMember($user,true)) && !in_array($groupObj->getID(), $groupNotifyIDs)) {
 							print "<option value=\"".$groupObj->getID()."\">" . $groupObj->getName() . "\n";
