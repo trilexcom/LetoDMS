@@ -25,23 +25,20 @@
  */
 class LetoDMS_UserAccess
 {
-	var $_userID;
+	var $_user;
 	var $_mode;
 
-	function LetoDMS_UserAccess($userID, $mode)
+	function LetoDMS_UserAccess($user, $mode)
 	{
-		$this->_userID = $userID;
+		$this->_user = $user;
 		$this->_mode = $mode;
 	}
 
-	function getUserID() { return $this->_userID; }
+	function getUserID() { return $this->_user->getID(); }
 
 	function getMode() { return $this->_mode; }
 
-	function getUser()
-	{
-		if (!isset($this->_user))
-			$this->_user = getUser($this->_userID);
+	function getUser() {
 		return $this->_user;
 	}
 }
@@ -49,23 +46,20 @@ class LetoDMS_UserAccess
 
 class LetoDMS_GroupAccess
 {
-	var $_groupID;
+	var $_group;
 	var $_mode;
 
-	function LetoDMS_GroupAccess($groupID, $mode)
+	function LetoDMS_GroupAccess($group, $mode)
 	{
-		$this->_groupID = $groupID;
+		$this->_group = $group;
 		$this->_mode = $mode;
 	}
 
-	function getGroupID() { return $this->_groupID; }
+	function getGroupID() { return $this->_group->getID(); }
 
 	function getMode() { return $this->_mode; }
 
-	function getGroup()
-	{
-		if (!isset($this->_group))
-			$this->_group = getGroup($this->_groupID);
+	function getGroup() {
 		return $this->_group;
 	}
 }

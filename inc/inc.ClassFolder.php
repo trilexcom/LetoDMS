@@ -390,7 +390,7 @@ class LetoDMS_Folder {
 		if (!$db->getResult($queryStr))
 			return false;
 		
-		$document = getDocument($db->getInsertID());
+		$document = $this->_dms->getDocument($db->getInsertID());
 		
 		if ($version_comment!="")
 			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
@@ -470,9 +470,9 @@ class LetoDMS_Folder {
 			$this->_accessList[$mode] = array("groups" => array(), "users" => array());
 			foreach ($resArr as $row) {
 				if ($row["userID"] != -1)
-					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($row["userID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($this->_dms->getUser($row["userID"]), $row["mode"]));
 				else //if ($row["groupID"] != -1)
-					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($row["groupID"], $row["mode"]));
+					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($this->_dms->getGroup($row["groupID"]), $row["mode"]));
 			}
 		}
 
