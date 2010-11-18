@@ -70,11 +70,11 @@ if ($folder->getAccessMode($user) < M_READ) {
 //Benachrichtigung löschen ------------------------------------------------------------------------
 if ($action == "delnotify") {
 
-	if (isset($userid)) {
+	if ($userid > 0) {
 		$res = $folder->removeNotify($userid, true);
 		$obj = $dms->getUser($userid);
 	}
-	else if (isset($groupid)) {
+	elseif ($groupid > 0) {
 		$res = $folder->removeNotify($groupid, false);
 		$obj = $dms->getGroup($groupid);
 	}
@@ -113,7 +113,7 @@ if ($action == "delnotify") {
 				$subject=mydmsDecodeString($subject);
 				$message=mydmsDecodeString($message);
 				
-				if ($isUser) {
+				if ($userid > 0) {
 					$notifier->toIndividual($user, $obj, $subject, $message);
 				}
 				else {
@@ -164,12 +164,7 @@ else if ($action == "addnotify") {
 					$subject=mydmsDecodeString($subject);
 					$message=mydmsDecodeString($message);
 					
-					if ($isUser) {
-						$notifier->toIndividual($user, $obj, $subject, $message);
-					}
-					else {
-						$notifier->toGroup($user, $obj, $subject, $message);
-					}
+					$notifier->toIndividual($user, $obj, $subject, $message);
 				}
 
 				break;
@@ -212,12 +207,7 @@ else if ($action == "addnotify") {
 					$subject=mydmsDecodeString($subject);
 					$message=mydmsDecodeString($message);
 					
-					if ($isUser) {
-						$notifier->toIndividual($user, $obj, $subject, $message);
-					}
-					else {
-						$notifier->toGroup($user, $obj, $subject, $message);
-					}
+					$notifier->toGroup($user, $obj, $subject, $message);
 				}
 				break;
 		}
