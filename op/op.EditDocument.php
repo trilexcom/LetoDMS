@@ -47,12 +47,6 @@ if ($document->getAccessMode($user) < M_READWRITE) {
 	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("access_denied"));
 }
 
-/* Create a notify object which is used to notify reporters, owners, etc.
- * about changes on documents and folders
- */
-$notifier = new LetoDMS_Email();
-$notifier->setSender($user);
-
 $name =     sanitizeString($_POST["name"]);
 $comment =  sanitizeString($_POST["comment"]);
 $keywords = sanitizeString($_POST["keywords"]);
@@ -61,7 +55,7 @@ if (!is_numeric($sequence)) {
 	$sequence="keep";
 }
 
-if (($oldname = $document->getName()) == $name) {
+if (($oldname = $document->getName()) != $name) {
 	if($document->setName($name)) {
 		// Send notification to subscribers.
 		$document->getNotifyList();
@@ -90,9 +84,9 @@ if (($oldname = $document->getName()) == $name) {
 		}
 
 	}
-}
-else {
-	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	else {
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
 }
 
 if (($oldcomment = $document->getComment()) != $comment) {
