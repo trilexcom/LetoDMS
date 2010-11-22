@@ -202,14 +202,12 @@ if ($_POST["approvalStatus"]==-1){
 				getMLText("comment").": ".$document->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
 
-			$uu = (is_null($updateUser) ? $document->_dms->getUser($settings->_adminID) : $updateUser);
-
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			$notifier->toList($uu, $nl["users"], $subject, $message);
+			$notifier->toList($user, $nl["users"], $subject, $message);
 			foreach ($nl["groups"] as $grp) {
-				$notifier->toGroup($uu, $grp, $subject, $message);
+				$notifier->toGroup($user, $grp, $subject, $message);
 			}
 		}
 		
@@ -251,14 +249,12 @@ if ($_POST["approvalStatus"]==-1){
 					getMLText("comment").": ".$document->getComment()."\r\n".
 					"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
 
-				$uu = (is_null($updateUser) ? $document->_dms->getUser($settings->_adminID) : $updateUser);
-
 				$subject=mydmsDecodeString($subject);
 				$message=mydmsDecodeString($message);
 				
-				$notifier->toList($uu, $nl["users"], $subject, $message);
+				$notifier->toList($user, $nl["users"], $subject, $message);
 				foreach ($nl["groups"] as $grp) {
-					$notifier->toGroup($uu, $grp, $subject, $message);
+					$notifier->toGroup($user, $grp, $subject, $message);
 				}
 			}
 			
