@@ -190,22 +190,27 @@ class LetoDMS_User {
 	}	
 
 	/**
-	 * Entfernt den Benutzer aus dem System.
-	 * Dies ist jedoch nicht mit einem Löschen des entsprechenden Eintrags aus tblUsers geschehen - vielmehr
-	 * muss dafür gesorgt werden, dass der Benutzer nirgendwo mehr auftaucht. D.h. auch die Tabellen tblACLs,
-	 * tblNotify, tblGroupMembers, tblFolders, tblDocuments und tblDocumentContent müssen berücksichtigt werden.
+	 * Remove the user and also remove all its keywords, notifies, etc.
+	 * Do not remove folders and documents of the user, but assign them
+	 * to a different user.
+	 *
+	 * @param object $assignToUser the user who is new owner of folders and
+	 *        documents which previously were owned by the delete user.
+	 * @return boolean true on success or false in case of an error
 	 */
-	function remove( $assignTo=-1 ) {
-	
-		GLOBAL $db, $settings, $user;
+	function remove( $assignToUser=null ) { /* {{{ */
+		GLOBAL $db, $user;
 
-		if ($assignTo==-1) $assignTo=$settings->_adminID;
+		/* Records like folders and documents that formely have belonged to
+		 * the user will assign to another user. If no such user is set,
+		 * the function now returns false and will not use the admin user
+		 * anymore.
+		 */
+		if(!$assignToUser)
+			return;
+		$assignTo = $assignToUser->getID();
 
-		if (($this->_id==$settings->_adminID) ||($this->_id==$settings->_guestID)) {
-			return false; // Cannot delete administrator.
-		}
-
-		//Private Stichwortlisten löschen
+		// delete private keyword lists
 		$queryStr = "SELECT tblKeywords.id FROM tblKeywords, tblKeywordCategories WHERE tblKeywords.category = tblKeywordCategories.id AND tblKeywordCategories.owner = " . $this->_id;
 		$resultArr = $db->getResultArray($queryStr);
 		if (count($resultArr) > 0) {
@@ -306,10 +311,9 @@ class LetoDMS_User {
 
 //		unset($this);
 		return true;
-	}
+	} /* }}} */
 
-	function joinGroup($group)
-	{
+	function joinGroup($group) { /* {{{ */
 		if ($group->isMember($this))
 			return false;
 		
@@ -318,10 +322,9 @@ class LetoDMS_User {
 		
 		unset($this->_groups);
 		return true;
-	}
+	} /* }}} */
 
-	function leaveGroup($group)
-	{
+	function leaveGroup($group) { /* {{{ */
 		if (!$group->isMember($this))
 			return false;
 		
@@ -330,9 +333,9 @@ class LetoDMS_User {
 		
 		unset($this->_groups);
 		return true;
-	}
+	} /* }}} */
 
-	function getGroups() {
+	function getGroups() { /* {{{ */
 		GLOBAL $db;
 		
 		if (!isset($this->_groups))
@@ -351,15 +354,24 @@ class LetoDMS_User {
 			}
 		}
 		return $this->_groups;
-	}
+	} /* }}} */
 
-	function isMemberOfGroup($group)
-	{
+	/**
+	 * Checks if user is member of a given group
+	 *
+	 * @param object $group 
+	 * @return boolean true if user is member of the given group otherwise false
+	 */
+	function isMemberOfGroup($group) { /* {{{ */
 		return $group->isMember($this);
-	}
+	} /* }}} */
 
-	function hasImage()
-	{
+	/**
+	 * Check if user has an image in its profile
+	 *
+	 * @return boolean true if user has a picture of itself
+	 */
+	function hasImage() { /* {{{ */
 		if (!isset($this->_hasImage))
 		{
 			GLOBAL $db;
@@ -374,16 +386,18 @@ class LetoDMS_User {
 		}
 		
 		return $this->_hasImage;
-	}
+	} /* }}} */
 
-	function getImageURL()
-	{
+	/* FIXME: This function should not be a method of the class but rather
+	 * implemented in the calling application
+	 */
+	function getImageURL() { /* {{{ */
 		GLOBAL $settings;
 		
 //		if (!$this->hasImage())
 //			return false;
 		return $settings->_httpRoot . "out/out.UserImage.php?userid=" . $this->_id;
-	}
+	} /* }}} */
 
 	function setImage($tmpfile, $mimeType)
 	{
@@ -509,28 +523,6 @@ class LetoDMS_User {
 				$status["grpstatus"][] = $res;
 		}
 		return $status;
-	}
-	
-	function getDocuments() {
-		GLOBAL $db;
-
-		if (!isset($this->_documents))
-		{
-			$queryStr = "SELECT `tblDocuments`.*, `tblDocumentLocks`.`userID` as `lockUser` ".
-				"FROM `tblDocuments` ".
-				"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
-				"WHERE `tblDocuments`.`owner` = " . $this->_id . " ORDER BY `sequence`";
-
-			$resArr = $db->getResultArray($queryStr);
-			if (is_bool($resArr) && !$resArr)
-				return false;
-			
-			$this->_documents = array();
-			foreach ($resArr as $row) {
-				array_push($this->_documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]));
-			}
-		}
-		return $this->_documents;
 	}
 	
 	function getMandatoryReviewers()
