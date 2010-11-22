@@ -1172,7 +1172,7 @@ class LetoDMS_Document { /* {{{ */
 			}
 			foreach ($tmpList["users"] as $c_user) {
 			
-				if (!$this->_dms->enableAdminRevApp && $c_user->getUserID()==$this->_dms->adminID) continue;
+				if (!$this->_dms->enableAdminRevApp && $c_user->isAdmin()) continue;
 				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $c_user->getUserID();
 			}
 
@@ -1217,8 +1217,9 @@ class LetoDMS_Document { /* {{{ */
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$this->_dms->enableAdminRevApp) && ($row["id"]==$this->_dms->adminID)) continue;					
-					$this->_approversList["users"][] = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
+					$user = $this->_dms->getUser($row['id']);
+					if (!$this->_dms->enableAdminRevApp && $user->isAdmin()) continue;					
+					$this->_approversList["users"][] = $user;
 				}
 			}
 
@@ -1524,8 +1525,12 @@ class LetoDMS_DocumentContent { /* {{{ */
 		return $this->_status;
 	} /* }}} */
 
-	function setStatus($status, $comment, $updateUser = null) { /* {{{ */
+	function setStatus($status, $comment, $updateUser) { /* {{{ */
 		$db = $this->_document->_dms->getDB();
+
+		/* return an error if $updateuser is not set */
+		if(!$updateUser)
+			return false;
 
 		// If the supplied value lies outside of the accepted range, return an
 		// error.
@@ -1542,7 +1547,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return false;
 		}
 		$queryStr = "INSERT INTO `tblDocumentStatusLog` (`statusID`, `status`, `comment`, `date`, `userID`) ".
-			"VALUES ('". $this->_status["statusID"] ."', '". $status ."', '". $comment ."', NOW(), '". (is_null($updateUser) ? $this->_document->_dms->adminID : $updateUser->getID()) ."')";
+			"VALUES ('". $this->_status["statusID"] ."', '". $status ."', '". $comment ."', NOW(), '". $updateUser->getID() ."')";
 		$res = $db->getResult($queryStr);
 		if (is_bool($res) && !$res)
 			return false;
@@ -1963,16 +1968,6 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 
 /* ----------------------------------------------------------------------- */
- 
-function filterDocumentLinks($user, $links) {
-	GLOBAL $settings;
-	
-	$tmp = array();
-	foreach ($links as $link)
-		if ($link->isPublic() || ($link->_userID == $user->getID()) || ($user->getID() == $settings->_adminID) )
-			array_push($tmp, $link);
-	return $tmp;
-}
 
 class LetoDMS_DocumentLink { /* {{{ */
 	var $_id;
