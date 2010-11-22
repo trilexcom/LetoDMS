@@ -620,7 +620,7 @@ class UI {
 		if (!is_object($folder)) return;
 		
 		$subFolders = $folder->getSubFolders();
-		$subFolders = filterAccess($subFolders, $user, M_READ);
+		$subFolders = LetoDMS_DMS::filterAccess($subFolders, $user, M_READ);
 		
 		if ($folderID == $settings->_rootFolderID) print "<ul style='list-style-type: none;' class='tree'>\n";
 
