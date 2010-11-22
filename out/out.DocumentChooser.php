@@ -19,7 +19,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassUI.php");
@@ -47,8 +46,8 @@ function printTree($path, $level = 0)
 	GLOBAL $user, $form;
 	
 	$folder = $path[$level];
-	$subFolders = filterAccess($folder->getSubFolders(), $user, M_READ);
-	$documents  = filterAccess($folder->getDocuments(), $user, M_READ);
+	$subFolders = LetoDMS_DMS::filterAccess($folder->getSubFolders(), $user, M_READ);
+	$documents  = LetoDMS_DMS::filterAccess($folder->getDocuments(), $user, M_READ);
 	
 	if ($level+1 < count($path))
 		$nextFolderID = $path[$level+1]->getID();
@@ -79,8 +78,8 @@ function printTree($path, $level = 0)
 			printTree($path, $level+1);
 		else {
 			print "<li>\n";
-			$subFolders_ = filterAccess($subFolders[$i]->getSubFolders(), $user, M_READ);
-			$documents_  = filterAccess($subFolders[$i]->getDocuments(), $user, M_READ);
+			$subFolders_ = LetoDMS_DMS::filterAccess($subFolders[$i]->getSubFolders(), $user, M_READ);
+			$documents_  = LetoDMS_DMS::filterAccess($subFolders[$i]->getDocuments(), $user, M_READ);
 			
 			if (count($subFolders_) + count($documents_) > 0)
 				print "<a href=\"out.DocumentChooser.php?form=$form&folderid=".$subFolders[$i]->getID()."\"><img class='treeicon' src=\"".getImgPath("plus.png")."\" border=0></a>";

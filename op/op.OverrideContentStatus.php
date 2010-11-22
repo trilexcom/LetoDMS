@@ -18,7 +18,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassEmail.php");
@@ -89,14 +88,12 @@ if ($overrideStatus != $overallStatus["status"]) {
 				getMLText("comment").": ".$document->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
 
-			$uu = (is_null($updateUser) ? $document->_dms->getUser($settings->_adminID) : $updateUser);
-
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
 			
-			$notifier->toList($uu, $nl["users"], $subject, $message);
+			$notifier->toList($user, $nl["users"], $subject, $message);
 			foreach ($nl["groups"] as $grp) {
-				$notifier->toGroup($uu, $grp, $subject, $message);
+				$notifier->toGroup($user, $grp, $subject, $message);
 			}
 		}
 		

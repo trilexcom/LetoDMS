@@ -19,7 +19,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassKeywords.php");
@@ -30,7 +29,7 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-$categories = getAllKeywordCategories($user->getID());
+$categories = getAllKeywordCategories(array($user->getID(), $settings->_adminID));
 
 UI::htmlStartPage(getMLText("use_default_keywords"));
 
@@ -118,7 +117,7 @@ UI::contentContainerStart();
 				<?php
 				foreach ($categories as $category) {
 					$owner = $category->getOwner();
-					if ($owner->getID() != $settings->_adminID)
+					if (!$owner->isAdmin())
 						continue;
 					
 					print "<option value=\"".$category->getID()."\">" . $category->getName();
@@ -130,7 +129,7 @@ UI::contentContainerStart();
 <?php
 	foreach ($categories as $category) {
 		$owner = $category->getOwner();
-		if ($owner->getID() != $settings->_adminID)
+		if (!$owner->isAdmin())
 			continue;
 ?>
 	<tr id="keywords<?php echo $category->getID()?>" style="display : none;">
@@ -162,7 +161,7 @@ UI::contentContainerStart();
 				<?php
 				foreach ($categories as $category) {
 					$owner = $category->getOwner();
-					if ($owner->getID() == $settings->_adminID)
+					if ($owner->isAdmin())
 						continue;
 					
 					print "<option value=\"".$category->getID()."\">" . $category->getName();
@@ -174,7 +173,7 @@ UI::contentContainerStart();
 <?php
 	foreach ($categories as $category) {
 		$owner = $category->getOwner();
-		if ($owner->getID() == $settings->_adminID)
+		if ($owner->isAdmin())
 			continue;
 ?>
 	<tr id="keywords<?php echo $category->getID()?>" style="display : none;">

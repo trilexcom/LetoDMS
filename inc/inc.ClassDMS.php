@@ -16,6 +16,7 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+require_once("inc.AccessUtils.php");
 require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
 require_once("inc.ClassGroup.php");
@@ -95,6 +96,44 @@ class LetoDMS_DMS {
 	 * @access public
 	 */
 	public $convertFileTypes;
+
+	/**
+	 * Filter objects out which are not accessible in a given mode by a user.
+	 *
+	 * @param array $objArr list of objects (either documents or folders)
+	 * @param object $user user for which access is checked
+	 * @param integer $minMode minimum access mode required
+	 * @return array filtered list of objects
+	 */
+	static function filterAccess($objArr, $user, $minMode) { /* {{{ */
+		if (!is_array($objArr)) {
+			return array();
+		}
+		$newArr = array();
+		foreach ($objArr as $obj) {
+			if ($obj->getAccessMode($user) >= $minMode)
+				array_push($newArr, $obj);
+		}
+		return $newArr;
+	} /* }}} */
+
+	/**
+	 * Filter users out which cannot access an object in a given mode.
+	 *
+	 * @param object $obj object that shall be accessed
+	 * @param array $users list of users which are to check for sufficient
+	 *        access rights
+	 * @param integer $minMode minimum access right on the object for each user
+	 * @return array filtered list of users
+	 */
+	static function filterUsersByAccess($obj, $users, $minMode) { /* {{{ */
+		$newArr = array();
+		foreach ($users as $currUser) {
+			if ($obj->getAccessMode($currUser) >= $minMode)
+				array_push($newArr, $currUser);
+		}
+		return $newArr;
+	} /* }}} */
 
 	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
 		$this->db = $db;

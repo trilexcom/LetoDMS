@@ -185,6 +185,8 @@ if (is_bool($user)) {
 	}
 
 	$resArr = $resArr[0];
+	$userid = $resArr["id"];
+	$user = $dms->getUser($userid);
 
 	if (($resArr["id"] == $settings->_guestID) && (!$settings->_enableGuestLogin)) {
 		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("guest_login_disabled").
@@ -203,14 +205,12 @@ if (is_bool($user)) {
 	
 	// control admin IP address if required
 	// TODO: extend control to LDAP autentication
-	if (($resArr["id"] == $settings->_adminID) && ($_SERVER['REMOTE_ADDR'] != $settings->_adminIP ) && ( $settings->_adminIP != "") ){
+	if ($user->isAdmin() && ($_SERVER['REMOTE_ADDR'] != $settings->_adminIP ) && ( $settings->_adminIP != "") ){
 		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("invalid_user_id").
 									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
 		exit;
 	}
 	
-	$userid = $resArr["id"];
-	$user = $dms->getUser($userid);
 }
 
 

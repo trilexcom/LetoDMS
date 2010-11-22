@@ -19,7 +19,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
@@ -74,9 +73,9 @@ UI::contentHeading(getMLText("folder_contents"));
 UI::contentContainerStart();
 
 $subFolders = $folder->getSubFolders($orderby);
-$subFolders = filterAccess($subFolders, $user, M_READ);
+$subFolders = LetoDMS_DMS::filterAccess($subFolders, $user, M_READ);
 $documents = $folder->getDocuments($orderby);
-$documents = filterAccess($documents, $user, M_READ);
+$documents = LetoDMS_DMS::filterAccess($documents, $user, M_READ);
 
 if ((count($subFolders) > 0)||(count($documents) > 0)){
 	print "<table class=\"folderView\">";
@@ -98,9 +97,9 @@ foreach($subFolders as $subFolder) {
 	$comment = $subFolder->getComment();
 	if (strlen($comment) > 50) $comment = substr($comment, 0, 47) . "...";
 	$subsub = $subFolder->getSubFolders();
-	$subsub = filterAccess($subsub, $user, M_READ);
+	$subsub = LetoDMS_DMS::filterAccess($subsub, $user, M_READ);
 	$subdoc = $subFolder->getDocuments();
-	$subdoc = filterAccess($subdoc, $user, M_READ);
+	$subdoc = LetoDMS_DMS::filterAccess($subdoc, $user, M_READ);
 	
 	print "<tr class=\"folder\">";
 //	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";

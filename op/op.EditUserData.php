@@ -18,7 +18,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
@@ -32,7 +31,7 @@ if ($user->getID() == $settings->_guestID) {
 	UI::exitError(getMLText("edit_user_details"),getMLText("access_denied"));
 }
 
-if (($user->getID() != $settings->_adminID) && ($settings->_disableSelfEdit)) {
+if (!$user->isAdmin() && ($settings->_disableSelfEdit)) {
 	UI::exitError(getMLText("edit_user_details"),getMLText("access_denied"));
 }
 

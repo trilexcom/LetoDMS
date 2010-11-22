@@ -20,7 +20,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
-include("../inc/inc.AccessUtils.php");
 include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
@@ -117,11 +116,12 @@ else if ($action == "removeuser") {
 	}
 
 	$userToRemove = $dms->getUser($userid);
-	if (!is_object($userToRemove)) {
+	if (!is_object($userToRemove) || ($userToRemove->getID() == $settings->_adminID) || ($userToRemove->getID() == $settings->_guestID)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
-	if (!$userToRemove->remove($_POST["assignTo"])) {
+	$userToAssign = $dms->getUser($_POST["assignTo"]);
+	if (!$userToRemove->remove($userToAssign)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
 		
@@ -162,7 +162,7 @@ else if ($action == "edituser") {
 		$editedUser->setEmail($email);
 	if ($editedUser->getComment() != $comment)
 		$editedUser->setComment($comment);
-	if ($editedUser->isAdmin() != $isAdmin && $editedUser->getID()!=$settings->_adminID)
+	if ($editedUser->isAdmin() != $isAdmin)
 		$editedUser->setAdmin($isAdmin);
 	if ($editedUser->isHidden() != $isHidden)
 		$editedUser->setHidden($isHidden);
