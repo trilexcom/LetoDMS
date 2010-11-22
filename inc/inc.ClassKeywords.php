@@ -78,12 +78,12 @@ class LetoDMS_KeywordCategory
 		return new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
 	}
 
-	function getAllKeywordCategories($userID = -1) {
+	function getAllKeywordCategories($userIDs = array()) {
 		GLOBAL $db, $settings;
 		
 		$queryStr = "SELECT * FROM tblKeywordCategories";
-		if ($userID != -1)
-			$queryStr .= " WHERE owner = $userID OR owner = " . $settings->_adminID;
+		if ($userIDs)
+			$queryStr .= " WHERE owner in (".implode(',', $userIDs).")";
 		
 		$resArr = $db->getResultArray($queryStr);
 		if (is_bool($resArr) && !$resArr)
