@@ -204,6 +204,29 @@ class LetoDMS_DMS {
 		return $document;
 	} /* }}} */
 
+	/**
+	 * Returns all documents of a given user
+	 *
+	 * @param object $user
+	 * @return array list of documents
+	 */
+	function getDocumentsByUser($user) { /* {{{ */
+		$queryStr = "SELECT `tblDocuments`.*, `tblDocumentLocks`.`userID` as `lockUser` ".
+			"FROM `tblDocuments` ".
+			"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
+			"WHERE `tblDocuments`.`owner` = " . $user->getID() . " ORDER BY `sequence`";
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$documents = array();
+		foreach ($resArr as $row) {
+			array_push($documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]));
+		}
+		return $documents;
+	} /* }}} */
+
 	/*
 	 * Search the database for documents
 	 *
