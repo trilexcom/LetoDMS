@@ -890,8 +890,9 @@ class LetoDMS_Folder {
 			$resArr = $db->getResultArray($queryStr);
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
-					if ((!$this->_dms->enableAdminRevApp) && ($row["id"]==$this->_dms->adminID)) continue;					
-					$this->_approversList["users"][] = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
+					$user = $this->_dms->getUser($row['id']);
+					if (!$this->_dms->enableAdminRevApp && $user>isAdmin()) continue;					
+					$this->_approversList["users"][] = $user;
 				}
 			}
 
