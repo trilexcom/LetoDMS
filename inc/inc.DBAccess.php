@@ -17,17 +17,21 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-include $settings->_ADOdbPath . "adodb.inc.php";
+if(isset($settings->_ADOdbPath))
+	require_once $settings->_ADOdbPath . "adodb/adodb.inc.php";
+else
+	require_once "adodb/adodb.inc.php";
 
-/**********************************************************************\
-|                     Klasse zum Datenbankzugriff                      |
-\**********************************************************************/
-
-//Zugriff erfolgt auf MySQL-Server
-
-
-class LetoDMS_DatabaseAccess
-{
+/**
+ * Class to represent the database access for the document management
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli, Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
+class LetoDMS_DatabaseAccess {
 	var $_driver;
 	var $_hostname;
 	var $_database;
