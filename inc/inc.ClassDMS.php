@@ -17,6 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 require_once("inc.AccessUtils.php");
+require_once("inc.ClassAccess.php");
 require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
 require_once("inc.ClassGroup.php");
@@ -65,13 +66,6 @@ class LetoDMS_DMS {
 	 * @access public
 	 */
 	public $guestID;
-
-	/**
-	 * @var integer $adminID ID of user treated as an administrator with full
-	 *      access rights
-	 * @access public
-	 */
-	public $adminID;
 
 	/**
 	 * @var integer $rootFolderID ID of root folder
@@ -140,7 +134,6 @@ class LetoDMS_DMS {
 		$this->contentDir = $contentDir;
 		$this->contentOffsetDir = $contentOffsetDir;
 		$this->rootFolderID = 1;
-		$this->adminID = 1;
 		$this->guestID = 2;
 		$this->enableAdminRevApp = false;
 		$this->enableConverting = false;
@@ -153,10 +146,6 @@ class LetoDMS_DMS {
 
 	function setRootFolderID($id) { /* {{{ */
 		$this->rootFolderID = $id;
-	} /* }}} */
-
-	function setAdminID($id) { /* {{{ */
-		$this->adminID = $id;
 	} /* }}} */
 
 	function setGuestID($id) { /* {{{ */
@@ -197,7 +186,7 @@ class LetoDMS_DMS {
 	/**
 	 * Set the logged in user
 	 *
-	 * If user authentication was externally done, this function can
+	 * If user authentication was done externally, this function can
 	 * be used to tell the dms who is currently logged in.
 	 *
 	 * @param object $user
