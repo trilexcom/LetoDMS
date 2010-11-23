@@ -1,6 +1,6 @@
 <?php
 //    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
+//    Copyright (C) 2002-2005 Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -17,19 +17,21 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-/*
- * Repräsentiert einen Eintrag in der tblACLs für einen User.
- * Änderungen an der Berechtigung können nicht vorgenommen werden;
- * dafür sind die Klassen Folder und Document selbst
- * verantwortlich.
+/**
+ * Class to represent a user access right.
+ * This class cannot be used to modify access rights.
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
  */
-class LetoDMS_UserAccess
-{
+class LetoDMS_UserAccess { /* {{{ */
 	var $_user;
 	var $_mode;
 
-	function LetoDMS_UserAccess($user, $mode)
-	{
+	function LetoDMS_UserAccess($user, $mode) {
 		$this->_user = $user;
 		$this->_mode = $mode;
 	}
@@ -41,16 +43,24 @@ class LetoDMS_UserAccess
 	function getUser() {
 		return $this->_user;
 	}
-}
+} /* }}} */
 
 
-class LetoDMS_GroupAccess
-{
+/**
+ * Class to represent a group access right.
+ * This class cannot be used to modify access rights.
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
+class LetoDMS_GroupAccess { /* {{{ */
 	var $_group;
 	var $_mode;
 
-	function LetoDMS_GroupAccess($group, $mode)
-	{
+	function LetoDMS_GroupAccess($group, $mode) {
 		$this->_group = $group;
 		$this->_mode = $mode;
 	}
@@ -62,5 +72,5 @@ class LetoDMS_GroupAccess
 	function getGroup() {
 		return $this->_group;
 	}
-}
+} /* }}} */
 ?>

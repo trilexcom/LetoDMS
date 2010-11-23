@@ -20,7 +20,6 @@
 
 include("../inc/inc.Version.php");
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassAccess.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
