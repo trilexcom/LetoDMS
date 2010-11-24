@@ -21,59 +21,54 @@
 |                           Group-Klasse                               |
 \**********************************************************************/
 
-class LetoDMS_Group
-{
+class LetoDMS_Group {
 	var $_id;
 	var $_name;
 	var $_dms;
 
-	function LetoDMS_Group($id, $name, $comment)
-	{
+	function LetoDMS_Group($id, $name, $comment) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_comment = $comment;
-	}
+		$this->_dms = null;
+	} /* }}} */
 
-	function setDMS($dms) {
+	function setDMS($dms) { /* {{{ */
 		$this->_dms = $dms;
-	}
+	} /* }}} */
 
 	function getID() { return $this->_id; }
 
 	function getName() { return $this->_name; }
 
-	function setName($newName)
-	{
-		global $db;
-		
+	function setName($newName) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblGroups SET name = '" . $newName . "' WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_name = $newName;
 		return true;
-	}
+	} /* }}} */
 
 	function getComment() { return $this->_comment; }
 
-	function setComment($newComment)
-	{
-		global $db;
-		
+	function setComment($newComment) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblGroups SET comment = '" . $newComment . "' WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_comment = $newComment;
 		return true;
-	}
+	} /* }}} */
 
-	function getUsers()
-	{
-		global $db;
-		
-		if (!isset($this->_users))
-		{
+	function getUsers() { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		if (!isset($this->_users)) {
 			$queryStr = "SELECT `tblUsers`.* FROM `tblUsers` ".
 				"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 				"WHERE `tblGroupMembers`.`groupID` = '". $this->_id ."'";
@@ -83,76 +78,70 @@ class LetoDMS_Group
 
 			$this->_users = array();
 
-			foreach ($resArr as $row)
-			{
+			foreach ($resArr as $row) {
 				$user = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"]);
 				array_push($this->_users, $user);
 			}
 		}
 		return $this->_users;
-	}
+	} /* }}} */
 
-	function addUser($user,$asManager=false)
-	{
-		global $db;
+	function addUser($user,$asManager=false) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$queryStr = "INSERT INTO tblGroupMembers (groupID, userID, manager) VALUES (".$this->_id.", ".$user->getID(). ", " . ($asManager?"1":"0") ." )";
 		$res = $db->getResult($queryStr);
-		
+
 		if ($res) return false;
 
 		unset($this->_users);
 		return true;
-	}
+	} /* }}} */
 
-	function removeUser($user)
-	{
-		global $db;
+	function removeUser($user) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		$queryStr = "DELETE FROM tblGroupMembers WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
 		$res = $db->getResult($queryStr);
-		
+
 		if ($res) return false;
 		unset($this->_users);
 		return true;
-	}
+	} /* }}} */
 
 	// $asManager=false: verify if user is in group
 	// $asManager=true : verify if user is in group as manager
-	function isMember($user,$asManager=false)
-	{
-		if (isset($this->_users)&&!$asManager)
-		{
+	function isMember($user,$asManager=false) { /* {{{ */
+		if (isset($this->_users)&&!$asManager) {
 			foreach ($this->_users as $usr)
 				if ($usr->getID() == $user->getID())
 					return true;
 			return false;
 		}
-		
-		global $db;
+
+		$db = $this->_dms->getDB();
 		if ($asManager) $queryStr = "SELECT * FROM tblGroupMembers WHERE groupID = " . $this->_id . " AND userID = " . $user->getID() . " AND manager = 1";
 		else $queryStr = "SELECT * FROM tblGroupMembers WHERE groupID = " . $this->_id . " AND userID = " . $user->getID();
 
 		$resArr = $db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false) return false;
 		if (count($resArr) != 1) return false;
-		
+
 		return true;
-	}
-	
-	function toggleManager($user)
-	{
-		global $db;
-		
+	} /* }}} */
+
+	function toggleManager($user) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		if (!$this->isMember($user)) return false;
-		
+
 		if ($this->isMember($user,true)) $queryStr = "UPDATE tblGroupMembers SET manager = 0 WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
 		else $queryStr = "UPDATE tblGroupMembers SET manager = 1 WHERE groupID = ".$this->_id." AND userID = ".$user->getID();
-		
+
 		if (!$db->getResult($queryStr)) return false;
 		return true;
-	}
+	} /* }}} */
 
 	/**
 	 * Entfernt die Gruppe aus dem System.
@@ -160,10 +149,10 @@ class LetoDMS_Group
 	 * muss dafür gesorgt werden, dass die Gruppe nirgendwo mehr auftaucht. D.h. auch die Tabellen tblACLs,
 	 * tblNotify und tblGroupMembers müssen berücksichtigt werden.
 	 */
-	function remove()
-	{
-		GLOBAl $db, $user;
-		
+	function remove() { /* {{{ */
+		$db = $this->_dms->getDB();
+		$user = $this->_dms->user;
+
 		$queryStr = "DELETE FROM tblGroups WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -182,7 +171,7 @@ class LetoDMS_Group
 		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE approverGroupID = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-			
+
 		// TODO : update document status if reviewer/approver has been deleted
 
 
@@ -201,10 +190,10 @@ class LetoDMS_Group
 		}
 
 		return true;
-	}
+	} /* }}} */
 
-	function getReviewStatus($documentID=null, $version=null) {
-		global $db;
+	function getReviewStatus($documentID=null, $version=null) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!$db->createTemporaryTable("ttreviewid")) {
 			return false;
@@ -232,10 +221,10 @@ class LetoDMS_Group
 				$status[] = $res;
 		}
 		return $status;
-	}
+	} /* }}} */
 
-	function getApprovalStatus($documentID=null, $version=null) {
-		global $db;
+	function getApprovalStatus($documentID=null, $version=null) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!$db->createTemporaryTable("ttapproveid")) {
 			return false;
@@ -264,6 +253,6 @@ class LetoDMS_Group
 		}
 
 		return $status;
-	}
+	} /* }}} */
 }
 ?>

@@ -33,9 +33,9 @@ class LetoDMS_User {
 	var $_comment;
 	var $_isAdmin;
 	var $_isHidden;
+	var $_dms;
 
-	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isHidden=0)
-	{
+	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isHidden=0) {
 		$this->_id = $id;
 		$this->_login = $login;
 		$this->_pwd = $pwd;
@@ -45,7 +45,8 @@ class LetoDMS_User {
 		$this->_theme = $theme;
 		$this->_comment = $comment;
 		$this->_isAdmin = $isAdmin;
-		$this->_isHidden = $isHidden;		
+		$this->_isHidden = $isHidden;
+		$this->_dms = null;
 	}
 
 	function setDMS($dms) {
@@ -56,138 +57,129 @@ class LetoDMS_User {
 
 	function getLogin() { return $this->_login; }
 
-	function setLogin($newLogin)
-	{
-		GLOBAL $db;
-		
+	function setLogin($newLogin) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET login ='" . $newLogin . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_login = $newLogin;
 		return true;
-	}
+	} /* }}} */
 
 	function getFullName() { return $this->_fullName; }
 
-	function setFullName($newFullName)
-	{
-		GLOBAL $db;
-		
+	function setFullName($newFullName) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET fullname = '" . $newFullName . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_fullName = $newFullName;
 		return true;
-	}
+	} /* }}} */
 
 	function getPwd() { return $this->_pwd; }
 
-	function setPwd($newPwd)
-	{
-		GLOBAL $db;
-		
+	function setPwd($newPwd) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET pwd ='" . $newPwd . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_pwd = $newPwd;
 		return true;
-	}
+	} /* }}} */
 
 	function getEmail() { return $this->_email; }
 
-	function setEmail($newEmail)
-	{
-		GLOBAL $db;
-		
+	function setEmail($newEmail) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET email ='" . $newEmail . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_email = $newEmail;
 		return true;
-	}
+	} /* }}} */
 
 	function getLanguage() { return $this->_language; }
 
-	function setLanguage($newLanguage)
-	{
-		GLOBAL $db;
-		
+	function setLanguage($newLanguage) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET language ='" . $newLanguage . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_language = $newLanguage;
 		return true;
-	}
+	} /* }}} */
 
 	function getTheme() { return $this->_theme; }
 
-	function setTheme($newTheme)
-	{
-		GLOBAL $db;
-		
+	function setTheme($newTheme) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET theme ='" . $newTheme . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_theme = $newTheme;
 		return true;
-	}
+	} /* }}} */
 
 	function getComment() { return $this->_comment; }
 
-	function setComment($newComment)
-	{
-		GLOBAL $db;
-		
+	function setComment($newComment) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "UPDATE tblUsers SET comment ='" . $newComment . "' WHERE id = " . $this->_id;
 		$res = $db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		$this->_comment = $newComment;
 		return true;
-	}
+	} /* }}} */
 
 	function isAdmin() { return $this->_isAdmin; }
 
-	function setAdmin($isAdmin)
-	{
-		GLOBAL $db;
-		
+	function setAdmin($isAdmin) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$isAdmin = ($isAdmin) ? "1" : "0";
 		$queryStr = "UPDATE tblUsers SET isAdmin = " . $isAdmin . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_isAdmin = $isAdmin;
 		return true;
-	}
-	
+	} /* }}} */
+
 	function isHidden() { return $this->_isHidden; }
 
-	function setHidden($isHidden)
-	{
-		GLOBAL $db;
-		
+	function setHidden($isHidden) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$isHidden = ($isHidden) ? "1" : "0";
 		$queryStr = "UPDATE tblUsers SET hidden = " . $isHidden . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_isHidden = $isAdmin;
 		return true;
-	}	
+	}	 /* }}} */
 
 	/**
 	 * Remove the user and also remove all its keywords, notifies, etc.
@@ -199,7 +191,8 @@ class LetoDMS_User {
 	 * @return boolean true on success or false in case of an error
 	 */
 	function remove( $assignToUser=null ) { /* {{{ */
-		GLOBAL $db, $user;
+		$db = $this->_dms->getDB();
+		$user = $this->_dms->user;
 
 		/* Records like folders and documents that formely have belonged to
 		 * the user will assign to another user. If no such user is set,
@@ -222,78 +215,78 @@ class LetoDMS_User {
 			}
 			if (!$db->getResult($queryStr))	return false;
 		}
-		
+
 		$queryStr = "DELETE FROM tblKeywordCategories WHERE owner = " . $this->_id;
-		if (!$db->getResult($queryStr))	return false;	
-		
+		if (!$db->getResult($queryStr))	return false;
+
 		//Benachrichtigungen entfernen
 		$queryStr = "DELETE FROM tblNotify WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//Der Besitz von Dokumenten oder Ordnern, deren bisheriger Besitzer der zu löschende war, geht an den Admin über
 		$queryStr = "UPDATE tblFolders SET owner = " . $assignTo . " WHERE owner = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		$queryStr = "UPDATE tblDocuments SET owner = " . $assignTo . " WHERE owner = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		$queryStr = "UPDATE tblDocumentContent SET createdBy = " . $assignTo . " WHERE createdBy = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-			
+
 		//Verweise auf Dokumente: Private löschen...
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE userID = " . $this->_id . " AND public = 0";
 		if (!$db->getResult($queryStr)) return false;
-			
+
 		//... und öffentliche an Admin übergeben
 		$queryStr = "UPDATE tblDocumentLinks SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		// set administrator for deleted user's attachments
 		$queryStr = "UPDATE tblDocumentFiles SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//Evtl. von diesem Benutzer gelockte Dokumente werden freigegeben
 		$queryStr = "DELETE FROM tblDocumentLocks WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//User aus allen Gruppen löschen
 		$queryStr = "DELETE FROM tblGroupMembers WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//User aus allen ACLs streichen
 		$queryStr = "DELETE FROM tblACLs WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//Eintrag aus tblUsers löschen
 		$queryStr = "DELETE FROM tblUserImages WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		//Eintrag aus tblUsers löschen
 		$queryStr = "DELETE FROM tblUsers WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		// mandatory review/approve
 		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE reviewerUserID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE approverUserID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-		
+
 		// set administrator for deleted user's events
 		$queryStr = "UPDATE tblEvents SET userID = " . $assignTo . " WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 
-			
+
 		// TODO : update document status if reviewer/approver has been deleted
 		// "DELETE FROM tblDocumentApproveLog WHERE userID = " . $this->_id;
 		// "DELETE FROM tblDocumentReviewLog WHERE userID = " . $this->_id;
-		
+
 
 		$reviewStatus = $this->getReviewStatus();
 		foreach ($reviewStatus["indstatus"] as $ri) {
@@ -316,10 +309,10 @@ class LetoDMS_User {
 	function joinGroup($group) { /* {{{ */
 		if ($group->isMember($this))
 			return false;
-		
+
 		if (!$group->addUser($this))
 			return false;
-		
+
 		unset($this->_groups);
 		return true;
 	} /* }}} */
@@ -327,17 +320,17 @@ class LetoDMS_User {
 	function leaveGroup($group) { /* {{{ */
 		if (!$group->isMember($this))
 			return false;
-		
+
 		if (!$group->removeUser($this))
 			return false;
-		
+
 		unset($this->_groups);
 		return true;
 	} /* }}} */
 
 	function getGroups() { /* {{{ */
-		GLOBAL $db;
-		
+		$db = $this->_dms->getDB();
+
 		if (!isset($this->_groups))
 		{
 			$queryStr = "SELECT `tblGroups`.*, `tblGroupMembers`.`userID` FROM `tblGroups` ".
@@ -359,7 +352,7 @@ class LetoDMS_User {
 	/**
 	 * Checks if user is member of a given group
 	 *
-	 * @param object $group 
+	 * @param object $group
 	 * @return boolean true if user is member of the given group otherwise false
 	 */
 	function isMemberOfGroup($group) { /* {{{ */
@@ -372,55 +365,42 @@ class LetoDMS_User {
 	 * @return boolean true if user has a picture of itself
 	 */
 	function hasImage() { /* {{{ */
-		if (!isset($this->_hasImage))
-		{
-			GLOBAL $db;
-			
+		if (!isset($this->_hasImage)) {
+			$db = $this->_dms->getDB();
+
 			$queryStr = "SELECT COUNT(*) AS num FROM tblUserImages WHERE userID = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && $resArr == false)
 				return false;
-			
+
 			if ($resArr[0]["num"] == 0)	$this->_hasImage = false;
 			else $this->_hasImage = true;
 		}
-		
+
 		return $this->_hasImage;
 	} /* }}} */
 
-	/* FIXME: This function should not be a method of the class but rather
-	 * implemented in the calling application
-	 */
-	function getImageURL() { /* {{{ */
-		GLOBAL $settings;
-		
-//		if (!$this->hasImage())
-//			return false;
-		return $settings->_httpRoot . "out/out.UserImage.php?userid=" . $this->_id;
-	} /* }}} */
+	function setImage($tmpfile, $mimeType) { /* {{{ */
+		$db = $this->_dms->getDB();
 
-	function setImage($tmpfile, $mimeType)
-	{
-		GLOBAL $db;
-		
 		$fp = fopen($tmpfile, "rb");
 		if (!$fp) return false;
 		$content = fread($fp, filesize($tmpfile));
 		fclose($fp);
-		
+
 		if ($this->hasImage())
 			$queryStr = "UPDATE tblUserImages SET image = '".base64_encode($content)."', mimeType = '". $mimeType."' WHERE userID = " . $this->_id;
 		else
 			$queryStr = "INSERT INTO tblUserImages (userID, image, mimeType) VALUES (" . $this->_id . ", '".base64_encode($content)."', '".$mimeType."')";
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_hasImage = true;
 		return true;
-	}
+	} /* }}} */
 
-	function getReviewStatus($documentID=null, $version=null) {
-		GLOBAL $db;
+	function getReviewStatus($documentID=null, $version=null) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!$db->createTemporaryTable("ttreviewid")) {
 			return false;
@@ -470,10 +450,10 @@ class LetoDMS_User {
 				$status["grpstatus"][] = $res;
 		}
 		return $status;
-	}
+	} /* }}} */
 
-	function getApprovalStatus($documentID=null, $version=null) {
-		GLOBAL $db;
+	function getApprovalStatus($documentID=null, $version=null) { /* {{{ */
+		$db = $this->_dms->getDB();
 
 		if (!$db->createTemporaryTable("ttapproveid")) {
 			return false;
@@ -523,93 +503,88 @@ class LetoDMS_User {
 				$status["grpstatus"][] = $res;
 		}
 		return $status;
-	}
-	
-	function getMandatoryReviewers()
-	{
-		GLOBAL $db;
-		
+	} /* }}} */
+
+	function getMandatoryReviewers() { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
 		$resArr = $db->getResultArray($queryStr);
 
 		return $resArr;
-	}
-	
-	function getMandatoryApprovers()
-	{
-		GLOBAL $db;
-		
+	} /* }}} */
+
+	function getMandatoryApprovers() { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
 		$resArr = $db->getResultArray($queryStr);
 
 		return $resArr;
-	}
-	
-	function setMandatoryReviewer($id, $isgroup=false)
-	{
-		GLOBAL $db;
-		
+	} /* }}} */
+
+	function setMandatoryReviewer($id, $isgroup=false) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		if ($isgroup){
-		
+
 			$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id . " AND reviewerGroupID = " . $id;
 			$resArr = $db->getResultArray($queryStr);
 			if (count($resArr)!=0) return;
-		
+
 			$queryStr = "INSERT INTO tblMandatoryReviewers (userID, reviewerGroupID) VALUES (" . $this->_id . ", " . $id .")";
 			$resArr = $db->getResult($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
 
 		}else{
-		
+
 			$queryStr = "SELECT * FROM tblMandatoryReviewers WHERE userID = " . $this->_id . " AND reviewerUserID = " . $id;
 			$resArr = $db->getResultArray($queryStr);
 			if (count($resArr)!=0) return;
-		
+
 			$queryStr = "INSERT INTO tblMandatoryReviewers (userID, reviewerUserID) VALUES (" . $this->_id . ", " . $id .")";
-			$resArr = $db->getResult($queryStr);			
+			$resArr = $db->getResult($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
-		}		
-		
-	}
-	
-	function setMandatoryApprover($id, $isgroup=false)
-	{
-		GLOBAL $db;
-		
+		}
+
+	} /* }}} */
+
+	function setMandatoryApprover($id, $isgroup=false) { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		if ($isgroup){
-		
+
 			$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id . " AND approverGroupID = " . $id;
 			$resArr = $db->getResultArray($queryStr);
 			if (count($resArr)!=0) return;
-		
+
 			$queryStr = "INSERT INTO tblMandatoryApprovers (userID, approverGroupID) VALUES (" . $this->_id . ", " . $id .")";
 			$resArr = $db->getResult($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
 
 		}else{
-		
+
 			$queryStr = "SELECT * FROM tblMandatoryApprovers WHERE userID = " . $this->_id . " AND approverUserID = " . $id;
 			$resArr = $db->getResultArray($queryStr);
 			if (count($resArr)!=0) return;
-		
+
 			$queryStr = "INSERT INTO tblMandatoryApprovers (userID, approverUserID) VALUES (" . $this->_id . ", " . $id .")";
 			$resArr = $db->getResult($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
 		}
-	}
-	
-	function delMandatoryReviewers()
-	{
-		GLOBAL $db;
+	} /* }}} */
+
+	function delMandatoryReviewers() { /* {{{ */
+		$db = $this->_dms->getDB();
 		$queryStr = "DELETE FROM tblMandatoryReviewers WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-	}
-	
-	function delMandatoryApprovers()
-	{
-		GLOBAL $db;
+	} /* }}} */
+
+	function delMandatoryApprovers() { /* {{{ */
+		$db = $this->_dms->getDB();
+
 		$queryStr = "DELETE FROM tblMandatoryApprovers WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
-	}
+	} /* }}} */
 }
 ?>
