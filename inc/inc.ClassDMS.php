@@ -17,6 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 require_once("inc.AccessUtils.php");
+require_once("inc.FileUtils.php");
 require_once("inc.ClassAccess.php");
 require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
@@ -90,6 +91,13 @@ class LetoDMS_DMS {
 	 * @access public
 	 */
 	public $convertFileTypes;
+
+	/**
+	 * @var array $viewOnlineFileTypes list of files types that can be viewed
+	 *      online
+	 * @access public
+	 */
+	public $viewOnlineFileTypes;
 
 	/**
 	 * Filter objects out which are not accessible in a given mode by a user.
@@ -166,6 +174,10 @@ class LetoDMS_DMS {
 
 	function setConvertFileTypes($types) { /* {{{ */
 		$this->convertFileTypes = $types;
+	} /* }}} */
+
+	function setViewOnlineFileTypes($types) { /* {{{ */
+		$this->viewOnlineFileTypes = $types;
 	} /* }}} */
 
 	/**
