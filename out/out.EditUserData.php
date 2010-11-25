@@ -96,7 +96,7 @@ if ($settings->_enableUserImage){
 		<td>
 	<?php
 	if ($user->hasImage())
-		print "<img src=\"".$user->getImageURL()."\">";
+		print "<img src=\"".$settings->_httpRoot . "out/out.UserImage.php?userid=".$user->getId()."\">";
 	else printMLText("no_user_image");
 	?>
 		</td>

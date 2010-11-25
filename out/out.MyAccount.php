@@ -41,7 +41,7 @@ print "<table>\n";
 
 if ($settings->_enableUserImage){
 	print "<tr>\n";
-	print "<td rowspan=5 id=\"userImage\">".($user->hasImage() ? "<img class=\"userImage\" src=\"".$user->getImageURL()."\">" : getMLText("no_user_image"))."</td>\n";
+	print "<td rowspan=5 id=\"userImage\">".($user->hasImage() ? "<img class=\"userImage\" src=\"".$settings->_httpRoot . "out/out.UserImage.php?userid=".$user->getId()."\">" : getMLText("no_user_image"))."</td>\n";
 	print "</tr>\n";
 }
 

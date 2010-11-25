@@ -70,7 +70,7 @@ foreach ($users as $currUser) {
 	
 	if ($settings->_enableUserImage){
 		print "<td>";
-		if ($currUser->hasImage()) print "<img src=\"".$currUser->getImageURL()."\">";
+		if ($currUser->hasImage()) print "<img src=\"".$settings->_httpRoot . "out/out.UserImage.php?userid=".$currUser->getId()."\">";
 		else printMLText("no_user_image");
 		print "</td>";	
 	}

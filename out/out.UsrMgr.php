@@ -287,7 +287,7 @@ UI::contentContainerStart();
 				<td>
 					<?php
 						if ($currUser->hasImage())
-							print "<img src=\"".$currUser->getImageURL()."\">";
+							print "<img src=\"".$settings->_httpRoot . "out/out.UserImage.php?userid=".$currUser->getId()."\">";
 						else
 							printMLText("no_user_image");
 					?>
