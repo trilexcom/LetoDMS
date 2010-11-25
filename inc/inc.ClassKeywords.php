@@ -37,38 +37,42 @@ function addKeywordCategory($owner, $name) {
 	return LetoDMS_KeywordCategory::addKeywordCategory($owner, $name);
 }
 
-//----------------------------------------------------------------------------------------------
-class LetoDMS_KeywordCategory
-{
+//---------------------------------------------------------------------------
+class LetoDMS_KeywordCategory {
 	var $_id;
 	var $_ownerID;
 	var $_name;
+	var $_dms;
 
-	function LetoDMS_KeywordCategory($id, $ownerID, $name)
-	{
+	function LetoDMS_KeywordCategory($id, $ownerID, $name) {
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_ownerID = $ownerID;
+		$this->_dms = null;
+	}
+
+	function setDMS($dms) {
+		$this->_dms = $dms;
 	}
 
 	function getKeywordCategory($id) {
 		GLOBAL $db;
-		
+
 		if (!is_numeric($id))
 			die ("invalid id");
-		
+
 		$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
 		$resArr = $db->getResultArray($queryStr);
 		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
 			return false;
-		
+
 		$resArr = $resArr[0];
 		return new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
 	}
 
 	function getKeywordCategoryByName($name, $owner) {
 		GLOBAL $db;
-		
+
 		$queryStr = "SELECT * FROM tblKeywordCategories WHERE name = '" . $name . "' AND owner = '" . $owner. "'";
 		$resArr = $db->getResultArray($queryStr);
 		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
@@ -80,37 +84,37 @@ class LetoDMS_KeywordCategory
 
 	function getAllKeywordCategories($userIDs = array()) {
 		GLOBAL $db, $settings;
-		
+
 		$queryStr = "SELECT * FROM tblKeywordCategories";
 		if ($userIDs)
 			$queryStr .= " WHERE owner in (".implode(',', $userIDs).")";
-		
+
 		$resArr = $db->getResultArray($queryStr);
 		if (is_bool($resArr) && !$resArr)
 			return false;
-		
+
 		$categories = array();
 		foreach ($resArr as $row)
 			array_push($categories, new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]));
-		
+
 		return $categories;
 	}
 
 	function getAllUserKeywordCategories($userID) {
 		GLOBAL $db, $settings;
-		
+
 		$queryStr = "SELECT * FROM tblKeywordCategories";
 		if ($userID != -1)
 			$queryStr .= " WHERE owner = " . $userID;
-		
+
 		$resArr = $db->getResultArray($queryStr);
 		if (is_bool($resArr) && !$resArr)
 			return false;
-		
+
 		$categories = array();
 		foreach ($resArr as $row)
 			array_push($categories, new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]));
-		
+
 		return $categories;
 	}
 
@@ -123,7 +127,7 @@ class LetoDMS_KeywordCategory
 		$queryStr = "INSERT INTO tblKeywordCategories (owner, name) VALUES ($owner, '$name')";
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		return self::getKeywordCategory($db->getInsertID());
 	}
 
@@ -137,25 +141,24 @@ class LetoDMS_KeywordCategory
 		return $this->_owner;
 	}
 
-	function setName($newName)
-	{
+	function setName($newName) {
 		GLOBAL $db;
-		
+
 		$queryStr = "UPDATE tblKeywordCategories SET name = '$newName' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_name = $newName;
 		return true;
 	}
 
 	function setOwner($user) {
 		GLOBAL $db;
-		
+
 		$queryStr = "UPDATE tblKeywordCategories SET owner = " . $user->getID() . " WHERE id " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_ownerID = $user->getID();
 		$this->_owner = $user;
 		return true;
@@ -163,44 +166,43 @@ class LetoDMS_KeywordCategory
 
 	function getKeywordLists() {
 		GLOBAL $db;
-		
+
 		$queryStr = "SELECT * FROM tblKeywords WHERE category = " . $this->_id;
 		return $db->getResultArray($queryStr);
 	}
 
 	function editKeywordList($listID, $keywords) {
 		GLOBAL $db;
-		
+
 		$queryStr = "UPDATE tblKeywords SET keywords = '$keywords' WHERE id = $listID";
 		return $db->getResult($queryStr);
 	}
 
 	function addKeywordList($keywords) {
 		GLOBAL $db;
-		
+
 		$queryStr = "INSERT INTO tblKeywords (category, keywords) VALUES (" . $this->_id . ", '$keywords')";
 		return $db->getResult($queryStr);
 	}
 
 	function removeKeywordList($listID) {
 		GLOBAL $db;
-		
+
 		$queryStr = "DELETE FROM tblKeywords WHERE id = $listID";
 		return $db->getResult($queryStr);
 	}
 
-	function remove()
-	{
+	function remove() {
 		GLOBAL $db;
-		
+
 		$queryStr = "DELETE FROM tblKeywords WHERE category = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$queryStr = "DELETE FROM tblKeywordCategories WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		return true;
 	}
 }
