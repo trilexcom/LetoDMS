@@ -27,4 +27,5 @@ $dms->setGuestID($settings->_guestID);
 $dms->setEnableGuestLogin($settings->_enableGuestLogin);
 $dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
 $dms->setEnableConverting($settings->_enableConverting);
+$dms->setViewOnlineFileTypes($settings->_viewOnlineFileTypes);
 ?>
