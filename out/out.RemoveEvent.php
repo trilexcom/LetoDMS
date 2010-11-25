@@ -20,7 +20,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
-include("../inc/inc.FileUtils.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Calendar.php");
