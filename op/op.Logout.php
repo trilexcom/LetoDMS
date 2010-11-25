@@ -19,6 +19,7 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 
@@ -46,7 +47,4 @@ setcookie("mydms_session", $_COOKIE["mydms_session"], time()-3600, $settings->_h
 
 //Forward to Login-page
 header("Location: ../out/out.Login.php");
-
-
-
 ?>

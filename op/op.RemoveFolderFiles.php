@@ -21,7 +21,6 @@ include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassEmail.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
-include("../inc/inc.FileUtils.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
@@ -36,7 +35,7 @@ function removeFolderFiles($folder)
 
 	$documents = $folder->getDocuments();
 	foreach ($documents as $document)
-		removeDir($settings->_contentDir . $document->getDir());
+		LetoDMS_File::removeDir($settings->_contentDir . $document->getDir());
 
 	$subFolders = $folder->getSubFolders();
 	
