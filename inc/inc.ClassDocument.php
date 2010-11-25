@@ -384,6 +384,10 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Returns a list of access privileges
+	 *
+	 */
 	function getAccessList($mode = M_ANY, $op = O_EQ) { /* {{{ */
 		$db = $this->_dms->getDB();
 		
@@ -408,8 +412,7 @@ class LetoDMS_Document { /* {{{ */
 				return false;
 			
 			$this->_accessList[$mode] = array("groups" => array(), "users" => array());
-			foreach ($resArr as $row)
-			{
+			foreach ($resArr as $row) {
 				if ($row["userID"] != -1)
 					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($this->_dms->getUser($row["userID"]), $row["mode"]));
 				else //if ($row["groupID"] != -1)
@@ -479,60 +482,63 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
-	/*
-	 * Liefert die Art der Zugriffsberechtigung für den User $user; Mögliche Rechte: n (keine), r (lesen), w (schreiben+lesen), a (alles)
-	 * Zunächst wird Geprüft, ob die Berechtigung geerbt werden soll; in diesem Fall wird die Anfrage an den Eltern-Ordner weitergeleitet.
-	 * Ansonsten werden die ACLs durchgegangen: Die höchstwertige Berechtigung gilt.
-	 * Wird bei den ACLs nicht gefunden, wird die Standard-Berechtigung zurückgegeben.
-	 * Ach ja: handelt es sich bei $user um den Besitzer ist die Berechtigung automatisch "a".
+	/**
+	 * Returns the greatest access privilege for a given user
+	 *
+	 * This function searches the access control list for entries of
+	 * user $user. If it finds more than one entry it will return the
+	 * one allowing the greatest privileges. If there is no entry in the
+	 * access control list, it will return the default access mode.
+	 * The function takes inherited access rights into account.
+	 * For a list of possible access rights see @file inc.AccessUtils.php
+	 *
+	 * @param $user object instance of class LetoDMS_User
+	 * @return integer access mode
 	 */
 	function getAccessMode($user) { /* {{{ */
-		//Administrator??
+		/* Administrators have unrestricted access */
 		if ($user->isAdmin()) return M_ALL;
 		
-		//Besitzer??
+		/* The owner of the document has unrestricted access */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
 		
-		//Gast-Benutzer??
-		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin))
-		{
+		//Gast-Benutzer?? FIXME: 
+		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin)) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
 		}
 		
-		//Berechtigung erben??
-		// wird über GetAccessList() bereits realisiert.
-		// durch das Verwenden der folgenden Zeilen wären auch Owner-Rechte vererbt worden.
-		/*
-		if ($this->inheritsAccess())
-		{
-			if (!$this->getFolder())
-				return false;
-			return $this->_folder->getAccessMode($user);
-		}
-		*/
-		//ACLs durchforsten
+		/* Check ACLs */
 		$accessList = $this->getAccessList();
 		if (!$accessList) return false;
 		
-		foreach ($accessList["users"] as $userAccess)
-		{
-			if ($userAccess->getUserID() == $user->getID())
-			{
+		foreach ($accessList["users"] as $userAccess) {
+			if ($userAccess->getUserID() == $user->getID()) {
 				return $userAccess->getMode();
 			}
 		}
-		foreach ($accessList["groups"] as $groupAccess)
-		{
-			if ($user->isMemberOfGroup($groupAccess->getGroup()))
-			{
+		foreach ($accessList["groups"] as $groupAccess) {
+			if ($user->isMemberOfGroup($groupAccess->getGroup())) {
 				return $groupAccess->getMode();
 			}
 		}
 		return $this->getDefaultAccess();
 	} /* }}} */
 
+	/**
+	 * Returns the greatest access privilege for a given group
+	 *
+	 * This function searches the access control list for entries of
+	 * group $group. If it finds more than one entry it will return the
+	 * one allowing the greatest privileges. If there is no entry in the
+	 * access control list, it will return the default access mode.
+	 * The function takes inherited access rights into account.
+	 * For a list of possible access rights see @file inc.AccessUtils.php
+	 *
+	 * @param $group object instance of class LetoDMS_Group
+	 * @return integer access mode
+	 */
 	function getGroupAccessMode($group) { /* {{{ */
 		$highestPrivileged = M_NONE;
 		
@@ -559,6 +565,15 @@ class LetoDMS_Document { /* {{{ */
 		return $this->getDefaultAccess();
 	} /* }}} */
 
+	/**
+	 * Returns a list of all notifications
+	 *
+	 * The returned list has two elements called 'users' and 'groups'. Each one
+	 * is an array itself countaining objects of class LetoDMS_User and
+	 * LetoDMS_Group.
+	 *
+	 * @return array list of notifications
+	 */
 	function getNotifyList() { /* {{{ */
 		if (!isset($this->_notifyList)) {
 			$db = $this->_dms->getDB();
@@ -580,16 +595,19 @@ class LetoDMS_Document { /* {{{ */
 		return $this->_notifyList;
 	} /* }}} */
 
+	/**
+	 * Add a user/group to the notification list
+	 *
+	 * @param $userOrGroupID integer id of user or group to add
+	 * @param $isUser integer 1 if $userOrGroupID is a user,
+	 *                0 if $userOrGroupID is a group
+	 * @return integer  0: Update successful.
+	 *                 -1: Invalid User/Group ID.
+	 *                 -2: Target User / Group does not have read access.
+	 *                 -3: User is already subscribed.
+	 *                 -4: Database / internal error.
+	 */
 	function addNotify($userOrGroupID, $isUser,$send_email=TRUE) { /* {{{ */
-
-		// Return values:
-		// -1: Invalid User/Group ID.
-		// -2: Target User / Group does not have read access.
-		// -3: User is already subscribed.
-		// -4: Database / internal error.
-		//  0: Update successful.
-
-		global $user;
 		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser ? "userID" : "groupID");
@@ -603,6 +621,12 @@ class LetoDMS_Document { /* {{{ */
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
+		/*
+		 * The calling application should enforce the policy on who is allowed
+		 * to add someone to the notification system. If is shall remain here
+		 * the currently logged in user should be passed to this function
+		 *
+		GLOBAL $user;
 		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
@@ -618,10 +642,9 @@ class LetoDMS_Document { /* {{{ */
 				}
 			}
 		}
+		 */
 
-		//
-		// Verify that target user / group has read access to the document.
-		//
+		/* Verify that target user / group has read access to the document. */
 		if ($isUser) {
 			// Users are straightforward to check.
 			if ($this->getAccessMode($obj) < M_READ) {
@@ -664,9 +687,7 @@ class LetoDMS_Document { /* {{{ */
 				}
 			}
 		}
-		//
-		// Check to see if user/group is already on the list.
-		//
+		/* Check to see if user/group is already on the list. */
 		$queryStr = "SELECT * FROM `tblNotify` WHERE `tblNotify`.`target` = '".$this->_id."' ".
 			"AND `tblNotify`.`targetType` = '".T_DOCUMENT."' ".
 			"AND `tblNotify`.`".$userOrGroup."` = '".$userOrGroupID."'";
@@ -686,20 +707,21 @@ class LetoDMS_Document { /* {{{ */
 		return 0;
 	} /* }}} */
 
+	/**
+	 * Remove a user or group from the notification list
+	 *
+	 * @param $userOrGroupID id of user or group
+	 * @param $isUser boolean true if a user is passed in $userOrGroupID, false
+	 *        if a group is passed in $userOrGroupID
+	 * @return integer 0 if operation was succesful
+	 *                 -1 if the userid/groupid is invalid
+	 *                 -3 if the user/group is already subscribed
+	 *                 -4 in case of an internal database error
+	 */
 	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
-
-		// Return values:
-		// -1: Invalid User/Group ID.
-		// -3: User is not subscribed. No action taken.
-		// -4: Database / internal error.
-		//  0: Update successful.
-
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 		
-		//
-		// Verify that user / group exists.
-		//
+		/* Verify that user / group exists. */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
 			return -1;
@@ -707,10 +729,15 @@ class LetoDMS_Document { /* {{{ */
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
 
-		//
-		// Verify that the requesting user has permission to add the target to
-		// the notification system.
-		//
+		/* Verify that the requesting user has permission to add the target to
+		 * the notification system.
+		 */
+		/*
+		 * The calling application should enforce the policy on who is allowed
+		 * to add someone to the notification system. If is shall remain here
+		 * the currently logged in user should be passed to this function
+		 *
+		GLOBAL $user;
 		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
@@ -726,10 +753,9 @@ class LetoDMS_Document { /* {{{ */
 				}
 			}
 		}
+		 */
 
-		//
-		// Check to see if the target is in the database.
-		//
+		/* Check to see if the target is in the database. */
 		$queryStr = "SELECT * FROM `tblNotify` WHERE `tblNotify`.`target` = '".$this->_id."' ".
 			"AND `tblNotify`.`targetType` = '".T_DOCUMENT."' ".
 			"AND `tblNotify`.`".$userOrGroup."` = '".$userOrGroupID."'";
@@ -773,8 +799,8 @@ class LetoDMS_Document { /* {{{ */
 		}
 
 		// copy file
-		if (!makeDir($this->_dms->contentDir . $dir)) return false;
-		if (!copyFile($tmpFile, $this->_dms->contentDir . $dir . $version . $fileType)) return false;
+		if (!LetoDMS_File::makeDir($this->_dms->contentDir . $dir)) return false;
+		if (!LetoDMS_File::copyFile($tmpFile, $this->_dms->contentDir . $dir . $version . $fileType)) return false;
 
 		unset($this->_content);
 		unset($this->_latestContent);
@@ -914,7 +940,7 @@ class LetoDMS_Document { /* {{{ */
 		$emailList[] = $version->_userID;
 
 		if (file_exists( $this->_dms->contentDir.$version->getPath() ))
-			if (!removeFile( $this->_dms->contentDir.$version->getPath() ))
+			if (!LetoDMS_File::removeFile( $this->_dms->contentDir.$version->getPath() ))
 				return false;
 			
 		$status = $version->getStatus();
@@ -1069,8 +1095,8 @@ class LetoDMS_Document { /* {{{ */
 		if (is_bool($file) && !$file) return false;
 
 		// copy file
-		if (!makeDir($this->_dms->contentDir . $dir)) return false;
-		if (!copyFile($tmpFile, $this->_dms->contentDir . $file->getPath() )) return false;
+		if (!LetoDMS_File::makeDir($this->_dms->contentDir . $dir)) return false;
+		if (!LetoDMS_File::copyFile($tmpFile, $this->_dms->contentDir . $file->getPath() )) return false;
 		
 		return true;
 	} /* }}} */
@@ -1082,7 +1108,7 @@ class LetoDMS_Document { /* {{{ */
 		if (is_bool($file) && !$file) return false;
 					
 		if (file_exists( $this->_dms->contentDir . $file->getPath() )){
-			if (!removeFile( $this->_dms->contentDir . $file->getPath() ))
+			if (!LetoDMS_File::removeFile( $this->_dms->contentDir . $file->getPath() ))
 				return false;
 		}
 		
@@ -1120,7 +1146,7 @@ class LetoDMS_Document { /* {{{ */
 		// TODO: versioning file?
 				
 		if (file_exists( $this->_dms->contentDir . $this->getDir() ))
-			if (!removeDir( $this->_dms->contentDir . $this->getDir() ))
+			if (!LetoDMS_File::removeDir( $this->_dms->contentDir . $this->getDir() ))
 				return false;
 		
 		$queryStr = "DELETE FROM tblDocuments WHERE id = " . $this->_id;
@@ -1373,13 +1399,11 @@ class LetoDMS_DocumentContent { /* {{{ */
 	 * of the application whether a file can viewed online or not.
 	 */
 	function viewOnline() { /* {{{ */
-		GLOBAL $settings;
-
-		if (!isset($settings->_viewOnlineFileTypes) || !is_array($settings->_viewOnlineFileTypes)) {
+		if (!isset($this->_document->_dms->_viewOnlineFileTypes) || !is_array($this->_document->_dms->_viewOnlineFileTypes)) {
 			return false;
 		}
 
-		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes))
+		if (in_array(strtolower($this->_fileType), $this->_document->_dms->_viewOnlineFileTypes))
 			return true;
 		
 		if ($this->_document->_dms->enableConverting && in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
@@ -1393,11 +1417,9 @@ class LetoDMS_DocumentContent { /* {{{ */
 	} /* }}} */
 
 	function getURL() { /* {{{ */
-		GLOBAL $settings;
-		
 		if (!$this->viewOnline())return false;
 		
-		if (in_array(strtolower($this->_fileType), $settings->_viewOnlineFileTypes))
+		if (in_array(strtolower($this->_fileType), $this->_document->_dms->_viewOnlineFileTypes))
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/" . $this->getOriginalFileName();
 		else
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/index.html";
@@ -1414,7 +1436,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		$emailList[] = $this->_userID;
 
 		if (file_exists( $this->_document->_dms->contentDir.$version->getPath() ))
-			if (!removeFile( $this->_document->_dms->contentDir.$version->getPath() ))
+			if (!LetoDMS_File::removeFile( $this->_document->_dms->contentDir.$version->getPath() ))
 				return false;
 			
 		$status = $this->getStatus();
@@ -2003,7 +2025,7 @@ class LetoDMS_DocumentLink { /* {{{ */
 	function isPublic() { return $this->_public; }
 
 	function __remove() { // Do not use anymore
-		GLOBAL $db;
+		$db = $this->_document->_dms->getDB();
 		
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -2063,10 +2085,10 @@ class LetoDMS_DocumentFile { /* {{{ */
 
 	function __remove() // do not use anymore, will be called from document->removeDocumentFile
 	{
-		GLOBAL $db;
+		$db = $this->_document->_dms->getDB();
 		
 		if (file_exists( $this->_document->_dms->contentDir.$this->getPath() ))
-			if (!removeFile( $this->_document->_dms->contentDir.$this->getPath() ))
+			if (!LetoDMS_File::removeFile( $this->_document->_dms->contentDir.$this->getPath() ))
 				return false;
 	
 		
