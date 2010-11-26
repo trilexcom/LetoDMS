@@ -168,7 +168,7 @@ if (!isset($_GET["targetidform2"]) || !is_numeric($_GET["targetidform2"]) || int
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
 }
 $folderid = $_GET["targetidform2"];
-$folder = getFolder($folderid);
+$folder = $dms->getFolder($folderid);
 
 if (!is_object($folder)) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));

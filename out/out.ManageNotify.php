@@ -114,7 +114,7 @@ function printDocumentNotificationList($ret,$deleteaction=true)
 		print "<th>".getMLText("actions")."</th>\n";
 		print "</tr></thead>\n<tbody>\n";
 		foreach ($ret as $ID) {
-			$doc = getDocument($ID);
+			$doc = $dms->getDocument($ID);
 			if (is_object($doc)) {
 				$owner = $doc->getOwner();
 				$latest = $doc->getLatestContent();

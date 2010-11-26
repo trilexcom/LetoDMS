@@ -111,7 +111,7 @@ foreach ($entries as $entry){
 	}
 
 	$folderid=substr($entry,strpos($entry,"_")+1);
-	$folder=getFolder((int)$folderid);
+	$folder=$dms->getFolder((int)$folderid);
 			
 	print "<tr>\n";
 	print "<td><a href=\"../op/op.Download.php?arkname=".$entry."\">".$entry."</a></td>\n";

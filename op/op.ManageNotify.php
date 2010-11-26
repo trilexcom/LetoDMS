@@ -49,7 +49,7 @@ function add_folder_notify($folder,$userid,$recursefolder,$recursedoc)
 		// recurse all folder's folders
 		
 		$subFolders = $folder->getSubFolders();
-		$subFolders = LetoDMS_DMS::filterAccess($subFolders, getUser($userid), M_READ);
+		$subFolders = LetoDMS_DMS::filterAccess($subFolders, $dms->getUser($userid), M_READ);
 
 		foreach($subFolders as $subFolder)
 			add_folder_notify($subFolder,$userid,$recursefolder,$recursedoc);
