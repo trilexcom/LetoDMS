@@ -81,7 +81,7 @@ function printFolderNotificationList($ret,$deleteaction=true)
 		print "<th>".getMLText("actions")."</th>\n";
 		print "</tr></thead>\n<tbody>\n";
 		foreach($ret as $ID) {
-			$fld = getFolder($ID);
+			$fld = $dms->getFolder($ID);
 			if (is_object($fld)) {
 				$owner = $fld->getOwner();
 				print "<tr class=\"folder\">";
