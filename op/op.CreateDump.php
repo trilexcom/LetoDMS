@@ -61,7 +61,7 @@ foreach ($tables as $table){
 
 fclose($h);
 
-if (gzcompressfile($dump_name,9)) unlink($dump_name);
+if (LetoDMS_File::gzcompressfile($dump_name,9)) unlink($dump_name);
 else UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 
 add_log_line();

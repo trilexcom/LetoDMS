@@ -20,14 +20,13 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassKeywords.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-$categories = getAllKeywordCategories(array($user->getID(), $settings->_adminID));
+$categories = $dms->getAllKeywordCategories(array($user->getID(), $settings->_adminID));
 
 UI::htmlStartPage(getMLText("use_default_keywords"));
 

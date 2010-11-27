@@ -190,7 +190,7 @@ if (!createFolderTar($folder,$ark)) {
 TarAddFooter($ark);
 fclose($ark);
 
-if (gzcompressfile($ark_name,9)) unlink($ark_name);
+if (LetoDMS_File::gzcompressfile($ark_name,9)) unlink($ark_name);
 else UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 
 add_log_line();

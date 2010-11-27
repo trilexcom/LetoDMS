@@ -23,6 +23,7 @@ require_once("inc.ClassFolder.php");
 require_once("inc.ClassDocument.php");
 require_once("inc.ClassGroup.php");
 require_once("inc.ClassUser.php");
+require_once("inc.ClassKeywords.php");
 
 /**
  * Class to represent the complete document management
@@ -604,6 +605,82 @@ class LetoDMS_DMS {
 			return false;
 		
 		return $this->getGroup($this->db->getInsertID());
+	} /* }}} */
+
+	function getKeywordCategory($id) { /* {{{ */
+		if (!is_numeric($id))
+			die ("invalid id");
+
+		$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
+		$resArr = $this->db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
+			return false;
+
+		$resArr = $resArr[0];
+		$cat = new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+		$cat->setDMS($this);
+		return $cat;
+	} /* }}} */
+
+	function getKeywordCategoryByName($name, $owner) { /* {{{ */
+		$queryStr = "SELECT * FROM tblKeywordCategories WHERE name = '" . $name . "' AND owner = '" . $owner. "'";
+		$resArr = $this->db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
+			return false;
+
+		$resArr = $resArr[0];
+		$cat = new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+		$cat->setDMS($this);
+		return $cat;
+	} /* }}} */
+
+	function getAllKeywordCategories($userIDs = array()) { /* {{{ */
+		$queryStr = "SELECT * FROM tblKeywordCategories";
+		if ($userIDs)
+			$queryStr .= " WHERE owner in (".implode(',', $userIDs).")";
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$categories = array();
+		foreach ($resArr as $row) {
+			$cat = new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]);
+			$cat->setDMS($this);
+			array_push($categories, $cat);
+		}
+
+		return $categories;
+	} /* }}} */
+
+	function getAllUserKeywordCategories($userID) { /* {{{ */
+		$queryStr = "SELECT * FROM tblKeywordCategories";
+		if ($userID != -1)
+			$queryStr .= " WHERE owner = " . $userID;
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$categories = array();
+		foreach ($resArr as $row) {
+			$cat = new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]);
+			$cat->setDMS($this);
+			array_push($categories, $cat);
+		}
+
+		return $categories;
+	} /* }}} */
+
+	function addKeywordCategory($owner, $name) { /* {{{ */
+		if (is_object($this->getKeywordCategoryByName($name, $owner))) {
+			return false;
+		}
+		$queryStr = "INSERT INTO tblKeywordCategories (owner, name) VALUES ($owner, '$name')";
+		if (!$this->db->getResult($queryStr))
+			return false;
+
+		return $this->getKeywordCategory($this->db->getInsertID());
 	} /* }}} */
 
 }

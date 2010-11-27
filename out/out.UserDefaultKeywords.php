@@ -19,7 +19,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassKeywords.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -30,7 +29,7 @@ if ($user->getID() == $settings->_guestID) {
 	UI::exitError(getMLText("edit_default_keywords"),getMLText("access_denied"));
 }
 
-$categories = getAllUserKeywordCategories($user->getID());
+$categories = $dms->getAllUserKeywordCategories($user->getID());
 
 UI::htmlStartPage(getMLText("edit_default_keywords"));
 UI::globalNavigation();

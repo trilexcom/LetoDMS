@@ -20,7 +20,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassKeywords.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -35,7 +34,7 @@ UI::htmlStartPage(getMLText("admin_tools"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("admin_tools"), "admin_tools");
 
-$categories = getAllUserKeywordCategories($settings->_adminID);
+$categories = $dms->getAllUserKeywordCategories($settings->_adminID);
 ?>
 
 <script language="JavaScript">

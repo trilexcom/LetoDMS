@@ -19,7 +19,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassKeywords.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -37,10 +36,10 @@ $action = $_GET["action"];
 if ($action == "addcategory") {
 	
 	$name = sanitizeString($_GET["name"]);
-	if (is_object(getKeywordCategoryByName($name, $settings->_adminID))) {
+	if (is_object($dms->getKeywordCategoryByName($name, $settings->_adminID))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("keyword_exists"));
 	}
-	$newCategory = addKeywordCategory($settings->_adminID, $name);
+	$newCategory = $dms->addKeywordCategory($settings->_adminID, $name);
 	if (!$newCategory) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
@@ -54,7 +53,7 @@ else if ($action == "removecategory") {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
 	$categoryid = $_GET["categoryid"];
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (!is_object($category)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
@@ -76,7 +75,7 @@ else if ($action == "editcategory") {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
 	$categoryid = $_GET["categoryid"];
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (!is_object($category)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
@@ -96,7 +95,7 @@ else if ($action == "editcategory") {
 else if ($action == "newkeywords") {
 	
 	$categoryid = sanitizeString($_GET["categoryid"]);
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	$owner    = $category->getOwner();
 	if ($owner->getID() != $settings->_adminID) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
@@ -116,7 +115,7 @@ else if ($action == "editkeywords")
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
 	$categoryid = $_GET["categoryid"];
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (!is_object($category)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 
@@ -145,7 +144,7 @@ else if ($action == "removekeywords") {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}
 	$categoryid = $_GET["categoryid"];
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (!is_object($category)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("unknown_keyword_category"));
 	}

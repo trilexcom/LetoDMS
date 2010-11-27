@@ -19,7 +19,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.ClassDMS.php");
-include("../inc/inc.ClassKeywords.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -47,7 +46,7 @@ if ($action == "addcategory") {
 		$name = sanitizeString($_GET["name"]);
 	}
 	
-	$newCategory = addKeywordCategory($user->getID(), $name);
+	$newCategory = $dms->addKeywordCategory($user->getID(), $name);
 	if (!$newCategory) {
 		UI::exitError(getMLText("personal_default_keywords"),getMLText("error_occured"));
 	}
@@ -64,7 +63,7 @@ else if ($action == "removecategory") {
 	else {
 		$categoryid = sanitizeString($_GET["categoryid"]);
 	}
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
 		$owner    = $category->getOwner();
 		if ($owner->getID() != $user->getID()) {
@@ -87,7 +86,7 @@ else if ($action == "editcategory") {
 	else {
 		$categoryid = sanitizeString($_GET["categoryid"]);
 	}
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
 		$owner = $category->getOwner();
 		if ($owner->getID() != $user->getID()) {
@@ -116,7 +115,7 @@ else if ($action == "newkeywords") {
 	else {
 		$categoryid = sanitizeString($_GET["categoryid"]);
 	}
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
 		$owner    = $category->getOwner();
 		if ($owner->getID() != $user->getID()) {
@@ -145,7 +144,7 @@ else if ($action == "editkeywords") {
 	else {
 		$categoryid = sanitizeString($_GET["categoryid"]);
 	}
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
 		$owner = $category->getOwner();
 		if ($owner->getID() != $user->getID()) {
@@ -178,7 +177,7 @@ else if ($action == "removekeywords") {
 	else {
 		$categoryid = sanitizeString($_GET["categoryid"]);
 	}
-	$category = getKeywordCategory($categoryid);
+	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
 		$owner    = $category->getOwner();
 		if ($owner->getID() != $user->getID()) {
