@@ -674,9 +674,11 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
+		/*
 		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
+		*/
 		if (!$user->isAdmin()) {
 			if ($isUser) {
 				if ($user->getID() != $obj->getID()) {
@@ -783,9 +785,11 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
+		/*
 		if ($user->getID() == $this->_dms->guestID) {
 			return -2;
 		}
+		*/
 		if (!$user->isAdmin()) {
 			if ($isUser) {
 				if ($user->getID() != $obj->getID()) {
