@@ -34,7 +34,6 @@ define("S_EXPIRED",  -3);
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-// these are the document information (all versions)
 class LetoDMS_Document { /* {{{ */
 	var $_id;
 	var $_name;
@@ -1320,17 +1319,26 @@ class LetoDMS_Document { /* {{{ */
 	} /* }}} */
 } /* }}} */
 
- /* --------------------------------------------------------------------- */
 
 /**
- * Die Datei wird als "data.ext" (z.b. data.txt) gespeichert. Getrennt davon wird in der DB der ursprüngliche
- * Dateiname festgehalten (-> $orgFileName). Die Datei wird deshalb nicht unter diesem ursprünglichen Namen
- * gespeichert, da es zu Problemen mit verschiedenen Dateisystemen kommen kann: Linux hat z.b. Probleme mit
- * deutschen Umlauten, während Windows wiederum den Doppelpunkt in Dateinamen nicht verwenden kann.
- * Der ursprüngliche Dateiname wird nur zum Download verwendet (siehe op.Download.pgp)
+ * Class to represent content of a document
+ *
+ * Each document has content attached to it, often called a 'version' of the
+ * document. The document content represents a file on the disk with some
+ * meta data stored in the database. A document content has a version number
+ * which is incremented with each replacement of the old content. Old versions
+ * are kept unless they are explicitly deleted by
+ * {@link LetoDMS_Document::removeContent()}.
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal,
+ *             2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli,
+ *             2010 Uwe Steinmann
+ * @version    Release: @package_version@
  */
-
-// these are the version information
 class LetoDMS_DocumentContent { /* {{{ */
 
 	// if status is released and there are reviewers set status draft_rev
@@ -2030,8 +2038,24 @@ class LetoDMS_DocumentContent { /* {{{ */
 } /* }}} */
 
 
-/* ----------------------------------------------------------------------- */
-
+/**
+ * Class to represent a link between two document
+ *
+ * Document links are to establish a reference from one document to
+ * another document. The owner of the document link may not be the same
+ * as the owner of one of the documents.
+ * Use {@link LetoDMS_Document::addDocumentLink()} to add a reference
+ * to another document.
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal,
+ *             2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli,
+ *             2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 class LetoDMS_DocumentLink { /* {{{ */
 	var $_id;
 	var $_document;
@@ -2076,8 +2100,23 @@ class LetoDMS_DocumentLink { /* {{{ */
 	}
 } /* }}} */
 
-/* ---------------------------------------------------------------------- */
-
+/**
+ * Class to represent a file attached to a document
+ *
+ * Beside the regular document content arbitrary files can be attached
+ * to a document. This is a similar concept as attaching files to emails.
+ * The owner of the attached file and the document may not be the same.
+ * Use {@link LetoDMS_Document::addDocumentFile()} to attach a file.
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal,
+ *             2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli,
+ *             2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 class LetoDMS_DocumentFile { /* {{{ */
 	var $_id;
 	var $_document;
@@ -2147,6 +2186,18 @@ class LetoDMS_DocumentFile { /* {{{ */
 // The object stores a copy of the new DocumentContent object, the newly assigned
 // reviewers and approvers and the status.
 //
+/**
+ * Class to represent a list of document contents
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal,
+ *             2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli,
+ *             2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 class LetoDMS_AddContentResultSet { /* {{{ */
 
 	var $_indReviewers;

@@ -1,21 +1,19 @@
 <?php
-//    MyDMS. Document Management System
-//    Copyright (C) 2010 Uwe Steinmann
-//
-//    This program is free software; you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program; if not, write to the Free Software
-//    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+/**
+ * Implementation of the document management system
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @license    GPL 2
+ * @version    @version@
+ * @author     Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2010, Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 
+/**
+ * Include some files
+ */
 require_once("inc.AccessUtils.php");
 require_once("inc.FileUtils.php");
 require_once("inc.ClassAccess.php");
@@ -26,60 +24,53 @@ require_once("inc.ClassUser.php");
 require_once("inc.ClassKeywords.php");
 
 /**
- * Class to represent the complete document management
+ * Class to represent the complete document management system
  *
  * @category   DMS
  * @package    LetoDMS
+ * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2010, Uwe Steinmann
  * @version    Release: @package_version@
  */
 class LetoDMS_DMS {
 	/**
-	 * @var object $db reference to database object
+	 * @var object $db reference to database object. This must be an instance
+	 *      of {@link LetoDMS_DatabaseAccess}.
 	 * @access protected
 	 */
 	protected $db;
 
 	/**
-	 * @var object $user reference to currently logged in user
+	 * @var object $user reference to currently logged in user. This must be
+	 *      an instance of {@link LetoDMS_User}.
 	 * @access public
 	 */
 	public $user;
 
 	/**
-	 * @var string $contentDir location in file system where all the
-	 *      data stores are located.
+	 * @var string $contentDir location in the file system where all the
+	 *      data stores are located. This should be an absolute path.
 	 * @access public
 	 */
 	public $contentDir;
 
 	/**
-	 * @var string $contentOffsetDir location in file system relative to
-	 *      @var $contentDir where all the  documents belonging to a
-	 *      data stored are saved
+	 * @var string $contentOffsetDir location in the file system relative to
+	 *      {@link $contentDir} where all the documents belonging to a
+	 *      data store are saved. This is basically a subdirectory of
+	 *      {@link $contentDir}. It is very helpful if several instances
+	 *      of the dms shall be used in parallel. This is often used with
+	 *      a separate database for each instance of the dms.
 	 * @access public
 	 */
 	public $contentOffsetDir;
-
-	/**
-	 * @var integer $guestID ID of user treated as a guest with limited
-	 *      access rights
-	 * @access public
-	 */
-	public $guestID;
 
 	/**
 	 * @var integer $rootFolderID ID of root folder
 	 * @access public
 	 */
 	public $rootFolderID;
-
-	/**
-	 * @var boolean $enableGuestLogin set to true if guest login is allowed
-	 * @access public
-	 */
-	public $enableGuestLogin;
 
 	/**
 	 * @var boolean $enableConverting set to true if conversion of content is desired
@@ -143,7 +134,6 @@ class LetoDMS_DMS {
 		$this->contentDir = $contentDir;
 		$this->contentOffsetDir = $contentOffsetDir;
 		$this->rootFolderID = 1;
-		$this->guestID = 2;
 		$this->enableAdminRevApp = false;
 		$this->enableConverting = false;
 		$this->convertFileTypes = array();
@@ -155,14 +145,6 @@ class LetoDMS_DMS {
 
 	function setRootFolderID($id) { /* {{{ */
 		$this->rootFolderID = $id;
-	} /* }}} */
-
-	function setGuestID($id) { /* {{{ */
-		$this->guestID = $id;
-	} /* }}} */
-
-	function setEnableGuestLogin($enable) { /* {{{ */
-		$this->enableGuestLogin = $enable;
 	} /* }}} */
 
 	function setEnableAdminRevApp($enable) { /* {{{ */
@@ -576,6 +558,11 @@ class LetoDMS_DMS {
 		return $group;
 	} /* }}} */
 
+	/**
+	 * Get a list of all groups
+	 *
+	 * @return array array of instances of {@link LetoDMS_Group}
+	 */
 	function getAllGroups() { /* {{{ */
 		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
 		$resArr = $this->db->getResultArray($queryStr);
@@ -595,6 +582,14 @@ class LetoDMS_DMS {
 		return $groups;
 	} /* }}} */
 
+	/**
+	 * Create a new user group
+	 *
+	 * @param string $name name of group
+	 * @param string $comment comment of group
+	 * @return object/boolean instance of {@link LetoDMS_Group} or false in
+	 *         case of an error.
+	 */
 	function addGroup($name, $comment) { /* {{{ */
 		if (is_object($this->getGroupByName($name))) {
 			return false;

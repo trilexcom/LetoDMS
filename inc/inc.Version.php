@@ -30,3 +30,4 @@ class LetoDMS_Version {
 		return $this->_string .", ". $this->_number;
 	}
 }
+?>
