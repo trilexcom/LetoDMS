@@ -48,7 +48,7 @@ class LetoDMS_Document { /* {{{ */
 	var $_keywords;
 	var $_sequence;
 	var $_dms;
-	
+
 	function LetoDMS_Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
@@ -110,7 +110,7 @@ class LetoDMS_Document { /* {{{ */
 	 */
 	function setName($newName) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -146,11 +146,11 @@ class LetoDMS_Document { /* {{{ */
 
 	function setKeywords($newKeywords) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments SET keywords = '" . $newKeywords . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_keywords = $newKeywords;
 		return true;
 	} /* }}} */
@@ -165,9 +165,18 @@ class LetoDMS_Document { /* {{{ */
 		return $this->_folder;
 	} /* }}} */
 
+	/**
+	 * Set folder of a document
+	 *
+	 * This function basically moves a document from a folder to another
+	 * folder.
+	 *
+	 * @param object $newFolder
+	 * @return boolean false in case of an error, otherwise true
+	 */
 	function setFolder($newFolder) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments SET folder = " . $newFolder->getID() . " WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -219,7 +228,7 @@ class LetoDMS_Document { /* {{{ */
 
 	function setDefaultAccess($mode) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments set defaultAccess = " . $mode . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -246,11 +255,11 @@ class LetoDMS_Document { /* {{{ */
 
 	function setInheritAccess($inheritAccess) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments SET inheritAccess = " . ($inheritAccess ? "1" : "0") . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_inheritAccess = ($inheritAccess ? "1" : "0");
 
 		// If any of the notification subscribers no longer have read access,
@@ -289,7 +298,7 @@ class LetoDMS_Document { /* {{{ */
 
 	function setExpires($expires) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$expires = (!$expires) ? 0 : $expires;
 
 		if ($expires == $this->_expires) {
@@ -310,12 +319,12 @@ class LetoDMS_Document { /* {{{ */
 		if (time()>$this->_expires+24*60*60) return true;
 		return false;
 	} /* }}} */
-	
+
 	// return true if status has changed (to reload page)
 	function verifyLastestContentExpriry(){ /* {{{ */
 		$lc=$this->getLatestContent();
 		$st=$lc->getStatus();
-		
+
 		if (($st["status"]==S_DRAFT_REV || $st["status"]==S_DRAFT_APP) && $this->hasExpired()){
 			$lc->setStatus(S_EXPIRED,"");
 			return true;
@@ -326,12 +335,12 @@ class LetoDMS_Document { /* {{{ */
 		}
 		return false;
 	} /* }}} */
-	
+
 	function isLocked() { return $this->_locked != -1; }
 
 	function setLocked($falseOrUser) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$lockUserID = -1;
 		if (is_bool($falseOrUser) && !$falseOrUser) {
 			$queryStr = "DELETE FROM tblDocumentLocks WHERE document = ".$this->_id;
@@ -354,7 +363,7 @@ class LetoDMS_Document { /* {{{ */
 	function getLockingUser() { /* {{{ */
 		if (!$this->isLocked())
 			return false;
-		
+
 		if (!isset($this->_lockingUser))
 			$this->_lockingUser = $this->_dms->getUser($this->_locked);
 		return $this->_lockingUser;
@@ -364,22 +373,22 @@ class LetoDMS_Document { /* {{{ */
 
 	function setSequence($seq) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblDocuments SET sequence = " . $seq . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_sequence = $seq;
 		return true;
 	} /* }}} */
 
 	function clearAccessList() { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "DELETE FROM tblACLs WHERE targetType = " . T_DOCUMENT . " AND target = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		unset($this->_accessList);
 		return true;
 	} /* }}} */
@@ -390,13 +399,13 @@ class LetoDMS_Document { /* {{{ */
 	 */
 	function getAccessList($mode = M_ANY, $op = O_EQ) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if ($this->inheritsAccess()) {
 			$res = $this->getFolder();
 			if (!$res) return false;
 			return $this->_folder->getAccessList($mode, $op);
 		}
-		
+
 		if (!isset($this->_accessList[$mode])) {
 			if ($op!=O_GTEQ && $op!=O_LTEQ && $op!=O_EQ) {
 				return false;
@@ -410,7 +419,7 @@ class LetoDMS_Document { /* {{{ */
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr)
 				return false;
-			
+
 			$this->_accessList[$mode] = array("groups" => array(), "users" => array());
 			foreach ($resArr as $row) {
 				if ($row["userID"] != -1)
@@ -419,20 +428,20 @@ class LetoDMS_Document { /* {{{ */
 					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($this->_dms->getGroup($row["groupID"]), $row["mode"]));
 			}
 		}
-		
+
 		return $this->_accessList[$mode];
 	} /* }}} */
 
 	function addAccess($mode, $userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
-		
-		$queryStr = "INSERT INTO tblACLs (target, targetType, ".$userOrGroup.", mode) VALUES 
+
+		$queryStr = "INSERT INTO tblACLs (target, targetType, ".$userOrGroup.", mode) VALUES
 					(".$this->_id.", ".T_DOCUMENT.", " . $userOrGroupID . ", " .$mode. ")";
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		unset($this->_accessList);
 
 		// Update the notify list, if necessary.
@@ -498,21 +507,21 @@ class LetoDMS_Document { /* {{{ */
 	function getAccessMode($user) { /* {{{ */
 		/* Administrators have unrestricted access */
 		if ($user->isAdmin()) return M_ALL;
-		
+
 		/* The owner of the document has unrestricted access */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
-		
-		//Gast-Benutzer?? FIXME: 
+
+		//Gast-Benutzer?? FIXME:
 		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin)) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
 		}
-		
+
 		/* Check ACLs */
 		$accessList = $this->getAccessList();
 		if (!$accessList) return false;
-		
+
 		foreach ($accessList["users"] as $userAccess) {
 			if ($userAccess->getUserID() == $user->getID()) {
 				return $userAccess->getMode();
@@ -541,13 +550,13 @@ class LetoDMS_Document { /* {{{ */
 	 */
 	function getGroupAccessMode($group) { /* {{{ */
 		$highestPrivileged = M_NONE;
-		
+
 		//ACLs durchforsten
 		$foundInACL = false;
 		$accessList = $this->getAccessList();
 		if (!$accessList)
 			return false;
-		
+
 		foreach ($accessList["groups"] as $groupAccess) {
 			if ($groupAccess->getGroupID() == $group->getID()) {
 				$foundInACL = true;
@@ -560,7 +569,7 @@ class LetoDMS_Document { /* {{{ */
 
 		if ($foundInACL)
 			return $highestPrivileged;
-		
+
 		//Standard-Berechtigung verwenden
 		return $this->getDefaultAccess();
 	} /* }}} */
@@ -577,12 +586,12 @@ class LetoDMS_Document { /* {{{ */
 	function getNotifyList() { /* {{{ */
 		if (!isset($this->_notifyList)) {
 			$db = $this->_dms->getDB();
-			
+
 			$queryStr ="SELECT * FROM tblNotify WHERE targetType = " . T_DOCUMENT . " AND target = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && $resArr == false)
 				return false;
-			
+
 			$this->_notifyList = array("groups" => array(), "users" => array());
 			foreach ($resArr as $row)
 			{
@@ -720,7 +729,7 @@ class LetoDMS_Document { /* {{{ */
 	 */
 	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		/* Verify that user / group exists. */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
@@ -770,33 +779,52 @@ class LetoDMS_Document { /* {{{ */
 		$queryStr = "DELETE FROM tblNotify WHERE target = " . $this->_id . " AND targetType = " . T_DOCUMENT . " AND " . $userOrGroup . " = " . $userOrGroupID;
 		if (!$db->getResult($queryStr))
 			return -4;
-		
+
 		unset($this->_notifyList);
 		return 0;
 	} /* }}} */
-	
-	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(),$version=0,$send_email=TRUE) { /* {{{ */
+
+	/**
+	 * Add content to a document
+	 *
+	 * Each document may have any number of content elements attached to it.
+	 * Each content element has a version number. Newer versions (greater
+	 * version number) replace older versions.
+	 *
+	 * @param string $comment comment
+	 * @param object $user user who shall be the owner of this content
+	 * @param string $tmpFile file containing the actuall content
+	 * @param string $orgFileName original file name
+	 * @param string $mimeType MimeType of the content
+	 * @param array $reviewers list of reviewers
+	 * @param array $approvers list of approvers
+	 * @param integer $version version number of content or 0 if next higher version shall be used.
+	 * @return bool/array false in case of an error or a result set
+	 */
+	function addContent($comment, $user, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers=array(), $approvers=array(), $version=0) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		// the doc path is id/version.filetype
 		$dir = $this->getDir();
 
-		//Eintrag in tblDocumentContent
 		$date = mktime();
-		
-		if ((int)$version<1){
 
-			$queryStr = "INSERT INTO tblDocumentContent (document, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
-						"(".$this->_id.", '".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
-			if (!$db->getResult($queryStr)) return false;
+		/* The version field in table tblDocumentContent used to be auto
+		 * increment but that requires the field to be primary as well if
+		 * innodb is used. That's why the version is now determined here.
+		 */
+		if ((int)$version<1) {
+			$queryStr = "SELECT MAX(version) as m from tblDocumentContent where document = ".$this->_id;
+			$resArr = $db->getResultArray($queryStr);
+			if (is_bool($resArr) && !$res)
+				return false;
 
-			$version = $db->getInsertID();
-		
-		}else{
-			$queryStr = "INSERT INTO tblDocumentContent (document, version, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
-						"(".$this->_id.", ".(int)$version.",'".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
-			if (!$db->getResult($queryStr)) return false;
+			$version = $resArr[0]['m']+1;
 		}
+
+		$queryStr = "INSERT INTO tblDocumentContent (document, version, comment, date, createdBy, dir, orgFileName, fileType, mimeType) VALUES ".
+						"(".$this->_id.", ".(int)$version.",'".$comment."', ".$date.", ".$user->getID().", '".$dir."', '".$orgFileName."', '".$fileType."', '" . $mimeType . "')";
+		if (!$db->getResult($queryStr)) return false;
 
 		// copy file
 		if (!LetoDMS_File::makeDir($this->_dms->contentDir . $dir)) return false;
@@ -877,26 +905,39 @@ class LetoDMS_Document { /* {{{ */
 		return $docResultSet;
 	} /* }}} */
 
+	/**
+	 * Return all content elements of a document
+	 *
+	 * This functions returns an array of content elements ordered by version
+	 *
+	 * @return array list of objects of class LetoDMS_DocumentContent
+	 */
 	function getContent() { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if (!isset($this->_content)) {
 			$queryStr = "SELECT * FROM tblDocumentContent WHERE document = ".$this->_id." ORDER BY version";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$res)
 				return false;
-			
+
 			$this->_content = array();
 			foreach ($resArr as $row)
 				array_push($this->_content, new LetoDMS_DocumentContent($this, $row["version"], $row["comment"], $row["date"], $row["createdBy"], $row["dir"], $row["orgFileName"], $row["fileType"], $row["mimeType"]));
 		}
-		
+
 		return $this->_content;
 	} /* }}} */
 
+	/**
+	 * Return the content element of a document with a given version number
+	 *
+	 * @param integer $version version number of content element
+	 * @return object object of class LetoDMS_DocumentContent
+	 */
 	function getContentByVersion($version) { /* {{{ */
 		if (!is_numeric($version)) return false;
-		
+
 		if (isset($this->_content)) {
 			foreach ($this->_content as $revision) {
 				if ($revision->getVersion() == $version)
@@ -904,7 +945,7 @@ class LetoDMS_Document { /* {{{ */
 			}
 			return false;
 		}
-		
+
 		$db = $this->_dms->getDB();
 		$queryStr = "SELECT * FROM tblDocumentContent WHERE document = ".$this->_id." AND version = " . $version;
 		$resArr = $db->getResultArray($queryStr);
@@ -912,7 +953,7 @@ class LetoDMS_Document { /* {{{ */
 			return false;
 		if (count($resArr) != 1)
 			return false;
-		
+
 		$resArr = $resArr[0];
 		return new LetoDMS_DocumentContent($this, $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
 	} /* }}} */
@@ -926,7 +967,7 @@ class LetoDMS_Document { /* {{{ */
 				return false;
 			if (count($resArr) != 1)
 				return false;
-			
+
 			$resArr = $resArr[0];
 			$this->_latestContent = new LetoDMS_DocumentContent($this, $resArr["version"], $resArr["comment"], $resArr["date"], $resArr["createdBy"], $resArr["dir"], $resArr["orgFileName"], $resArr["fileType"], $resArr["mimeType"]);
 		}
@@ -942,18 +983,18 @@ class LetoDMS_Document { /* {{{ */
 		if (file_exists( $this->_dms->contentDir.$version->getPath() ))
 			if (!LetoDMS_File::removeFile( $this->_dms->contentDir.$version->getPath() ))
 				return false;
-			
+
 		$status = $version->getStatus();
 		$stID = $status["statusID"];
-			
+
 		$queryStr = "DELETE FROM tblDocumentContent WHERE `document` = " . $this->getID() .	" AND `version` = " . $version->_version;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$queryStr = "DELETE FROM `tblDocumentStatusLog` WHERE `statusID` = '".$stID."'";
 		if (!$db->getResult($queryStr))
 			return false;
-			
+
 		$queryStr = "DELETE FROM `tblDocumentStatus` WHERE `documentID` = '". $this->getID() ."' AND `version` = '" . $version->_version."'";
 		if (!$db->getResult($queryStr))
 			return false;
@@ -996,14 +1037,14 @@ class LetoDMS_Document { /* {{{ */
 
 	function getDocumentLink($linkID) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if (!is_numeric($linkID)) return false;
-	
+
 		$queryStr = "SELECT * FROM tblDocumentLinks WHERE document = " . $this->_id ." AND id = " . $linkID;
 		$resArr = $db->getResultArray($queryStr);
 		if ((is_bool($resArr) && !$resArr) || count($resArr)==0)
 			return false;
-	
+
 		$resArr = $resArr[0];
 		$document = $this->_dms->getDocument($resArr["document"]);
 		$target = $this->_dms->getDocument($resArr["target"]);
@@ -1013,13 +1054,13 @@ class LetoDMS_Document { /* {{{ */
 	function getDocumentLinks() { /* {{{ */
 		if (!isset($this->_documentLinks)) {
 			$db = $this->_dms->getDB();
-			
+
 			$queryStr = "SELECT * FROM tblDocumentLinks WHERE document = " . $this->_id;
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr)
 				return false;
 			$this->_documentLinks = array();
-			
+
 			foreach ($resArr as $row) {
 				$target = $this->_dms->getDocument($row["target"]);
 				array_push($this->_documentLinks, new LetoDMS_DocumentLink($row["id"], $this, $target, $row["userID"], $row["public"]));
@@ -1030,35 +1071,35 @@ class LetoDMS_Document { /* {{{ */
 
 	function addDocumentLink($targetID, $userID, $public) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$public = ($public) ? "1" : "0";
-		
+
 		$queryStr = "INSERT INTO tblDocumentLinks(document, target, userID, public) VALUES (".$this->_id.", ".$targetID.", ".$userID.", " . $public.")";
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		unset($this->_documentLinks);
 		return true;
 	} /* }}} */
 
 	function removeDocumentLink($linkID) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE document = " . $this->_id ." AND id = " . $linkID;
 		if (!$db->getResult($queryStr)) return false;
 		unset ($this->_documentLinks);
 		return true;
 	} /* }}} */
-	
+
 	function getDocumentFile($ID) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if (!is_numeric($ID)) return false;
-	
+
 		$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id ." AND id = " . $ID;
 		$resArr = $db->getResultArray($queryStr);
 		if ((is_bool($resArr) && !$resArr) || count($resArr)==0) return false;
-	
+
 		$resArr = $resArr[0];
 		return new LetoDMS_DocumentFile($resArr["id"], $this, $resArr["userID"], $resArr["comment"], $resArr["date"], $resArr["dir"], $resArr["fileType"], $resArr["mimeType"], $resArr["orgFileName"], $resArr["name"]);
 	} /* }}} */
@@ -1066,67 +1107,67 @@ class LetoDMS_Document { /* {{{ */
 	function getDocumentFiles() { /* {{{ */
 		if (!isset($this->_documentFiles)) {
 			$db = $this->_dms->getDB();
-			
+
 			$queryStr = "SELECT * FROM tblDocumentFiles WHERE document = " . $this->_id." ORDER BY `date` DESC";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr) return false;
-				
+
 			$this->_documentFiles = array();
-			
+
 			foreach ($resArr as $row) {
 				array_push($this->_documentFiles, new LetoDMS_DocumentFile($row["id"], $this, $row["userID"], $row["comment"], $row["date"], $row["dir"], $row["fileType"], $row["mimeType"], $row["orgFileName"], $row["name"]));
 			}
 		}
-		return $this->_documentFiles;		
+		return $this->_documentFiles;
 	} /* }}} */
 
 	function addDocumentFile($name, $comment, $user, $tmpFile, $orgFileName,$fileType, $mimeType ) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$dir = $this->getDir();
-	
+
 		$queryStr = "INSERT INTO tblDocumentFiles (comment, date, dir, document, fileType, mimeType, orgFileName, userID, name) VALUES ".
 			"('".$comment."', '".mktime()."', '" . $dir ."', " . $this->_id.", '".$fileType."', '".$mimeType."', '".$orgFileName."',".$user->getID().",'".$name."')";
 		if (!$db->getResult($queryStr)) return false;
-			
+
 		$id = $db->getInsertID();
-		
+
 		$file = $this->getDocumentFile($id);
 		if (is_bool($file) && !$file) return false;
 
 		// copy file
 		if (!LetoDMS_File::makeDir($this->_dms->contentDir . $dir)) return false;
 		if (!LetoDMS_File::copyFile($tmpFile, $this->_dms->contentDir . $file->getPath() )) return false;
-		
+
 		return true;
 	} /* }}} */
-	
+
 	function removeDocumentFile($ID) { /* {{{ */
 		$db = $this->_dms->getDB();
-	
+
 		$file = $this->getDocumentFile($ID);
 		if (is_bool($file) && !$file) return false;
-					
+
 		if (file_exists( $this->_dms->contentDir . $file->getPath() )){
 			if (!LetoDMS_File::removeFile( $this->_dms->contentDir . $file->getPath() ))
 				return false;
 		}
-		
+
 		$name=$file->getName();
 		$comment=$file->getcomment();
-		
+
 		$queryStr = "DELETE FROM tblDocumentFiles WHERE document = " . $this->getID() . " AND id = " . $ID;
 		if (!$db->getResult($queryStr))
 			return false;
 
 		unset ($this->_documentFiles);
-		
+
 		return true;
 	} /* }}} */
 
 	function remove() { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$res = $this->getContent();
 		if (is_bool($res) && !$res) return false;
 
@@ -1138,17 +1179,17 @@ class LetoDMS_Document { /* {{{ */
 		// remove document file
 		$res = $this->getDocumentFiles();
 		if (is_bool($res) && !$res) return false;
-		
+
 		foreach ($res as $documentfile)
 			if(!$this->removeDocumentFile($documentfile->getId()))
 				return false;
-				
+
 		// TODO: versioning file?
-				
+
 		if (file_exists( $this->_dms->contentDir . $this->getDir() ))
 			if (!LetoDMS_File::removeDir( $this->_dms->contentDir . $this->getDir() ))
 				return false;
-		
+
 		$queryStr = "DELETE FROM tblDocuments WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -1177,7 +1218,7 @@ class LetoDMS_Document { /* {{{ */
 		$db = $this->_dms->getDB();
 
 		if (!isset($this->_approversList)) {
-		
+
 			$this->_approversList = array("groups" => array(), "users" => array());
 			$userIDs = "";
 			$groupIDs = "";
@@ -1197,7 +1238,7 @@ class LetoDMS_Document { /* {{{ */
 				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
 			}
 			foreach ($tmpList["users"] as $c_user) {
-			
+
 				if (!$this->_dms->enableAdminRevApp && $c_user->isAdmin()) continue;
 				$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $c_user->getUserID();
 			}
@@ -1244,7 +1285,7 @@ class LetoDMS_Document { /* {{{ */
 			if (!is_bool($resArr)) {
 				foreach ($resArr as $row) {
 					$user = $this->_dms->getUser($row['id']);
-					if (!$this->_dms->enableAdminRevApp && $user->isAdmin()) continue;					
+					if (!$this->_dms->enableAdminRevApp && $user->isAdmin()) continue;
 					$this->_approversList["users"][] = $user;
 				}
 			}
@@ -1288,32 +1329,32 @@ class LetoDMS_Document { /* {{{ */
  * deutschen Umlauten, während Windows wiederum den Doppelpunkt in Dateinamen nicht verwenden kann.
  * Der ursprüngliche Dateiname wird nur zum Download verwendet (siehe op.Download.pgp)
  */
- 
+
 // these are the version information
 class LetoDMS_DocumentContent { /* {{{ */
 
-	// if status is released and there are reviewers set status draft_rev	
+	// if status is released and there are reviewers set status draft_rev
 	// if status is released or draft_rev and there are approves set status draft_app
-	// if status is draft and there are no approver and no reviewers set status to release	
+	// if status is draft and there are no approver and no reviewers set status to release
 	function verifyStatus($ignorecurrentstatus=false,$user=null) { /* {{{ */
-	
+
 		unset($this->_status);
 		$st=$this->getStatus();
-		
+
 		if (!$ignorecurrentstatus && ($st["status"]==S_OBSOLETE || $st["status"]==S_REJECTED || $st["status"]==S_EXPIRED )) return;
-		
+
 		$pendingReview=false;
 		unset($this->_reviewStatus);  // force to be reloaded from DB
-		$reviewStatus=$this->getReviewStatus(true);	
+		$reviewStatus=$this->getReviewStatus(true);
 		if (is_array($reviewStatus) && count($reviewStatus)>0) {
 			foreach ($reviewStatus as $r){
-				if ($r["status"]==0){	
+				if ($r["status"]==0){
 					$pendingReview=true;
 					break;
 				}
 			}
 		}
-		$pendingApproval=false;		
+		$pendingApproval=false;
 		unset($this->_approvalStatus);  // force to be reloaded from DB
 		$approvalStatus=$this->getApprovalStatus(true);
 		if (is_array($approvalStatus) && count($approvalStatus)>0) {
@@ -1355,7 +1396,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		return $this->_user;
 	} /* }}} */
 	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
-	
+
 	function setComment($newComment) { /* {{{ */
 		$db = $this->_document->_dms->getDB();
 
@@ -1364,30 +1405,30 @@ class LetoDMS_DocumentContent { /* {{{ */
 			return false;
 
 		$this->_comment = $newComment;
-		
+
 		return true;
 	} /* }}} */
 
 	function convert() { /* {{{ */
 		if (file_exists($this->_document->_dms->contentDir . $this->_dir . "index.html"))
 			return true;
-		
+
 		if (!in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
 			return false;
-		
+
 		$source = $this->_document->_dms->contentDir . $this->_dir . $this->getFileName();
 		$target = $this->_document->_dms->contentDir . $this->_dir . "index.html";
 	//	$source = str_replace("/", "\\", $source);
 	//	$target = str_replace("/", "\\", $target);
-		
+
 		$command = $this->_document->_dms->convertFileTypes[$this->_fileType];
 		$command = str_replace("{SOURCE}", "\"$source\"", $command);
 		$command = str_replace("{TARGET}", "\"$target\"", $command);
-		
+
 		$output = array();
 		$res = 0;
 		exec($command, $output, $res);
-		
+
 		if ($res != 0) {
 			print (implode("\n", $output));
 			return false;
@@ -1405,10 +1446,10 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 		if (in_array(strtolower($this->_fileType), $this->_document->_dms->_viewOnlineFileTypes))
 			return true;
-		
+
 		if ($this->_document->_dms->enableConverting && in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
 			if ($this->wasConverted()) return true;
-		
+
 		return false;
 	} /* }}} */
 
@@ -1418,14 +1459,14 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 	function getURL() { /* {{{ */
 		if (!$this->viewOnline())return false;
-		
+
 		if (in_array(strtolower($this->_fileType), $this->_document->_dms->_viewOnlineFileTypes))
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/" . $this->getOriginalFileName();
 		else
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/index.html";
 	} /* }}} */
 
-	// $send_email=FALSE is used when removing entire document 
+	// $send_email=FALSE is used when removing entire document
 	// to avoid one email for every version
 	// This function is deprecated. It was replaced by LetoDMS_Document::removeContent()
 	function __remove($send_email=TRUE) { /* {{{ */
@@ -1438,18 +1479,18 @@ class LetoDMS_DocumentContent { /* {{{ */
 		if (file_exists( $this->_document->_dms->contentDir.$version->getPath() ))
 			if (!LetoDMS_File::removeFile( $this->_document->_dms->contentDir.$version->getPath() ))
 				return false;
-			
+
 		$status = $this->getStatus();
 		$stID = $status["statusID"];
-			
+
 		$queryStr = "DELETE FROM tblDocumentContent WHERE `document` = " . $this->_document->getID() .	" AND `version` = " . $this->_version;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$queryStr = "DELETE FROM `tblDocumentStatusLog` WHERE `statusID` = '".$stID."'";
 		if (!$db->getResult($queryStr))
 			return false;
-			
+
 		$queryStr = "DELETE FROM `tblDocumentStatus` WHERE `documentID` = '". $this->_document->getID() ."' AND `version` = '" . $this->_version."'";
 		if (!$db->getResult($queryStr))
 			return false;
@@ -1489,7 +1530,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 		// Notify affected users.
 		if ($send_email && $this->_notifier){
-		
+
 			$recipients = array();
 			foreach ($emailList as $eID) {
 				$eU = $this->_document->_dms->getUser($eID);
@@ -1497,7 +1538,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			}
 			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("version_deleted_email");
 			$message = getMLText("version_deleted_email")."\r\n";
-			$message .= 
+			$message .=
 				getMLText("document").": ".$this->_document->getName()."\r\n".
 				getMLText("version").": ".$this->_version."\r\n".
 				getMLText("comment").": ".$this->getComment()."\r\n".
@@ -1505,9 +1546,9 @@ class LetoDMS_DocumentContent { /* {{{ */
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
-			
+
 			LetoDMS_Email::toList($user, $recipients, $subject, $message);
-			
+
 			// Send notification to subscribers.
 			$nl=$this->_document->getNotifyList();
 			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
@@ -1678,7 +1719,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		else {
 			$reviewID = isset($reviewStatus["indstatus"][0]["reviewID"])?$reviewStatus["indstatus"][0]["reviewID"]:NULL;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $reviewID ."', '0', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1736,7 +1777,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		else {
 			$reviewID = isset($reviewStatus[0]["reviewID"])?$reviewStatus[0]["reviewID"]:NULL;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $reviewID ."', '0', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1849,7 +1890,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 		else {
 			$approveID = isset($approvalStatus[0]["approveID"])?$approvalStatus[0]["approveID"]:NULL;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentApproveLog` (`approveID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $approveID ."', '0', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1883,7 +1924,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			// return an error.
 			return -3;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $reviewStatus["indstatus"][0]["reviewID"] ."', '-2', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1914,7 +1955,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			// return an error.
 			return -3;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentReviewLog` (`reviewID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $reviewStatus[0]["reviewID"] ."', '-2', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1945,7 +1986,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			// return an error.
 			return -3;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentApproveLog` (`approveID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $approvalStatus["indstatus"][0]["approveID"] ."', '-2', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -1976,7 +2017,7 @@ class LetoDMS_DocumentContent { /* {{{ */
 			// return an error.
 			return -3;
 		}
-		
+
 		$queryStr = "INSERT INTO `tblDocumentApproveLog` (`approveID`, `status`, `comment`, `date`, `userID`) ".
 			"VALUES ('". $approvalStatus[0]["approveID"] ."', '-2', '', NOW(), '". $requestUser->getID() ."')";
 		$res = $db->getResult($queryStr);
@@ -2026,11 +2067,11 @@ class LetoDMS_DocumentLink { /* {{{ */
 
 	function __remove() { // Do not use anymore
 		$db = $this->_document->_dms->getDB();
-		
+
 		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		return true;
 	}
 } /* }}} */
@@ -2072,13 +2113,13 @@ class LetoDMS_DocumentFile { /* {{{ */
 	function getMimeType() { return $this->_mimeType; }
 	function getOriginalFileName() { return $this->_orgFileName; }
 	function getName() { return $this->_name; }
-	
+
 	function getUser() {
 		if (!isset($this->_user))
 			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
 	}
-	
+
 	function getPath() {
 		return $this->_dir . "f" .$this->_id . $this->_fileType;
 	}
@@ -2086,16 +2127,16 @@ class LetoDMS_DocumentFile { /* {{{ */
 	function __remove() // do not use anymore, will be called from document->removeDocumentFile
 	{
 		$db = $this->_document->_dms->getDB();
-		
+
 		if (file_exists( $this->_document->_dms->contentDir.$this->getPath() ))
 			if (!LetoDMS_File::removeFile( $this->_document->_dms->contentDir.$this->getPath() ))
 				return false;
-	
-		
+
+
 		$queryStr = "DELETE FROM tblDocumentFiles WHERE document = " . $this->_document->getID() . " AND id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		return true;
 	}
 } /* }}} */
@@ -2107,7 +2148,7 @@ class LetoDMS_DocumentFile { /* {{{ */
 // reviewers and approvers and the status.
 //
 class LetoDMS_AddContentResultSet { /* {{{ */
-	
+
 	var $_indReviewers;
 	var $_grpReviewers;
 	var $_indApprovers;
@@ -2126,7 +2167,7 @@ class LetoDMS_AddContentResultSet { /* {{{ */
 	}
 
 	function addReviewer($reviewer, $type, $status) {
-		
+
 		if (!is_object($reviewer) || (strcasecmp($type, "i") && strcasecmp($type, "g")) && !is_integer($status)){
 			return false;
 		}
@@ -2152,7 +2193,7 @@ class LetoDMS_AddContentResultSet { /* {{{ */
 	}
 
 	function addApprover($approver, $type, $status) {
-		
+
 		if (!is_object($approver) || (strcasecmp($type, "i") && strcasecmp($type, "g")) && !is_integer($status)){
 			return false;
 		}
