@@ -393,8 +393,8 @@ class LetoDMS_Folder {
 		$document = $this->_dms->getDocument($db->getInsertID());
 		
 		if ($version_comment!="")
-			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
-		else $res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion,FALSE);
+			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion);
+		else $res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion);
 
 		if (is_bool($res) && !$res) {
 			$queryStr = "DELETE FROM tblDocuments WHERE id = " . $document->getID();
