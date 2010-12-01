@@ -147,6 +147,10 @@ class LetoDMS_DMS {
 		$this->rootFolderID = $id;
 	} /* }}} */
 
+	function getRootFolder() { /* {{{ */
+		return $this->getFolder($this->rootFolderID);
+	} /* }}} */
+
 	function setEnableAdminRevApp($enable) { /* {{{ */
 		$this->enableAdminRevApp = $enable;
 	} /* }}} */
@@ -201,7 +205,7 @@ class LetoDMS_DMS {
 	 */
 	function getDocument($id) { /* {{{ */
 		if (!is_numeric($id)) return false;
-		
+
 		$queryStr = "SELECT * FROM tblDocuments WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
 		if (is_bool($resArr) && $resArr == false)
@@ -209,7 +213,7 @@ class LetoDMS_DMS {
 		if (count($resArr) != 1)
 			return false;
 		$resArr = $resArr[0];
-	
+
 		// New Locking mechanism uses a separate table to track the lock.
 		$queryStr = "SELECT * FROM tblDocumentLocks WHERE document = " . $id;
 		$lockArr = $this->db->getResultArray($queryStr);
@@ -221,7 +225,7 @@ class LetoDMS_DMS {
 			// A lock has been identified for this document.
 			$lock = $lockArr[0]["userID"];
 		}
-	
+
 		$document = new LetoDMS_Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
 		$document->setDMS($this);
 		return $document;
@@ -245,9 +249,45 @@ class LetoDMS_DMS {
 
 		$documents = array();
 		foreach ($resArr as $row) {
-			array_push($documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]));
+			$document = new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
+			$document->setDMS($this);
+			$documents[] = $document;
 		}
 		return $documents;
+	} /* }}} */
+
+	/**
+	 * Returns a document by its name
+	 *
+	 * This function searches a document by its name and restricts the search
+	 * to given folder if passed as the second parameter.
+	 *
+	 * @param string $name
+	 * @param object $folder
+	 * @return object/boolean found document or false
+	 */
+	function getDocumentByName($name, $folder=null) { /* {{{ */
+		if (!$name) return false;
+
+		$queryStr = "SELECT `tblDocuments`.*, `tblDocumentLocks`.`userID` as `lockUser` ".
+			"FROM `tblDocuments` ".
+			"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
+			"WHERE `tblDocuments`.`name` = '" . $name . "'";
+		if($folder)
+			$queryStr .= " AND `tblDocuments`.`folder` = ". $folder->getID();
+		$queryStr .= " LIMIT 1";
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		if(!$resArr)
+			return false;
+
+		$row = $resArr[0];
+		$document = new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
+		$document->setDMS($this);
+		return $document;
 	} /* }}} */
 
 	/*
@@ -271,7 +311,7 @@ class LetoDMS_DMS {
 		if (strlen($query)>0) {
 			$tkeys = split("[\t\r\n ,]+", $query);
 		}
-		
+
 		// if none is checkd search all
 		if (count($searchin)==0)
 			$searchin=array( 0, 1, 2, 3);
@@ -289,7 +329,7 @@ class LetoDMS_DMS {
 		if (in_array(3, $searchin)) {
 			$concatFunction = (strlen($concatFunction) == 0 ? "" : $concatFunction.", ")."`tblDocuments`.`comment`";
 		}
-		
+
 		if (strlen($concatFunction)>0 && count($tkeys)>0) {
 			$concatFunction = "CONCAT_WS(' ', ".$concatFunction.")";
 			foreach ($tkeys as $key) {
@@ -299,21 +339,21 @@ class LetoDMS_DMS {
 				}
 			}
 		}
-		
+
 		// Check to see if the search has been restricted to a particular sub-tree in
 		// the folder hierarchy.
 		$searchFolder = "";
 		if ($startFolder) {
 			$searchFolder = "`tblDocuments`.`folderList` LIKE '%:".$startFolder->getID().":%'";
 		}
-		
+
 		// Check to see if the search has been restricted to a particular
 		// document owner.
 		$searchOwner = "";
 		if ($owner) {
 			$searchOwner = "`tblDocuments`.`owner` = '".$owner->getId()."'";
 		}
-		
+
 		// Is the search restricted to documents created between two specific dates?
 		$searchCreateDate = "";
 		if ($creationstartdate) {
@@ -330,17 +370,17 @@ class LetoDMS_DMS {
 				$searchCreateDate = "`tblDocuments`.`date` <= ".$stopdate;
 			}
 		}
-		
+
 		// ---------------------- Suche starten ----------------------------------
-		
+
 		//
 		// Construct the SQL query that will be used to search the database.
 		//
-		
+
 		if (!$this->db->createTemporaryTable("ttcontentid") || !$this->db->createTemporaryTable("ttstatid")) {
 			return false;
 		}
-		
+
 		$searchQuery = "FROM `tblDocumentContent` ".
 			"LEFT JOIN `tblDocuments` ON `tblDocuments`.`id` = `tblDocumentContent`.`document` ".
 			"LEFT JOIN `tblDocumentStatus` ON `tblDocumentStatus`.`documentID` = `tblDocumentContent`.`document` ".
@@ -350,7 +390,7 @@ class LetoDMS_DMS {
 			"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
 			"WHERE `ttstatid`.`maxLogID`=`tblDocumentStatusLog`.`statusLogID` ".
 			"AND `ttcontentid`.`maxVersion` = `tblDocumentContent`.`version`";
-		
+
 		if (strlen($searchKey)>0) {
 			$searchQuery .= " AND (".$searchKey.")";
 		}
@@ -383,7 +423,7 @@ class LetoDMS_DMS {
 		} else {
 			$totalPages = 1;
 		}
-		
+
 		// If there are no results from the count query, then there is no real need
 		// to run the full query. TODO: re-structure code to by-pass additional
 		// queries when no initial results are found.
@@ -392,22 +432,22 @@ class LetoDMS_DMS {
 		$searchQuery = "SELECT `tblDocuments`.*, ".
 			"`tblDocumentContent`.`version`, ".
 			"`tblDocumentStatusLog`.`status`, `tblDocumentLocks`.`userID` as `lockUser` ".$searchQuery;
-		
+
 		if($limit) {
 			$searchQuery .= " LIMIT ".$offset.",".$limit;
 		}
-		
+
 		// Send the complete search query to the database.
 		$resArr = $this->db->getResultArray($searchQuery);
-		
+
 		// ------------------- Ausgabe der Ergebnisse ----------------------------
 		$numResults = count($resArr);
 		if ($numResults == 0) {
 			return array('totalDocs'=>$totalDocs, 'totalPages'=>$totalPages, 'docs'=>array());
 		}
-		
+
 		foreach ($resArr as $docArr) {
-		
+
 			$document = new LetoDMS_Document(
 				$docArr["id"], $docArr["name"],
 				$docArr["comment"], $docArr["date"],
@@ -431,15 +471,45 @@ class LetoDMS_DMS {
 	 */
 	function getFolder($id) { /* {{{ */
 		if (!is_numeric($id)) return false;
-		
+
 		$queryStr = "SELECT * FROM tblFolders WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
-	
+
 		if (is_bool($resArr) && $resArr == false)
 			return false;
 		else if (count($resArr) != 1)
 			return false;
-			
+
+		$resArr = $resArr[0];
+		$folder = new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
+		$folder->setDMS($this);
+		return $folder;
+	} /* }}} */
+
+	/**
+	 * Return a folder by its name
+	 *
+	 * This function retrieves a folder from the database by its id.
+	 *
+	 * @param string $name
+	 * @param object $folder
+	 * @return object/boolean found folder or false
+	 */
+	function getFolderByName($name, $folder=null) { /* {{{ */
+		if (!$name) return false;
+
+		$queryStr = "SELECT * FROM tblFolders WHERE name = '" . $name . "'";
+		if($folder)
+			$queryStr .= " AND `parent` = ". $folder->getID();
+		$queryStr .= " LIMIT 1";
+		$resArr = $this->db->getResultArray($queryStr);
+
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+
+		if(!$resArr)
+			return false;
+
 		$resArr = $resArr[0];
 		$folder = new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 		$folder->setDMS($this);
@@ -457,15 +527,15 @@ class LetoDMS_DMS {
 	function getUser($id) { /* {{{ */
 		if (!is_numeric($id))
 			return false;
-		
+
 		$queryStr = "SELECT * FROM tblUsers WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false) return false;
 		if (count($resArr) != 1) return false;
-		
+
 		$resArr = $resArr[0];
-		
+
 		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
@@ -482,12 +552,12 @@ class LetoDMS_DMS {
 	function getUserByLogin($login) { /* {{{ */
 		$queryStr = "SELECT * FROM tblUsers WHERE login = '".$login."'";
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false) return false;
 		if (count($resArr) != 1) return false;
-			
+
 		$resArr = $resArr[0];
-		
+
 		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
@@ -496,21 +566,21 @@ class LetoDMS_DMS {
 	function getAllUsers() { /* {{{ */
 		$queryStr = "SELECT * FROM tblUsers ORDER BY login";
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false)
 			return false;
-		
+
 		$users = array();
-		
+
 		for ($i = 0; $i < count($resArr); $i++) {
 			$user = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["hidden"]);
 			$user->setDMS($this);
 			$users[$i] = $user;
 		}
-		
+
 		return $users;
 	} /* }}} */
-	
+
 	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isHidden=0) { /* {{{ */
 		if (is_object($this->getUserByLogin($login))) {
 			return false;
@@ -519,24 +589,24 @@ class LetoDMS_DMS {
 		$res = $this->db->getResult($queryStr);
 		if (!$res)
 			return false;
-		
+
 		return $this->getUser($this->db->getInsertID());
 	} /* }}} */
 
 	function getGroup($id) { /* {{{ */
 		if (!is_numeric($id))
 			die ("invalid groupid");
-		
+
 		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false)
 			return false;
 		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
 			return false;
-		
+
 		$resArr = $resArr[0];
-		
+
 		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
 		$group->setDMS($this);
 		return $group;
@@ -545,14 +615,14 @@ class LetoDMS_DMS {
 	function getGroupByName($name) { /* {{{ */
 		$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false)
 			return false;
 		else if (count($resArr) != 1) //wenn, dann wohl eher 0 als > 1 ;-)
 			return false;
-		
+
 		$resArr = $resArr[0];
-		
+
 		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
 		$group->setDMS($this);
 		return $group;
@@ -566,19 +636,19 @@ class LetoDMS_DMS {
 	function getAllGroups() { /* {{{ */
 		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
 		$resArr = $this->db->getResultArray($queryStr);
-		
+
 		if (is_bool($resArr) && $resArr == false)
 			return false;
-		
+
 		$groups = array();
-		
+
 		for ($i = 0; $i < count($resArr); $i++) {
-			
+
 			$group = new LetoDMS_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
 			$group->setDMS($this);
 			$groups[$i] = $group;
 		}
-		
+
 		return $groups;
 	} /* }}} */
 
@@ -598,7 +668,7 @@ class LetoDMS_DMS {
 		$queryStr = "INSERT INTO tblGroups (name, comment) VALUES ('".$name."', '" . $comment . "')";
 		if (!$this->db->getResult($queryStr))
 			return false;
-		
+
 		return $this->getGroup($this->db->getInsertID());
 	} /* }}} */
 
