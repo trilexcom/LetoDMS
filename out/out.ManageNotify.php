@@ -29,8 +29,7 @@ if ($user->getID() == $settings->_guestID) {
 }
 
 // Get list of subscriptions for documents or folders for user or groups
-function getNotificationList($as_group,$folders)
-{
+function getNotificationList($as_group, $folders) {
 	global $user,$db;
 
 	// First, get the list of groups of which the user is a member.
@@ -66,8 +65,8 @@ function getNotificationList($as_group,$folders)
 	return $ret;
 }
 
-function printFolderNotificationList($ret,$deleteaction=true)
-{
+function printFolderNotificationList($ret,$deleteaction=true) {
+	global $dms;
 	if (count($ret)==0) {
 		printMLText("empty_notify_list");
 	}
@@ -98,8 +97,9 @@ function printFolderNotificationList($ret,$deleteaction=true)
 	}
 }
 
-function printDocumentNotificationList($ret,$deleteaction=true)
-{
+function printDocumentNotificationList($ret,$deleteaction=true) {
+	global $dms;
+
 	if (count($ret)==0) {
 		printMLText("empty_notify_list");
 	}
