@@ -1,22 +1,8 @@
 <?php
-ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
+#ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
 
-include("inc/inc.Settings.php");
-include("inc/inc.Utils.php");
-include("inc/inc.AccessUtils.php");
-include("inc/inc.ClassAccess.php");
-include("inc/inc.ClassDocument.php");
-include("inc/inc.ClassFolder.php");
-include("inc/inc.ClassGroup.php");
-include("inc/inc.ClassUser.php");
-include("inc/inc.ClassEmail.php");
-include("inc/inc.DBAccess.php");
-include("inc/inc.DBInit.php");
-include("inc/inc.FileUtils.php");
-include("inc/inc.Language.php");
-include("inc/inc.ClassUIConsole.php");
-
-#$db->_conn->debug = 1;
+include("/etc/letodms/conf.Settings.php");
+include("LetoDMS/LetoDMS.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
@@ -62,10 +48,12 @@ if(isset($options['F'])) {
 	exit;
 }
 
+$comment = '';
 if(isset($options['c'])) {
 	$comment = $options['c'];
 }
 
+$keywords = '';
 if(isset($options['k'])) {
 	$keywords = $options['k'];
 }
@@ -100,13 +88,21 @@ if(isset($options['V'])) {
 if($reqversion<1)
 	$reqversion=1;
 
-/* Create a global user object */
-$user = LetoDMS_User::getUser(1);
+$db = new LetoDMS_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
+$db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostname . "\"");
+$db->_conn->debug = 1;
 
-/* Fake some server variables used in add_log_line() */
-$_SERVER['REMOTE_ADDR'] = 'console';
-$_SERVER["REQUEST_URI"] = __FILE__;
-$_SERVER['HTTP_HOST'] = 'localhost';
+
+$dms = new LetoDMS_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir);
+$dms->setRootFolderID($settings->_rootFolderID);
+$dms->setGuestID($settings->_guestID);
+$dms->setEnableGuestLogin($settings->_enableGuestLogin);
+$dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
+$dms->setEnableConverting($settings->_enableConverting);
+$dms->setViewOnlineFileTypes($settings->_viewOnlineFileTypes);
+
+/* Create a global user object */
+$user = $dms->getUser(1);
 
 if(is_readable($filename)) {
 	if(filesize($filename)) {
@@ -115,24 +111,29 @@ if(is_readable($filename)) {
 			$filetype = $finfo->file($filename);
 		}
 	} else {
-		UIConsole::exitError("","File has zero size");
+		echo "File has zero size\n";
+		exit;
 	}
 } else {
-	UIConsole::exitError("","File is not readable");
+	echo "File is not readable\n";
+	exit;
 }
 
-$folder = LetoDMS_Folder::getFolder($folderid);
+$folder = $dms->getFolder($folderid);
 
 if (!is_object($folder)) {
-	UIConsole::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
+	echo "Could not find specified folder\n";
+	exit;
 }
 
 if ($folder->getAccessMode($user) < M_READWRITE) {
-	UIConsole::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));
+	echo "Not sufficient access rights\n";
+	exit;
 }
 
 if (!is_numeric($sequence)) {
-	UIConsole::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("invalid_sequence"));
+	echo "Sequence must be numeric\n";
+	exit;
 }
 
 //$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, sanitizeString($_POST["expmonth"]), sanitizeString($_POST["expday"]), sanitizeString($_POST["expyear"])) : false;
@@ -151,6 +152,7 @@ $res = $folder->addDocument($name, $comment, $expires, $user, $keywords,
                             $reviewers, $approvers, $reqversion);
 
 if (is_bool($res) && !$res) {
-	UIConsole::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
+	echo "Could not add document to folder\n";
+	exit;
 }
 ?>
