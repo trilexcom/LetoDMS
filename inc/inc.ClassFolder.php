@@ -286,7 +286,7 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	/*
-	 * Returns a array of all parents, grand parent, etc. up to root folder.
+	 * Returns an array of all parents, grand parent, etc. up to root folder.
 	 * The folder itself is the last element of the array.
 	 *
 	 * @return array Array of parents
