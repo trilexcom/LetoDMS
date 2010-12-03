@@ -40,7 +40,7 @@ CREATE TABLE `tblDocumentApprovers` (
   `version` smallint(5) unsigned NOT NULL default '0',
   `type` tinyint(4) NOT NULL default '0',
   `required` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`approveID`),
+  PRIMARY KEY (`approveID`),
   UNIQUE KEY `documentID` (`documentID`,`version`,`type`,`required`)
 ) ;
 
@@ -52,7 +52,7 @@ CREATE TABLE `tblDocumentApprovers` (
 
 CREATE TABLE `tblDocumentContent` (
   `document` int(11) NOT NULL default '0',
-  `version` smallint(5) unsigned NOT NULL auto_increment,
+  `version` smallint(5) unsigned NOT NULL,
   `comment` text,
   `date` int(12) default NULL,
   `createdBy` int(11) default NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `tblDocumentContent` (
   `orgFileName` varchar(150) NOT NULL default '',
   `fileType` varchar(10) NOT NULL default '',
   `mimeType` varchar(70) NOT NULL default '',
-  PRIMARY KEY  (`document`,`version`)
+  UNIQUE (`document`,`version`)
 ) ;
 
 -- --------------------------------------------------------
@@ -328,6 +328,7 @@ CREATE TABLE `tblUsers` (
   `theme` varchar(32) NOT NULL,
   `comment` text NOT NULL,
   `isAdmin` smallint(1) NOT NULL default '0',
+  `isGuest` smallint(1) NOT NULL default '0',
   `hidden` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ;
@@ -402,5 +403,5 @@ CREATE TABLE `tblEvents` (
 --
 
 INSERT INTO tblFolders VALUES (1, 'DMS', 0, 'DMS root', 1, 0, 2, 0);
-INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1, 0);
-INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 0, 0);
+INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1, 0, 0);
+INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 0, 1, 0);
