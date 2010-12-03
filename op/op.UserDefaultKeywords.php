@@ -25,7 +25,7 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-if ($user->getID() == $settings->_guestID) {
+if ($user->isGuest()) {
 	UI::exitError(getMLText("edit_default_keywords"),getMLText("access_denied"));
 }
 

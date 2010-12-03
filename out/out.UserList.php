@@ -37,7 +37,7 @@ UI::contentContainerStart();
 $users = getAllUsers();
 for ($i = 0; $i < count($users); $i++) {
 	$currUser = $users[$i];
-	if ($currUser->getID() == $settings->_guestID)
+	if ($currUser->isGuest())
 		continue;
 
 	UI::contentSubHeading(getMLText("user") . ": \"" . $currUser->getFullName() . "\"");

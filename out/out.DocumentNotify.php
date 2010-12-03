@@ -119,11 +119,11 @@ print "</table>\n";
 					if ($user->isAdmin()) {
 						$allUsers = $dms->getAllUsers();
 						foreach ($allUsers as $userObj) {
-							if ($userObj->getID() != $settings->_guestID && !in_array($userObj->getID(), $userNotifyIDs))
+							if (!$userObj->isGuest() && !in_array($userObj->getID(), $userNotifyIDs))
 								print "<option value=\"".$userObj->getID()."\">" . $userObj->getFullName() . "\n";
 						}
 					}
-					else if ($user->getID() != $settings->_guestID && !in_array($user->getID(), $userNotifyIDs)) {
+					elseif (!$user->isGuest() && !in_array($user->getID(), $userNotifyIDs)) {
 						print "<option value=\"".$user->getID()."\">" . $user->getFullName() . "\n";
 					}
 				?>

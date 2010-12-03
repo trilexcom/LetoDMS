@@ -112,7 +112,7 @@ UI::contentContainerStart();
 $allUsers = getAllUsers();
 foreach ($allUsers as $userObj)
 {
-	if ($userObj->getID() == $settings->_guestID)
+	if ($userObj->isGuest())
 		continue;
 	print "<option value=\"".$userObj->getID()."\">" . $userObj->getFullName() . "\n";
 }

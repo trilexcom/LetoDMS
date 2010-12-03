@@ -25,7 +25,7 @@ include("../inc/inc.ClassUI.php");
 include("../inc/inc.Calendar.php");
 include("../inc/inc.Authentication.php");
 
-if ($user->getID() == $settings->_guestID) {
+if ($user->isGuest()) {
 	UI::exitError(getMLText("edit_event"),getMLText("access_denied"));
 }
 

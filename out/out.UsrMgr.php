@@ -101,7 +101,7 @@ UI::contentContainerStart();
 	$selected=0;
 	$count=2;
 	foreach ($users as $currUser) {
-		if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID))
+		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
 			continue;
 			
 		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;
@@ -168,7 +168,7 @@ UI::contentContainerStart();
 				<ul class="cbSelectList"><?php
 				foreach ($users as $usr) {
 				
-					if ($usr->getID() == $settings->_guestID) continue;
+					if ($usr->isGuest()) continue;
 				
 					print "<li class=\"cbSelectItem\"><input id='revUsr".$usr->getID()."' type='checkbox' name='usrReviewers[]' value='". $usr->getID() ."'>".$usr->getLogin();
 				}
@@ -198,7 +198,7 @@ UI::contentContainerStart();
 <?php
 				foreach ($users as $usr) {
 				
-					if ($usr->getID() == $settings->_guestID) continue;
+					if ($usr->isGuest()) continue;
 				
 					print "<li class=\"cbSelectItem\"><input id='appUsr".$usr->getID()."' type='checkbox' name='usrApprovers[]' value='". $usr->getID() ."'>".$usr->getLogin();
 				}
@@ -230,7 +230,7 @@ UI::contentContainerStart();
 	<?php
 	foreach ($users as $currUser) {
 	
-		if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID))
+		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
 			continue;
 		
 		print "<td id=\"keywords".$currUser->getID()."\" style=\"display : none;\">";
@@ -275,6 +275,10 @@ UI::contentContainerStart();
 			<td><input type="checkbox" name="isadmin" value="1"<?php print ($currUser->isAdmin() ? " checked='checked'" : "");?>></td>
 		</tr>
 		<tr>
+			<td><?php printMLText("is_guest");?>:</td>
+			<td><input type="checkbox" name="isguest" value="1"<?php print ($currUser->isGuest() ? " checked='checked'" : "");?>></td>
+		</tr>
+		<tr>
 			<td><?php printMLText("is_hidden");?>:</td>
 			<td><input type="checkbox" name="ishidden" value="1"<?php print ($currUser->isHidden() ? " checked='checked'" : "");?>></td>
 		</tr>
@@ -312,7 +316,7 @@ UI::contentContainerStart();
 
 				foreach ($users as $usr) {
 				
-					if (($usr->getID() == $settings->_guestID) || ($usr->getID() == $currUser->getID()))
+					if ($usr->isGuest() || ($usr->getID() == $currUser->getID()))
 						continue;
 						
 					$checked=false;
@@ -352,7 +356,7 @@ UI::contentContainerStart();
 				
 				foreach ($users as $usr) {
 				
-					if (($usr->getID() == $settings->_guestID) || ($usr->getID() == $currUser->getID()))
+					if ($usr->isGuest() || ($usr->getID() == $currUser->getID()))
 						continue;
 						
 					$checked=false;

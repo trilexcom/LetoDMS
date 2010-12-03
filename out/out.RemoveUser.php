@@ -35,13 +35,11 @@ if (!isset($_GET["userid"]) || !is_numeric($_GET["userid"]) || intval($_GET["use
 }
 
 $userid = $_GET["userid"];
+$currUser = $dms->getUser($userid);
 
-
-if (($userid==$settings->_adminID)||($userid==$settings->_guestID)) {
+if (($userid==$settings->_adminID) || $currUser->isGuest()) {
 	UI::exitError(getMLText("rm_user"),getMLText("access_denied"));
 }
-
-$currUser = $dms->getUser($userid);
 
 if (!is_object($currUser)) {
 	UI::exitError(getMLText("rm_user"),getMLText("invalid_user_id"));
@@ -69,7 +67,7 @@ UI::contentContainerStart();
 <?php
 	$users = $dms->getAllUsers();
 	foreach ($users as $currUser) {
-		if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID) || ($currUser->getID() == $userid) )
+		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest() || ($currUser->getID() == $userid) )
 			continue;
 			
 		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;

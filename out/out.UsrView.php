@@ -24,7 +24,7 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-if ($user->getID() == $settings->_guestID) {
+if ($user->isGuest()) {
 	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
 }
 
@@ -55,7 +55,7 @@ echo "</tr>\n</thead>\n";
 
 foreach ($users as $currUser) {
 
-	if (($currUser->getID() == $settings->_adminID) || ($currUser->getID() == $settings->_guestID))
+	if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
 		continue;
 		
 	if ($currUser->isHidden()=="1") continue;

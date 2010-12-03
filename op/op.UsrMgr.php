@@ -43,13 +43,14 @@ if ($action == "adduser") {
 	$email   = sanitizeString($_POST["email"]);
 	$comment = sanitizeString($_POST["comment"]);
 	$isAdmin = (isset($_POST["isadmin"]) && $_POST["isadmin"]==1 ? 1 : 0);
+	$isGuest = (isset($_POST["isguest"]) && $_POST["isguest"]==1 ? 1 : 0);
 	$isHidden = (isset($_POST["ishidden"]) && $_POST["ishidden"]==1 ? 1 : 0);
 
 	if (is_object($dms->getUserByLogin($login))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("user_exists"));
 	}
 
-	$newUser = $dms->addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin, $isHidden);
+	$newUser = $dms->addUser($login, md5($_POST["pwd"]), $name, $email, $settings->_language, $settings->_theme, $comment, $isAdmin, $isGuest, $isHidden);
 	if ($newUser) {
 
 		if (isset($_FILES["userfile"]) && is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0)
@@ -106,7 +107,7 @@ else if ($action == "removeuser") {
 		$userid = $_GET["userid"];
 	}
 
-	if (($userid==$settings->_adminID)||($userid==$settings->_guestID)) {
+	if ($userid==$settings->_adminID) {
 		UI::exitError(getMLText("admin_tools"),getMLText("cannot_delete_admin"));
 	}
 	if (!isset($userid) || !is_numeric($userid) || intval($userid)<1) {
@@ -114,7 +115,7 @@ else if ($action == "removeuser") {
 	}
 
 	$userToRemove = $dms->getUser($userid);
-	if (!is_object($userToRemove) || ($userToRemove->getID() == $settings->_adminID) || ($userToRemove->getID() == $settings->_guestID)) {
+	if (!is_object($userToRemove) || ($userToRemove->getID() == $settings->_adminID)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
@@ -148,6 +149,7 @@ else if ($action == "edituser") {
 	$email   = sanitizeString($_POST["email"]);
 	$comment = sanitizeString($_POST["comment"]);
 	$isAdmin = (isset($_POST["isadmin"]) && $_POST["isadmin"]==1 ? 1 : 0);
+	$isGuest = (isset($_POST["isguest"]) && $_POST["isguest"]==1 ? 1 : 0);
 	$isHidden = (isset($_POST["ishidden"]) && $_POST["ishidden"]==1 ? 1 : 0);
 	
 	if ($editedUser->getLogin() != $login)
@@ -162,6 +164,8 @@ else if ($action == "edituser") {
 		$editedUser->setComment($comment);
 	if ($editedUser->isAdmin() != $isAdmin)
 		$editedUser->setAdmin($isAdmin);
+	if ($editedUser->isGuest() != $isGuest)
+		$editedUser->setGuest($isGuest);
 	if ($editedUser->isHidden() != $isHidden)
 		$editedUser->setHidden($isHidden);
 

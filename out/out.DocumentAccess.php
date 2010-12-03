@@ -93,7 +93,7 @@ if ($user->isAdmin()) {
 	<?php
 	$owner = $document->getOwner();
 	foreach ($allUsers as $currUser) {
-		if ($currUser->getID() == $settings->_guestID)
+		if ($currUser->isGuest())
 			continue;
 		print "<option value=\"".$currUser->getID()."\"";
 		if ($currUser->getID() == $owner->getID())
@@ -192,7 +192,7 @@ if (count($accessList["users"]) != 0 || count($accessList["groups"]) != 0) {
 <option value="-1"><?php printMLText("select_one");?></option>
 <?php
 foreach ($allUsers as $userObj) {
-	if ($userObj->getID() == $settings->_guestID) {
+	if ($userObj->isGuest()) {
 		continue;
 	}
 	print "<option value=\"".$userObj->getID()."\">" . $userObj->getFullName() . "</option>\n";

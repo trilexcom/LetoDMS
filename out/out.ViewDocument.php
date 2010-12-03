@@ -491,7 +491,7 @@ if (count($links) > 0) {
 }
 else printMLText("empty_notify_list");
 
-if ($user->getID() != $settings->_guestID){
+if (!$user->isGuest()){
 ?>
 	<br>
 	<form action="../op/op.AddDocumentLink.php" name="form1">
