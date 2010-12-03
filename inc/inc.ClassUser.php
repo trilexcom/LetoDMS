@@ -32,10 +32,11 @@ class LetoDMS_User {
 	var $_theme;
 	var $_comment;
 	var $_isAdmin;
+	var $_isGuest;
 	var $_isHidden;
 	var $_dms;
 
-	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isHidden=0) {
+	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isGuest, $isHidden=0) {
 		$this->_id = $id;
 		$this->_login = $login;
 		$this->_pwd = $pwd;
@@ -45,6 +46,7 @@ class LetoDMS_User {
 		$this->_theme = $theme;
 		$this->_comment = $comment;
 		$this->_isAdmin = $isAdmin;
+		$this->_isGuest = $isGuest;
 		$this->_isHidden = $isHidden;
 		$this->_dms = null;
 	}
@@ -167,6 +169,20 @@ class LetoDMS_User {
 		return true;
 	} /* }}} */
 
+	function isGuest() { return $this->_isGuest; }
+
+	function setGuest($isGuest) { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		$isGuest = ($isGuest) ? "1" : "0";
+		$queryStr = "UPDATE tblUsers SET isGuest = " . $isGuest . " WHERE id = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+
+		$this->_isGuest = $isGuest;
+		return true;
+	} /* }}} */
+
 	function isHidden() { return $this->_isHidden; }
 
 	function setHidden($isHidden) { /* {{{ */
@@ -177,7 +193,7 @@ class LetoDMS_User {
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->_isHidden = $isAdmin;
+		$this->_isHidden = $isHidden;
 		return true;
 	}	 /* }}} */
 
