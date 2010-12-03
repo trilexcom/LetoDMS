@@ -170,8 +170,8 @@ class UI {
 		echo "<ul class=\"globalNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.ViewFolder.php?folderid=".$settings->_rootFolderID."\">".getMLText("content")."</a></li>\n";
 		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=".$settings->_calendarDefaultView."\">".getMLText("calendar")."</a></li>\n";
-		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
-		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
+		if (!$user->isGuest()) echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
+		if (!$user->isGuest()) echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
 		if ($user->isAdmin()) echo "<li><a href=\"../out/out.AdminTools.php\">".getMLText("admin_tools")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Help.php\">".getMLText("help")."</a></li>\n";
 		echo "<li id=\"search\">\n";
@@ -247,7 +247,7 @@ class UI {
 		$accessMode = $folder->getAccessMode($user);
 		$folderID = $folder->getID();
 		echo "<ul class=\"localNav\">\n";
-		if ($accessMode == M_READ && $user->getID() != $settings->_guestID) {
+		if ($accessMode == M_READ && !$user->isGuest()) {
 			echo "<li id=\"first\"><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_folder_notify")."</a></li>\n";
 		}
 		else if ($accessMode >= M_READWRITE) {
@@ -297,7 +297,7 @@ class UI {
 			echo "<li><a href=\"../out/out.RemoveDocument". $docid ."\">".getMLText("rm_document")."</a></li>";
 			echo "<li><a href=\"../out/out.DocumentAccess". $docid ."\">".getMLText("edit_document_access")."</a></li>";
 		}
-		if ($accessMode >= M_READ && $user->getID() != $settings->_guestID) {
+		if ($accessMode >= M_READ && !$user->isGuest()) {
 			echo "<li><a href=\"../out/out.DocumentNotify". $docid ."\">".getMLText("edit_existing_notify")."</a></li>";
 		}
 		echo "</ul>\n";
@@ -360,7 +360,7 @@ class UI {
 		echo "<li><a href=\"../out/out.Calendar.php?mode=w".$ds."\">".getMLText("week_view")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Calendar.php?mode=m".$ds."\">".getMLText("month_view")."</a></li>\n";
 		echo "<li><a href=\"../out/out.Calendar.php?mode=y".$ds."\">".getMLText("year_view")."</a></li>\n";
-		if ($user->getID() != $settings->_guestID) echo "<li><a href=\"../out/out.AddEvent.php\">".getMLText("add_event")."</a></li>\n";
+		if (!$user->isGuest()) echo "<li><a href=\"../out/out.AddEvent.php\">".getMLText("add_event")."</a></li>\n";
 		echo "</ul>\n";
 		return;
 	

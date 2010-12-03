@@ -510,8 +510,8 @@ class LetoDMS_Document { /* {{{ */
 		/* The owner of the document has unrestricted access */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
 
-		//Gast-Benutzer?? FIXME:
-		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin)) {
+		/* The guest users do not have more than read access */
+		if ($user->isGuest()) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
@@ -635,7 +635,7 @@ class LetoDMS_Document { /* {{{ */
 		 * the currently logged in user should be passed to this function
 		 *
 		GLOBAL $user;
-		if ($user->getID() == $this->_dms->guestID) {
+		if ($user->isGuest()) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -746,7 +746,7 @@ class LetoDMS_Document { /* {{{ */
 		 * the currently logged in user should be passed to this function
 		 *
 		GLOBAL $user;
-		if ($user->getID() == $this->_dms->guestID) {
+		if ($user->isGuest()) {
 			return -2;
 		}
 		if (!$user->isAdmin()) {
@@ -1252,11 +1252,11 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`id` !='".$this->_dms->guestID."')";
+						"AND `tblUsers`.`isGuest` = 0)";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`id` !='".$this->_dms->guestID."') ".
+					"WHERE (`tblUsers`.`isGuest` = 0) ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
 					"OR (`tblUsers`.`isAdmin` = 1)".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
@@ -1267,7 +1267,7 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`id` != '".$this->_dms->guestID."' ".
+						"AND `tblUsers`.`isGuest` = 0 ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
@@ -1276,7 +1276,7 @@ class LetoDMS_Document { /* {{{ */
 					"OR (`tblUsers`.`isAdmin` = 1))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`id` != '".$this->_dms->guestID."' ".
+					"WHERE `tblUsers`.`isGuest` = 0 ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}

@@ -564,7 +564,7 @@ class LetoDMS_Folder {
 		if ($user->getID() == $this->_ownerID) return M_ALL;
 		
 		/* Guest has read access by default, if guest login is allowed at all */
-		if (($user->getID() == $this->_dms->guestID) && ($this->_dms->enableGuestLogin)) {
+		if ($user->isGuest()) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
@@ -674,11 +674,9 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
-		/*
-		if ($user->getID() == $this->_dms->guestID) {
+		if ($user->isGuest()) {
 			return -2;
 		}
-		*/
 		if (!$user->isAdmin()) {
 			if ($isUser) {
 				if ($user->getID() != $obj->getID()) {
@@ -785,11 +783,9 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
-		/*
-		if ($user->getID() == $this->_dms->guestID) {
+		if ($user->isGuest()) {
 			return -2;
 		}
-		*/
 		if (!$user->isAdmin()) {
 			if ($isUser) {
 				if ($user->getID() != $obj->getID()) {
@@ -848,7 +844,7 @@ class LetoDMS_Folder {
 				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
 			}
 			foreach ($tmpList["users"] as $user) {
-				if ($user->getUserID()!=$this->_dms->guestID) {
+				if (!$user->isGuest()) {
 					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
 				}
 			}
@@ -863,11 +859,11 @@ class LetoDMS_Folder {
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`id` !='".$this->_dms->guestID."')";
+						"AND `tblUsers`.`isGuest` = 0)";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`id` !='".$this->_dms->guestID."') ".
+					"WHERE (`tblUsers`.`isGuest` = 0) ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
 					"OR (`tblUsers`.`isAdmin` = 1)".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
@@ -878,7 +874,7 @@ class LetoDMS_Folder {
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`id` != '".$this->_dms->guestID."' ".
+						"AND `tblUsers`.`isGuest` = 0 ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
@@ -887,7 +883,7 @@ class LetoDMS_Folder {
 					"OR (`tblUsers`.`isAdmin` = 1))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`id` != '".$this->_dms->guestID."' ".
+					"WHERE `tblUsers`.`isGuest` = 0 ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}
