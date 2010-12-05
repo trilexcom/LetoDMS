@@ -536,7 +536,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["isGuest"], $resArr["hidden"]);
+		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
 	} /* }}} */
@@ -558,7 +558,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["isAdmin"], $resArr["isGuest"], $resArr["hidden"]);
+		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
 	} /* }}} */
@@ -573,7 +573,7 @@ class LetoDMS_DMS {
 		$users = array();
 
 		for ($i = 0; $i < count($resArr); $i++) {
-			$user = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["isAdmin"], $resArr[$i]["isGuest"], $resArr[$i]["hidden"]);
+			$user = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["role"], $resArr[$i]["hidden"]);
 			$user->setDMS($this);
 			$users[$i] = $user;
 		}
@@ -581,11 +581,11 @@ class LetoDMS_DMS {
 		return $users;
 	} /* }}} */
 
-	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin=0, $isGuest=0, $isHidden=0) { /* {{{ */
+	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $role=0, $isHidden=0) { /* {{{ */
 		if (is_object($this->getUserByLogin($login))) {
 			return false;
 		}
-		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, isAdmin, isGuest, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$isAdmin."', '".$isGuest."', '".$isHidden."')";
+		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, role, isGuest, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$role."', '".$isHidden."')";
 		$res = $this->db->getResult($queryStr);
 		if (!$res)
 			return false;

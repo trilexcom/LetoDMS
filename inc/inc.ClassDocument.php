@@ -1252,13 +1252,13 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`isGuest` = 0)";
+						"AND `tblUsers`.`role` != LetoDMS_User::role_guest)";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`isGuest` = 0) ".
+					"WHERE (`tblUsers`.`role` != LetoDMS_User::role_guest) ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
-					"OR (`tblUsers`.`isAdmin` = 1)".
+					"OR (`tblUsers`.`role` = LetoDMS_User::role_admin)".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
 					")) ORDER BY `login`";
 			}
@@ -1267,16 +1267,16 @@ class LetoDMS_Document { /* {{{ */
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`isGuest` = 0 ".
+						"AND `tblUsers`.`role` != LetoDMS_User::role_guest ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
 					"WHERE (`tblUsers`.`id` = ". $this->_ownerID . ") ".
-					"OR (`tblUsers`.`isAdmin` = 1))".
+					"OR (`tblUsers`.`role` = LetoDMS_User::role_admin))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`isGuest` = 0 ".
+					"WHERE `tblUsers`.`role` != LetoDMS_User::role_guest ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}

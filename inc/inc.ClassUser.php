@@ -23,20 +23,92 @@
  * @version    Release: @package_version@
  */
 class LetoDMS_User {
+	/**
+	 * @var integer id of user
+	 *
+	 * @access protected
+	 */
 	var $_id;
+
+	/**
+	 * @var string login name of user
+	 *
+	 * @access protected
+	 */
 	var $_login;
+
+	/**
+	 * @var string password of user as saved in database (md5)
+	 *
+	 * @access protected
+	 */
 	var $_pwd;
+
+	/**
+	 * @var string full human readable name of user
+	 *
+	 * @access protected
+	 */
 	var $_fullName;
+
+	/**
+	 * @var string email address of user
+	 *
+	 * @access protected
+	 */
 	var $_email;
+
+	/**
+	 * @var string prefered language of user
+	 *      possible values are 'English', 'German', 'Chinese_ZH_TW', 'Czech'
+	 *      'Francais', 'Hungarian', 'Italian', 'Portuguese_BR', 'Slovak', 
+	 *      'Spanish'
+	 *
+	 * @access protected
+	 */
 	var $_language;
+
+	/**
+	 * @var string preselected theme of user
+	 *
+	 * @access protected
+	 */
 	var $_theme;
+
+	/**
+	 * @var string comment of user
+	 *
+	 * @access protected
+	 */
 	var $_comment;
-	var $_isAdmin;
-	var $_isGuest;
+
+	/**
+	 * @var string role of user. Can be one of LetoDMS_User::role_user,
+	 *      LetoDMS_User::role_admin, LetoDMS_User::role_guest
+	 *
+	 * @access protected
+	 */
+	var $_role;
+
+	/**
+	 * @var string true if user shall be hidden
+	 *
+	 * @access protected
+	 */
 	var $_isHidden;
+
+	/**
+	 * @var object reference to the dms instance this user belongs to
+	 *
+	 * @access protected
+	 */
 	var $_dms;
 
-	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $isAdmin, $isGuest, $isHidden=0) {
+	const role_user = '0';
+	const role_admin = '1';
+	const role_guest = '2';
+
+	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $role, $isHidden=0) {
 		$this->_id = $id;
 		$this->_login = $login;
 		$this->_pwd = $pwd;
@@ -45,8 +117,7 @@ class LetoDMS_User {
 		$this->_language = $language;
 		$this->_theme = $theme;
 		$this->_comment = $comment;
-		$this->_isAdmin = $isAdmin;
-		$this->_isGuest = $isGuest;
+		$this->_role = $role;
 		$this->_isHidden = $isHidden;
 		$this->_dms = null;
 	}
@@ -155,31 +226,42 @@ class LetoDMS_User {
 		return true;
 	} /* }}} */
 
-	function isAdmin() { return $this->_isAdmin; }
+	function getRole() { return $this->_role; }
+
+	function setRole($newrole) { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		$queryStr = "UPDATE tblUsers SET role = " . $newrole . " WHERE id = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+
+		$this->_role = $newrole;
+		return true;
+	} /* }}} */
+
+	function isAdmin() { return ($this->_role == LetoDMS_User::role_admin); }
 
 	function setAdmin($isAdmin) { /* {{{ */
 		$db = $this->_dms->getDB();
 
-		$isAdmin = ($isAdmin) ? "1" : "0";
-		$queryStr = "UPDATE tblUsers SET isAdmin = " . $isAdmin . " WHERE id = " . $this->_id;
+		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_User::role_admin . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->_isAdmin = $isAdmin;
+		$this->_role = LetoDMS_User::role_admin;
 		return true;
 	} /* }}} */
 
-	function isGuest() { return $this->_isGuest; }
+	function isGuest() { return ($this->_role == LetoDMS_User::role_guest); }
 
 	function setGuest($isGuest) { /* {{{ */
 		$db = $this->_dms->getDB();
 
-		$isGuest = ($isGuest) ? "1" : "0";
-		$queryStr = "UPDATE tblUsers SET isGuest = " . $isGuest . " WHERE id = " . $this->_id;
+		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_User::role_guest . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->_isGuest = $isGuest;
+		$this->_role = LetoDMS_User::role_guest;
 		return true;
 	} /* }}} */
 
