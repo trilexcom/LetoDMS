@@ -54,7 +54,7 @@ function checkForm(num)
 {
 	msg = "";
 	eval("var formObj = document.form" + num + ";");
-	
+
 	if (formObj.login.value == "") msg += "<?php printMLText("js_no_login");?>\n";
 	if ((num == '0') && (formObj.pwd.value == "")) msg += "<?php printMLText("js_no_pwd");?>\n";
 	if ((formObj.pwd.value != formObj.pwdconf.value)&&(formObj.pwd.value != "" )&&(formObj.pwd.value != "" )) msg += "<?php printMLText("js_pwd_not_conf");?>\n";
@@ -75,11 +75,11 @@ obj = -1;
 function showUser(selectObj) {
 	if (obj != -1)
 		obj.style.display = "none";
-	
+
 	id = selectObj.options[selectObj.selectedIndex].value;
 	if (id == -1)
 		return;
-	
+
 	obj = document.getElementById("keywords" + id);
 	obj.style.display = "";
 }
@@ -101,9 +101,10 @@ UI::contentContainerStart();
 	$selected=0;
 	$count=2;
 	foreach ($users as $currUser) {
+/*
 		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
 			continue;
-			
+*/
 		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;
 		print "<option value=\"".$currUser->getID()."\">" . $currUser->getLogin();
 		$count++;
@@ -113,8 +114,8 @@ UI::contentContainerStart();
 &nbsp;&nbsp;
 </td>
 
-<td id="keywords0" style="display : none;"> 
-	
+<td id="keywords0" style="display : none;">
+
 	<form action="../op/op.UsrMgr.php" method="post" enctype="multipart/form-data" name="form0" onsubmit="return checkForm('0');">
 	<input type="Hidden" name="action" value="adduser">
 	<table>
@@ -143,33 +144,33 @@ UI::contentContainerStart();
 			<td><textarea name="comment" rows="4" cols="50"></textarea></td>
 		</tr>
 		<tr>
-			<td><?php printMLText("is_admin");?>:</td>
-			<td><input type="checkbox" name="isadmin" value="1"></td>
+			<td><?php printMLText("role");?>:</td>
+			<td><select name="role"><option value="<?= LetoDMS_User::role_user ?>"></option><option value="<?= LetoDMS_User::role_admin ?>"><?php printMLText("role_admin"); ?></option><option value="<?= LetoDMS_User::role_guest ?>"><?php printMLText("role_guest"); ?></option></select></td>
 		</tr>
 		<tr>
 			<td><?php printMLText("is_hidden");?>:</td>
 			<td><input type="checkbox" name="ishidden" value="1"></td>
 		</tr>
-		
+
 		<?php if ($settings->_enableUserImage){ ?>
-				
+
 			<tr>
 				<td><?php printMLText("user_image");?>:</td>
 				<td><input type="File" name="userfile"></td>
 			</tr>
-		
+
 		<?php } ?>
-		
+
 		<tr>
 			<td><?php printMLText("reviewers");?>:</td>
-			<td> 	
+			<td>
 				<div class="cbSelectTitle"><?php printMLText("individuals");?>:</div>
 				<div class="cbSelectContainer">
 				<ul class="cbSelectList"><?php
 				foreach ($users as $usr) {
-				
+
 					if ($usr->isGuest()) continue;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revUsr".$usr->getID()."' type='checkbox' name='usrReviewers[]' value='". $usr->getID() ."'>".$usr->getLogin();
 				}
 ?>
@@ -180,15 +181,15 @@ UI::contentContainerStart();
 				<ul class="cbSelectList">
 <?php
 				foreach ($groups as $grp) {
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revGrp".$grp->getID()."' type='checkbox' name='grpReviewers[]' value='". $grp->getID() ."'>".$grp->getName();
 				}
 ?>
 				</ul>
 				</div>
-			</td>			
+			</td>
 		</tr>
-		
+
 		<tr>
 			<td><?php printMLText("approvers");?>:</td>
 			<td>
@@ -197,9 +198,9 @@ UI::contentContainerStart();
 				<ul class="cbSelectList">
 <?php
 				foreach ($users as $usr) {
-				
+
 					if ($usr->isGuest()) continue;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='appUsr".$usr->getID()."' type='checkbox' name='usrApprovers[]' value='". $usr->getID() ."'>".$usr->getLogin();
 				}
 ?>
@@ -210,13 +211,13 @@ UI::contentContainerStart();
 				<ul class="cbSelectList">
 <?php
 				foreach ($groups as $grp) {
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revGrp".$grp->getID()."' type='checkbox' name='grpApprovers[]' value='". $grp->getID() ."'>".$grp->getName();
 				}
 ?>
 				</ul>
 				</div>
-			</td>			
+			</td>
 		</tr>
 		<tr>
 			<td colspan="2"><input type="Submit" value="<?php printMLText("add_user");?>"></td>
@@ -225,19 +226,21 @@ UI::contentContainerStart();
 	</form>
 
 </td>
-	
+
 
 	<?php
 	foreach ($users as $currUser) {
-	
+
+/*
 		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
 			continue;
-		
+*/
+
 		print "<td id=\"keywords".$currUser->getID()."\" style=\"display : none;\">";
-			
+
 		UI::contentSubHeading(getMLText("user")." : ".$currUser->getLogin());
 	?>
-	
+
 	<a class="standardText" href="../out/out.RemoveUser.php?userid=<?php print $currUser->getID();?>"><img src="images/del.gif" width="15" height="15" border="0" align="absmiddle" alt=""> <?php printMLText("rm_user");?></a>
 
 	<?php	UI::contentSubHeading(getMLText("edit_user"));?>
@@ -271,20 +274,16 @@ UI::contentContainerStart();
 			<td><textarea name="comment" rows="4" cols="50"><?php print $currUser->getComment();?></textarea></td>
 		</tr>
 		<tr>
-			<td><?php printMLText("is_admin");?>:</td>
-			<td><input type="checkbox" name="isadmin" value="1"<?php print ($currUser->isAdmin() ? " checked='checked'" : "");?>></td>
-		</tr>
-		<tr>
-			<td><?php printMLText("is_guest");?>:</td>
-			<td><input type="checkbox" name="isguest" value="1"<?php print ($currUser->isGuest() ? " checked='checked'" : "");?>></td>
+			<td><?php printMLText("role");?>:</td>
+			<td><select name="role"><option value="<?= LetoDMS_User::role_user ?>"></option><option value="<?= LetoDMS_User::role_admin ?>" <?php if($currUser->getRole() == LetoDMS_User::role_admin) echo "selected"; ?>><?php printMLText("role_admin"); ?></option><option value="<?= LetoDMS_User::role_guest ?>" <?php if($currUser->getRole() == LetoDMS_User::role_guest) echo "selected"; ?>><?php printMLText("role_guest"); ?></option></select></td>
 		</tr>
 		<tr>
 			<td><?php printMLText("is_hidden");?>:</td>
 			<td><input type="checkbox" name="ishidden" value="1"<?php print ($currUser->isHidden() ? " checked='checked'" : "");?>></td>
 		</tr>
-		
+
 		<?php if ($settings->_enableUserImage){ ?>
-		
+
 			<tr>
 				<td><?php printMLText("user_image");?>:</td>
 				<td>
@@ -300,10 +299,10 @@ UI::contentContainerStart();
 				<td><?php printMLText("new_user_image");?>:</td>
 				<td><input type="file" name="userfile" accept="image/jpeg"></td>
 			</tr>
-		
+
 		<?php } ?>
-		
-		
+
+
 		<tr>
 			<td><?php printMLText("reviewers");?>:</td>
 			<td>
@@ -315,13 +314,13 @@ UI::contentContainerStart();
 				$res=$currUser->getMandatoryReviewers();
 
 				foreach ($users as $usr) {
-				
+
 					if ($usr->isGuest() || ($usr->getID() == $currUser->getID()))
 						continue;
-						
+
 					$checked=false;
 					foreach ($res as $r) if ($r['reviewerUserID']==$usr->getID()) $checked=true;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revUsr".$usr->getID()."' type='checkbox' ".($checked?"checked='checked' ":"")."name='usrReviewers[]' value='". $usr->getID() ."'>".$usr->getLogin()."</li>\n";
 				}
 				?>
@@ -332,18 +331,18 @@ UI::contentContainerStart();
 				<ul class="cbSelectList">
 				<?php
 				foreach ($groups as $grp) {
-						
+
 					$checked=false;
 					foreach ($res as $r) if ($r['reviewerGroupID']==$grp->getID()) $checked=true;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revGrp".$grp->getID()."' type='checkbox' ".($checked?"checked='checked' ":"")."name='grpReviewers[]' value='". $grp->getID() ."'>".$grp->getName()."</li>\n";
 				}
 				?>
 				</ul>
 				</div>
-			</td>			
+			</td>
 		</tr>
-		
+
 		<tr>
 			<td><?php printMLText("approvers");?>:</td>
 			<td>
@@ -351,17 +350,17 @@ UI::contentContainerStart();
 				<div class="cbSelectContainer">
 				<ul class="cbSelectList">
 				<?php
-				
+
 				$res=$currUser->getMandatoryApprovers();
-				
+
 				foreach ($users as $usr) {
-				
+
 					if ($usr->isGuest() || ($usr->getID() == $currUser->getID()))
 						continue;
-						
+
 					$checked=false;
 					foreach ($res as $r) if ($r['approverUserID']==$usr->getID()) $checked=true;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='appUsr".$usr->getID()."' type='checkbox' ".($checked?"checked='checked' ":"")."name='usrApprovers[]' value='". $usr->getID() ."'>".$usr->getLogin()."</li>\n";
 				}
 				?>
@@ -372,18 +371,18 @@ UI::contentContainerStart();
 				<ul class="cbSelectList">
 				<?php
 				foreach ($groups as $grp) {
-						
+
 					$checked=false;
 					foreach ($res as $r) if ($r['approverGroupID']==$grp->getID()) $checked=true;
-				
+
 					print "<li class=\"cbSelectItem\"><input id='revGrp".$grp->getID()."' type='checkbox' ".($checked?"checked='checked' ":"")."name='grpApprovers[]' value='". $grp->getID() ."'>".$grp->getName()."</li>\n";
 				}
 				?>
 				</ul>
 				</div>
-			</td>			
+			</td>
 		</tr>
-		
+
 		<tr>
 			<td colspan="2"><input type="Submit" value="<?php printMLText("save");?>"></td>
 		</tr>
