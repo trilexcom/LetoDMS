@@ -46,6 +46,7 @@ $text["admin_tools"] = "Administrationsbereich";
 $text["all_documents"] = "alle Dokumente";
 $text["all_pages"] = "Alle";
 $text["all_users"] = "Alle Benutzer";
+$text["already_subscribed"] = "Bereits aboniert";
 $text["and"] = "und";
 $text["approval_group"] = "Berechtigungsgruppe";
 $text["approval_status"] = "Freigabestatus";
@@ -208,6 +209,7 @@ $text["invalid_target_folder"] = "Unzulässige Ziel-Ordner Identifikation";
 $text["invalid_user_id"] = "Unzulässige Benutzernummer";
 $text["invalid_version"] = "Unzulässige Dokumenten-Version";
 $text["is_admin"] = "Verwalter(Administrator)-Privileg";
+$text["is_admin"] = "Gastzugang";
 $text["js_no_approval_group"] = "Wählen Sie bitte eine Freigabe-Gruppe aus";
 $text["js_no_approval_status"] = "Wählen Sie bitte einen Freigabe-Status aus";
 $text["js_no_comment"] = "Geben Sie einen Kommentar an";
@@ -438,7 +440,7 @@ $text["group_review_summary"] = "Prüfergruppen";
 $text["documents_locked_by_you"] = "Von mir gesperrte Dokumente";
 
 $text["document_renamed_email"] = "Dokument umbenannt";
-$text["folder_renamed_email"] = "Ordener umbenannt";
+$text["folder_renamed_email"] = "Ordner umbenannt";
 $text["comment_changed_email"] = "Kommentar geändert";
 $text["document_moved_email"] = "Dokument verschoben";
 $text["folder_moved_email"] = "Ordner verschoben";
@@ -503,7 +505,7 @@ $text["confirm_rm_log"] = "Möchten Sie wirklich die Log-Datei \"[logname]\" lösc
 $text["include_subdirectories"] = "Unterverzeichnisse miteinbeziehen";
 $text["include_documents"] = "Dokumente miteinbeziehen";
 $text["manager"] = "Manager";
-$text["toggle_manager"] = "Toggle manager";
+$text["toggle_manager"] = "Managerstatus wechseln";
 
 // new from 2.0
 
@@ -566,4 +568,9 @@ $text["max_upload_size"] = "Maximale Größe einer hochgeladenen Datei";
 $text["space_used_on_data_folder"] = "Space used on data folder";
 $text["assign_user_property_to"] = "Assign user's properties to";
 
+// new from 3.0.0
+
+$text["role"] = "Rolle";
+$text["role_admin"] = "Administrator";
+$text["role_guest"] = "Gast";
 ?>

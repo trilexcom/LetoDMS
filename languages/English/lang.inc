@@ -46,6 +46,7 @@ $text["admin_tools"] = "Admin-Tools";
 $text["all_documents"] = "All Documents";
 $text["all_pages"] = "All";
 $text["all_users"] = "All users";
+$text["already_subscribed"] = "Already subscribed";
 $text["and"] = "and";
 $text["approval_group"] = "Approval Group";
 $text["approval_status"] = "Approval Status";
@@ -208,6 +209,7 @@ $text["invalid_target_folder"] = "Invalid Target Folder ID";
 $text["invalid_user_id"] = "Invalid User ID";
 $text["invalid_version"] = "Invalid Document Version";
 $text["is_admin"] = "Administrator Privilege";
+$text["is_guest"] = "Guest account";
 $text["js_no_approval_group"] = "Please select a approval group";
 $text["js_no_approval_status"] = "Please select the approval status";
 $text["js_no_comment"] = "There is no comment";
@@ -566,4 +568,9 @@ $text["max_upload_size"] = "Maximum upload size for each file";
 $text["space_used_on_data_folder"] = "Space used on data folder";
 $text["assign_user_property_to"] = "Assign user's properties to";
 
+// new from 3.0.0
+
+$text["role"] = "Role";
+$text["role_admin"] = "Administrator";
+$text["role_guest"] = "Guest";
 ?>
