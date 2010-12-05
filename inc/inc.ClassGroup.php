@@ -96,7 +96,7 @@ class LetoDMS_Group {
 			$this->_users = array();
 
 			foreach ($resArr as $row) {
-				$user = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["isAdmin"], $row['isGuest'], $row['isHidden']);
+				$user = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["role"], $row['isHidden']);
 				array_push($this->_users, $user);
 			}
 		}
