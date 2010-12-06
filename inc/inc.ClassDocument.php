@@ -1,23 +1,20 @@
 <?php
-//    MyDMS. Document Management System
-//    Copyright (C) 2002-2005  Markus Westphal
-//    Copyright (C) 2006-2008 Malcolm Cowe
-//    Copyright (C) 2010 Matteo Lucarelli
-//
-//    This program is free software; you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program; if not, write to the Free Software
-//    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+/**
+ * Implementation of a document in the document management system
+ *
+ * @category   DMS
+ * @package    LetoDMS
+ * @license    GPL2
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe,
+ *             2010 Matteo Lucarelli, 2010 Uwe Steinmann
+ * @version    Release: @package_version@
+ */
 
+/**
+ * The different states a document can be in
+ */
 define("S_DRAFT_REV", 0);
 define("S_DRAFT_APP", 1);
 define("S_RELEASED",  2);
@@ -26,26 +23,71 @@ define("S_OBSOLETE", -2);
 define("S_EXPIRED",  -3);
 
 /**
- * Class to represent a folder in the document management system
+ * Class to represent a document in the document management system
  *
  * @category   DMS
  * @package    LetoDMS
- * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli, Uwe Steinmann <uwe@steinmann.cx>
- * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
+ * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
+ *             Uwe Steinmann <uwe@steinmann.cx>
+ * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe,
+ *             2010 Matteo Lucarelli, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
 class LetoDMS_Document { /* {{{ */
+	/**
+	 * @var integer unique id of document
+	 */
 	var $_id;
+
+	/**
+	 * @var string name of document
+	 */
 	var $_name;
+
+	/**
+	 * @var string comment of document
+	 */
 	var $_comment;
+
+	/**
+	 * @var integer id of user who is the owner
+	 */
 	var $_ownerID;
+
+	/**
+	 * @var integer id of folder this document belongs to
+	 */
 	var $_folderID;
+
+	/**
+	 * @var integer timestamp of expiration date
+	 */
 	var $_expires;
+
+	/**
+	 * @var boolean true if access is inherited, otherwise false
+	 */
 	var $_inheritAccess;
 	var $_defaultAccess;
+
+	/**
+	 * @var boolean true if document is locked, otherwise false
+	 */
 	var $_locked;
+
+	/**
+	 * @var string list of keywords
+	 */
 	var $_keywords;
+
+	/**
+	 * @var integer position of document within parent folder
+	 */
 	var $_sequence;
+
+	/**
+	 * @var object back reference to document management system
+	 */
 	var $_dms;
 
 	function LetoDMS_Document($id, $name, $comment, $date, $expires, $ownerID, $folderID, $inheritAccess, $defaultAccess, $locked, $keywords, $sequence) { /* {{{ */
