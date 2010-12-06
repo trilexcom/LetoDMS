@@ -327,8 +327,7 @@ CREATE TABLE `tblUsers` (
   `language` varchar(32) NOT NULL,
   `theme` varchar(32) NOT NULL,
   `comment` text NOT NULL,
-  `isAdmin` smallint(1) NOT NULL default '0',
-  `isGuest` smallint(1) NOT NULL default '0',
+  `role` smallint(1) NOT NULL default '0',
   `hidden` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ;
