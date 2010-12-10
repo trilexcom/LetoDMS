@@ -55,7 +55,7 @@ echo "</tr>\n</thead>\n";
 
 foreach ($users as $currUser) {
 
-	if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
+	if ($currUser->isGuest())
 		continue;
 		
 	if ($currUser->isHidden()=="1") continue;

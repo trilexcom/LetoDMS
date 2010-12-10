@@ -32,7 +32,7 @@ function filterDocumentLinks($user, $links) {
 	
 	$tmp = array();
 	foreach ($links as $link)
-		if ($link->isPublic() || ($link->_userID == $user->getID()) || ($user->getID() == $settings->_adminID) )
+		if ($link->isPublic() || ($link->_userID == $user->getID()) || $user->isAdmin())
 			array_push($tmp, $link);
 	return $tmp;
 }

@@ -34,7 +34,7 @@ UI::htmlStartPage(getMLText("admin_tools"));
 UI::globalNavigation();
 UI::pageNavigation(getMLText("admin_tools"), "admin_tools");
 
-$categories = $dms->getAllUserKeywordCategories($settings->_adminID);
+$categories = $dms->getAllUserKeywordCategories($user->getID());
 ?>
 
 <script language="JavaScript">
