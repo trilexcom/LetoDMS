@@ -37,7 +37,7 @@ if (!isset($_GET["userid"]) || !is_numeric($_GET["userid"]) || intval($_GET["use
 $userid = $_GET["userid"];
 $currUser = $dms->getUser($userid);
 
-if (($userid==$settings->_adminID) || $currUser->isGuest()) {
+if ($userid==$user->getID()) {
 	UI::exitError(getMLText("rm_user"),getMLText("access_denied"));
 }
 
@@ -62,14 +62,12 @@ UI::contentContainerStart();
 <p>
 <?php printMLText("assign_user_property_to"); ?> :
 <select name="assignTo">
-<option value="<?php print $settings->_adminID; ?>"><?php echo getMLText("admin")?>
-
 <?php
 	$users = $dms->getAllUsers();
 	foreach ($users as $currUser) {
-		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest() || ($currUser->getID() == $userid) )
+		if ($currUser->isGuest() || ($currUser->getID() == $userid) )
 			continue;
-			
+
 		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;
 		print "<option value=\"".$currUser->getID()."\">" . $currUser->getLogin();
 	}

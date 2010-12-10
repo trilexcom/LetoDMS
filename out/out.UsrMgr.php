@@ -101,10 +101,6 @@ UI::contentContainerStart();
 	$selected=0;
 	$count=2;
 	foreach ($users as $currUser) {
-/*
-		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
-			continue;
-*/
 		if (isset($_GET["userid"]) && $currUser->getID()==$_GET["userid"]) $selected=$count;
 		print "<option value=\"".$currUser->getID()."\">" . $currUser->getLogin();
 		$count++;
@@ -230,11 +226,6 @@ UI::contentContainerStart();
 
 	<?php
 	foreach ($users as $currUser) {
-
-/*
-		if (($currUser->getID() == $settings->_adminID) || $currUser->isGuest())
-			continue;
-*/
 
 		print "<td id=\"keywords".$currUser->getID()."\" style=\"display : none;\">";
 

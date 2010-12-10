@@ -36,10 +36,10 @@ $action = $_GET["action"];
 if ($action == "addcategory") {
 	
 	$name = sanitizeString($_GET["name"]);
-	if (is_object($dms->getKeywordCategoryByName($name, $settings->_adminID))) {
+	if (is_object($dms->getKeywordCategoryByName($name, $user->getID()))) {
 		UI::exitError(getMLText("admin_tools"),getMLText("keyword_exists"));
 	}
-	$newCategory = $dms->addKeywordCategory($settings->_adminID, $name);
+	$newCategory = $dms->addKeywordCategory($user->getID(), $name);
 	if (!$newCategory) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
@@ -59,7 +59,7 @@ else if ($action == "removecategory") {
 	}
 
 	$owner = $category->getOwner();
-	if ($owner->getID() != $settings->_adminID) {
+	if (!$owner->isAdmin()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 	}
 	if (!$category->remove()) {
@@ -81,7 +81,7 @@ else if ($action == "editcategory") {
 	}
 
 	$owner    = $category->getOwner();
-	if ($owner->getID() != $settings->_adminID) {
+	if (!$owner->isAdmin()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 	}
 
@@ -97,7 +97,7 @@ else if ($action == "newkeywords") {
 	$categoryid = sanitizeString($_GET["categoryid"]);
 	$category = $dms->getKeywordCategory($categoryid);
 	$owner    = $category->getOwner();
-	if ($owner->getID() != $settings->_adminID) {
+	if (!$owner->isAdmin()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 	}
 
@@ -122,7 +122,7 @@ else if ($action == "editkeywords")
 	}
 
 	$owner    = $category->getOwner();
-	if ($owner->getID() != $settings->_adminID) {
+	if (!$owner->isAdmin()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 	}
 
@@ -150,7 +150,7 @@ else if ($action == "removekeywords") {
 	}
 
 	$owner    = $category->getOwner();
-	if ($owner->getID() != $settings->_adminID) {
+	if (!$owner->isAdmin()) {
 		UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 	}
 

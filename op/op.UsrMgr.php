@@ -106,15 +106,19 @@ else if ($action == "removeuser") {
 		$userid = $_GET["userid"];
 	}
 
-	if ($userid==$settings->_adminID) {
-		UI::exitError(getMLText("admin_tools"),getMLText("cannot_delete_admin"));
-	}
 	if (!isset($userid) || !is_numeric($userid) || intval($userid)<1) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
+	/* This used to be a check if an admin is deleted. Now it checks if one
+	 * wants to delete herself.
+	 */
+	if ($userid==$user->getID()) {
+		UI::exitError(getMLText("admin_tools"),getMLText("cannot_delete_yourself"));
+	}
+
 	$userToRemove = $dms->getUser($userid);
-	if (!is_object($userToRemove) || ($userToRemove->getID() == $settings->_adminID)) {
+	if (!is_object($userToRemove)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_user_id"));
 	}
 
