@@ -24,21 +24,57 @@
  * @version    Release: @package_version@
  */
 class LetoDMS_Folder {
+	/**
+	 * @var integer unique id of folder
+	 */
 	var $_id;
+
+	/**
+	 * @var string name of folder
+	 */
 	var $_name;
+
+	/**
+	 * @var integer id of parent folder
+	 */
 	var $_parentID;
+
+	/**
+	 * @var string comment of document
+	 */
 	var $_comment;
+
+	/**
+	 * @var integer id of user who is the owner
+	 */
 	var $_ownerID;
+
+	/**
+	 * @var boolean true if access is inherited, otherwise false
+	 */
 	var $_inheritAccess;
+
+	/**
+	 * @var integer default access if access rights are not inherited
+	 */
 	var $_defaultAccess;
+
+	/**
+	 * @var integer position of folder within the parent folder
+	 */
 	var $_sequence;
+
+	/**
+	 * @var object back reference to document management system
+	 */
 	var $_dms;
 
-	function LetoDMS_Folder($id, $name, $parentID, $comment, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
+	function LetoDMS_Folder($id, $name, $parentID, $comment, $date, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_parentID = $parentID;
 		$this->_comment = $comment;
+		$this->_date = $date;
 		$this->_ownerID = $ownerID;
 		$this->_inheritAccess = $inheritAccess;
 		$this->_defaultAccess = $defaultAccess;
@@ -101,6 +137,15 @@ class LetoDMS_Folder {
 
 		$this->_comment = $newComment;
 		return true;
+	} /* }}} */
+
+	/**
+	 * Return creation date of document
+	 *
+	 * @return integer unix timestamp of creation date
+	 */
+	function getDate() { /* {{{ */
+		return $this->_date;
 	} /* }}} */
 
 	function getParent() { /* {{{ */
@@ -271,8 +316,8 @@ class LetoDMS_Folder {
 		$db = $this->_dms->getDB();
 
 		//inheritAccess = true, defaultAccess = M_READ
-		$queryStr = "INSERT INTO tblFolders (name, parent, comment, owner, inheritAccess, defaultAccess, sequence) ".
-					"VALUES ('".$name."', ".$this->_id.", '".$comment."', ".$owner->getID().", 1, ".M_READ.", ".$sequence.")";
+		$queryStr = "INSERT INTO tblFolders (name, parent, comment, date, owner, inheritAccess, defaultAccess, sequence) ".
+					"VALUES ('".$name."', ".$this->_id.", '".$comment."', ".mktime().", ".$owner->getID().", 1, ".M_READ.", ".$sequence.")";
 		if (!$db->getResult($queryStr))
 			return false;
 		$newFolder = $this->_dms->getFolder($db->getInsertID());
