@@ -50,6 +50,11 @@ class LetoDMS_Document { /* {{{ */
 	var $_comment;
 
 	/**
+	 * @var integer unix timestamp of creation date
+	 */
+	var $_date;
+
+	/**
 	 * @var integer id of user who is the owner
 	 */
 	var $_ownerID;
@@ -68,6 +73,10 @@ class LetoDMS_Document { /* {{{ */
 	 * @var boolean true if access is inherited, otherwise false
 	 */
 	var $_inheritAccess;
+
+	/**
+	 * @var integer default access if access rights are not inherited
+	 */
 	var $_defaultAccess;
 
 	/**
@@ -81,7 +90,7 @@ class LetoDMS_Document { /* {{{ */
 	var $_keywords;
 
 	/**
-	 * @var integer position of document within parent folder
+	 * @var integer position of document within the parent folder
 	 */
 	var $_sequence;
 
@@ -196,6 +205,11 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Return creation date of document
+	 *
+	 * @return integer unix timestamp of creation date
+	 */
 	function getDate() { /* {{{ */
 		return $this->_date;
 	} /* }}} */
