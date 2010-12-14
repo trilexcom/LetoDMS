@@ -251,6 +251,7 @@ $text["log_management"] = "Log files management";
 $text["logout"] = "Logout";
 $text["manager"] = "Manager";
 $text["march"] = "March";
+$text["max_upload_size"] = "Maximum upload size";
 $text["may"] = "May";
 $text["monday"] = "Monday";
 $text["month_view"] = "Month view";
