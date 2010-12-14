@@ -89,7 +89,7 @@ $docAccess = $folder->getApproversList();
 ?>
 <table>
 <tr>
-	<td class="warning"><?php echo getMLtext("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
+	<td class="warning"><?php echo getMLText("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
 </tr>
 </table><br>
 
