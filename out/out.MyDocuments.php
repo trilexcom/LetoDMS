@@ -258,11 +258,11 @@ if ($showInProcess){
 	
 		UI::contentHeading(getMLText("documents_to_review"));
 		UI::contentContainerStart();
-		printMLText("empty_notify_list");
+		printMLText("no_review_needed");
 		UI::contentContainerEnd();
 		UI::contentHeading(getMLText("documents_to_approve"));
 		UI::contentContainerStart();
-		printMLText("empty_notify_list");
+		printMLText("no_approval_needed");
 		UI::contentContainerEnd();
 	}
 
@@ -328,7 +328,7 @@ if ($showInProcess){
 		print "</tbody></table>";	
 		
 	}
-	else printMLText("empty_notify_list");
+	else printMLText("no_docs_to_look_at");
 	
 	UI::contentContainerEnd();
 	
@@ -393,7 +393,7 @@ if ($showInProcess){
 		print "</tbody></table>";	
 		
 	}
-	else printMLText("empty_notify_list");
+	else printMLText("no_docs_locked");
 	
 	UI::contentContainerEnd();
 	

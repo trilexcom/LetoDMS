@@ -393,7 +393,7 @@ if (count($versions)>1) {
 	}
 	print "</tbody>\n</table>\n";
 }
-else printMLText("empty_notify_list");
+else printMLText("no_previous_versions");
 
 UI::contentContainerEnd();
 
@@ -446,7 +446,7 @@ if (count($files) > 0) {
 	print "</tbody>\n</table>\n";	
 
 }
-else printMLText("empty_notify_list");
+else printMLText("no_attached_files");
 
 if ($document->getAccessMode($user) >= M_READWRITE){
 	print "<br>";
@@ -489,7 +489,7 @@ if (count($links) > 0) {
 	}
 	print "</tbody>\n</table>\n";
 }
-else printMLText("empty_notify_list");
+else printMLText("no_linked_files");
 
 if (!$user->isGuest()){
 ?>

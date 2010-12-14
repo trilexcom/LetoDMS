@@ -19,8 +19,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDocument.php");
-include("../inc/inc.ClassFolder.php");
+include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -143,7 +142,7 @@ foreach ($approvalStatus["indstatus"] as $st) {
 if (!$printheader) {
 	echo "</tbody>\n</table>\n";
 }else{
-	printMLText("empty_notify_list");
+	printMLText("no_approval_needed");
 }
 
 UI::contentContainerEnd();
