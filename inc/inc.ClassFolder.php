@@ -140,7 +140,7 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	/**
-	 * Return creation date of document
+	 * Return creation date of folder
 	 *
 	 * @return integer unix timestamp of creation date
 	 */
@@ -148,8 +148,13 @@ class LetoDMS_Folder {
 		return $this->_date;
 	} /* }}} */
 
+	/**
+	 * Returns the parent
+	 *
+	 * @return object parent folder or false if there is no parent folder
+	 */
 	function getParent() { /* {{{ */
-		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
+		if ($this->_id == $this->_dms->rootFolderID || empty($this->_parentID)) {
 			return false;
 		}
 
@@ -159,10 +164,19 @@ class LetoDMS_Folder {
 		return $this->_parent;
 	} /* }}} */
 
+	/**
+	 * Set a new folder
+	 *
+	 * This function moves a folder from one parent folder into another parent
+	 * folder. It will fail if the root folder is moved.
+	 *
+	 * @param object new parent folder
+	 * @return boolean true if operation was successful otherwise false
+	 */
 	function setParent($newParent) { /* {{{ */
 		$db = $this->_dms->getDB();
 
-		if ($this->_id == $this->_dms->rootFolderID || !isset($this->_parentID) || ($this->_parentID == null) || ($this->_parentID == "") || ($this->_parentID == 0)) {
+		if ($this->_id == $this->_dms->rootFolderID || empty($this->_parentID)) {
 			return false;
 		}
 
@@ -198,12 +212,23 @@ class LetoDMS_Folder {
 		return true;
 	} /* }}} */
 
+	/**
+	 * Returns the owner
+	 *
+	 * @return object owner of the folder
+	 */
 	function getOwner() { /* {{{ */
 		if (!isset($this->_owner))
 			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
 	} /* }}} */
 
+	/**
+	 * Set the owner
+	 *
+	 * @param object new owner of the folder
+	 * @return boolean true if successful otherwise false
+	 */
 	function setOwner($newOwner) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -293,6 +318,13 @@ class LetoDMS_Folder {
 		return true;
 	} /* }}} */
 
+	/**
+	 * Returns a list of subfolders
+	 *
+	 * @param string $orderby if set to 'n' the list is ordered by name, otherwise
+	 *        it will be ordered by sequence
+	 * @return array list of folder objects or false in case of an error
+	 */
 	function getSubFolders($orderby="") { /* {{{ */
 		$db = $this->_dms->getDB();
 		
