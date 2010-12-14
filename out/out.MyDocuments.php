@@ -191,7 +191,7 @@ if ($showInProcess){
 		if (!$printheader){
 			echo "</tbody>\n</table>";
 		}else{
-			printMLText("empty_notify_list");
+			printMLText("no_docs_to_review");
 		}
 		UI::contentContainerEnd();
 
@@ -250,7 +250,7 @@ if ($showInProcess){
 		if (!$printheader){
 			echo "</tbody>\n</table>\n";
 		 }else{
-		 	printMLText("empty_notify_list");
+		 	printMLText("no_docs_to_approve");
 		 }
 		UI::contentContainerEnd();
 	}
