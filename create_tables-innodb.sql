@@ -58,6 +58,7 @@ CREATE TABLE `tblFolders` (
   `name` varchar(70) default NULL,
   `parent` int(11) default NULL,
   `comment` text,
+  `date` int(12) default NULL,
   `owner` int(11) default NULL,
   `inheritAccess` tinyint(1) NOT NULL default '1',
   `defaultAccess` tinyint(4) NOT NULL default '0',
