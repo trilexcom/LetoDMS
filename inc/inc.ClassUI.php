@@ -119,7 +119,7 @@ class UI {
 		echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n".
 			"\"http://www.w3.org/TR/html4/strict.dtd\">\n";
 		echo "<html>\n<head>\n";
-		echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />\n";
+		echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/".$theme."/style.css\"/>\n";
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/print.css\" media=\"print\"/>\n";
 		echo "<link rel='shortcut icon' href='../styles/".$theme."/favicon.ico' type='image/x-icon'/>\n";
