@@ -130,9 +130,9 @@ else {
 			
 			// Send notification to subscribers.
 			$nl=$document->getNotifyList();
-			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
+			$notifier->toList($user, $nl["users"], $subject, $message);
 			foreach ($nl["groups"] as $grp) {
-				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+				$notifier->toGroup($user, $grp, $subject, $message);
 			}
 		}
 	}

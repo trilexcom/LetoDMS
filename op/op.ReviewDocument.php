@@ -96,26 +96,28 @@ if ($_POST["reviewType"] == "ind") {
 	}
 	else {
 		// Send an email notification to the document updater.
-		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
-		$message = getMLText("review_submit_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$document->getName()."\r\n".
-			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-			getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
+		if($notifier) {
+			$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
+			$message = getMLText("review_submit_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$document->getName()."\r\n".
+				getMLText("version").": ".$version."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+				getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
-		
-		// Send notification to subscribers.
-		$nl=$document->getNotifyList();
-		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-		foreach ($nl["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toIndividual($user, $content->getUser(), $subject, $message);
+
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			$notifier->toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 	}
 }
@@ -148,27 +150,29 @@ else if ($_POST["reviewType"] == "grp") {
 	else {
 		// Send an email notification to the document updater.
 		$grp = $dms->getGroup($grpStatus["required"]);
-		
-		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
-		$message = getMLText("review_submit_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$document->getName()."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-			getMLText("version").": ".$version."\r\n".
-			getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
-		
-		// Send notification to subscribers.
-		$nl=$document->getNotifyList();
-		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-		foreach ($nl["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+		if($notifier) {
+			$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("review_submit_email");
+			$message = getMLText("review_submit_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$document->getName()."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+				getMLText("version").": ".$version."\r\n".
+				getMLText("status").": ".getReviewStatusText($_POST["reviewStatus"])."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
+
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toIndividual($user, $content->getUser(), $subject, $message);
+			
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			$notifier->toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 	}
 }
@@ -276,30 +280,32 @@ if ($_POST["reviewStatus"]==-1){
 			// Notify approvers, if necessary.
 			if ($newStatus == S_DRAFT_APP) {
 				$requestUser = $document->getOwner();
-				
-				$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_request_email");
-				$message = getMLText("approval_request_email")."\r\n";
-				$message .= 
-					getMLText("name").": ".$content->getOriginalFileName()."\r\n".
-					getMLText("version").": ".$version."\r\n".
-					getMLText("comment").": ".$content->getComment()."\r\n".
-					"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."&version=".$version."\r\n";
 
-				$subject=mydmsDecodeString($subject);
-				$message=mydmsDecodeString($message);
-				
-				foreach ($docApprovalStatus as $dastat) {
-				
-					if ($dastat["status"] == 0) {
-						if ($dastat["type"] == 0) {
+				if($notifier) {
+					$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_request_email");
+					$message = getMLText("approval_request_email")."\r\n";
+					$message .= 
+						getMLText("name").": ".$content->getOriginalFileName()."\r\n".
+						getMLText("version").": ".$version."\r\n".
+						getMLText("comment").": ".$content->getComment()."\r\n".
+						"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."&version=".$version."\r\n";
 
-							$approver = $dms->getUser($dastat["required"]);
-							LetoDMS_Email::toIndividual($document->getOwner(), $approver, $subject, $message);
-						}
-						else if ($dastat["type"] == 1) {
-						
-							$group = $dms->getGroup($dastat["required"]);
-							LetoDMS_Email::toGroup($document->getOwner(), $group, $subject, $message);
+					$subject=mydmsDecodeString($subject);
+					$message=mydmsDecodeString($message);
+					
+					foreach ($docApprovalStatus as $dastat) {
+					
+						if ($dastat["status"] == 0) {
+							if ($dastat["type"] == 0) {
+	
+								$approver = $dms->getUser($dastat["required"]);
+								$notifier->toIndividual($document->getOwner(), $approver, $subject, $message);
+							}
+							else if ($dastat["type"] == 1) {
+							
+								$group = $dms->getGroup($dastat["required"]);
+								$notifier->toGroup($document->getOwner(), $group, $subject, $message);
+							}
 						}
 					}
 				}

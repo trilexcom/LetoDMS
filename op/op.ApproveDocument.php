@@ -101,26 +101,28 @@ if ($_POST["approvalType"] == "ind") {
 	}
 	else {
 		// Send an email notification to the document updater.
-		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
-		$message = getMLText("approval_submit_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$document->getName()."\r\n".
-			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-			getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
+		if($notifier) {
+			$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
+			$message = getMLText("approval_submit_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$document->getName()."\r\n".
+				getMLText("version").": ".$version."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+				getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toIndividual($user, $content->getUser(), $subject, $message);
 
-		// Send notification to subscribers.
-		$nl=$document->getNotifyList();
-		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-		foreach ($nl["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			$notifier->toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 	}
 }
@@ -154,27 +156,28 @@ else if ($_POST["approvalType"] == "grp") {
 	else {
 		// Send an email notification to the document updater.
 		$grp = $dms->getGroup($grpStatus["required"]);
-		
-		$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
-		$message = getMLText("approval_submit_email")."\r\n";
-		$message .= 
-			getMLText("name").": ".$document->getName()."\r\n".
-			getMLText("version").": ".$version."\r\n".
-			getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-			getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
-			getMLText("comment").": ".$comment."\r\n".
-			"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
+		if($notifier) {
+			$subject = $settings->_siteName.": ".$document->getName().", v.".$version." - ".getMLText("approval_submit_email");
+			$message = getMLText("approval_submit_email")."\r\n";
+			$message .= 
+				getMLText("name").": ".$document->getName()."\r\n".
+				getMLText("version").": ".$version."\r\n".
+				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
+				getMLText("status").": ".getApprovalStatusText($_POST["approvalStatus"])."\r\n".
+				getMLText("comment").": ".$comment."\r\n".
+				"URL: http".((isset($_SERVER['HTTPS']) && (strcmp($_SERVER['HTTPS'],'off')!=0)) ? "s" : "")."://".$_SERVER['HTTP_HOST'].$settings->_httpRoot."out/out.ViewDocument.php?documentid=".$documentid."\r\n";
 
-		$subject=mydmsDecodeString($subject);
-		$message=mydmsDecodeString($message);
-		
-		LetoDMS_Email::toIndividual($user, $content->getUser(), $subject, $message);
+			$subject=mydmsDecodeString($subject);
+			$message=mydmsDecodeString($message);
+			
+			$notifier->toIndividual($user, $content->getUser(), $subject, $message);
 
-		// Send notification to subscribers.
-		$nl=$document->getNotifyList();
-		LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-		foreach ($nl["groups"] as $grp) {
-			LetoDMS_Email::toGroup($user, $grp, $subject, $message);
+			// Send notification to subscribers.
+			$nl=$document->getNotifyList();
+			$notifier->toList($user, $nl["users"], $subject, $message);
+			foreach ($nl["groups"] as $grp) {
+				$notifier->toGroup($user, $grp, $subject, $message);
+			}
 		}
 	}
 }
