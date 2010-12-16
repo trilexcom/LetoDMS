@@ -118,14 +118,14 @@ foreach ($pIndRev as $p) {
 					case 0:
 						// Send an email notification to the new reviewer.
 						if ($notifier) {
-							$subject = "###SITENAME###: ".$document->getName().", v.".$this->_version." - ".getMLText("review_request_email");
+							$subject = "###SITENAME###: ".$document->getName().", v.".$content->_version." - ".getMLText("review_request_email");
 							$message = getMLText("review_request_email")."\r\n";
 							$message .= 
 								getMLText("document").": ".$document->getName()."\r\n".
-								getMLText("version").": ".$this->_version."\r\n".
-								getMLText("comment").": ".$this->getComment()."\r\n".
+								getMLText("version").": ".$content->_version."\r\n".
+								getMLText("comment").": ".$content->getComment()."\r\n".
 								getMLText("user").": ".$user->getFullName()." <". $user->getEmail() .">\r\n".
-								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$this->_version."\r\n";
+								"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
 
 							$subject=mydmsDecodeString($subject);
 							$message=mydmsDecodeString($message);
