@@ -254,12 +254,23 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Return owner of document
+	 *
+	 * @return object owner of document as an instance of {@link LetoDMS_User}
+	 */
 	function getOwner() { /* {{{ */
 		if (!isset($this->_owner))
 			$this->_owner = $this->_dms->getUser($this->_ownerID);
 		return $this->_owner;
 	} /* }}} */
 
+	/**
+	 * Set owner of a document
+	 *
+	 * @param object $newOwner new owner
+	 * @return boolean true if successful otherwise false
+	 */
 	function setOwner($newOwner) { /* {{{ */
 		$db = $this->_dms->getDB();
 
