@@ -18,13 +18,12 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-function formatted_size($size_bytes)
-{
+function formatted_size($size_bytes) { /* {{{ */
 	if ($size_bytes>1000000000) return number_format($size_bytes/1000000000,1,".","")." GBytes";
 	else if ($size_bytes>1000000) return number_format($size_bytes/1000000,1,".","")." MBytes";
 	else if ($size_bytes>1000) return number_format($size_bytes/1000,1,".","")." KBytes";
 	return number_format($size_bytes,0,"","")." Bytes";
-}
+} /* }}} */
 
 function getReadableDate($timestamp) {
 	return date("d.m.Y", $timestamp);
@@ -48,7 +47,7 @@ function getLongReadableDate($timestamp) {
 //	return $string;
 //}
 
-function sanitizeString($string) {
+function sanitizeString($string) { /* {{{ */
 
 	$string = (string) $string;
 	if (get_magic_quotes_gpc()) {
@@ -75,9 +74,9 @@ function sanitizeString($string) {
 	$string = str_replace("+", "&#0043;", $string);
 
 	return trim($string);
-}
+} /* }}} */
 
-function mydmsDecodeString($string) {
+function mydmsDecodeString($string) { /* {{{ */
 
 	$string = (string)$string;
 
@@ -95,11 +94,10 @@ function mydmsDecodeString($string) {
 	$string = str_replace("&#0043;", "+", $string);
 
 	return $string;
-}
+} /* }}} */
 
-function createVersionigFile($document)
-{
-	global $settings;
+function createVersionigFile($document) { /* {{{ */
+	global $settings, $dms;
 	
 	// if directory has been removed recreate it
 	if (!file_exists($settings->_contentDir . $document->getDir())) 
@@ -229,10 +227,9 @@ function createVersionigFile($document)
 	
 	fclose($handle);
 	return true;
-}
+} /* }}} */
 
-function add_log_line($msg="")
-{
+function add_log_line($msg="") { /* {{{ */
 	global $settings,$user;
 	
 	if ($settings->_logFileEnable!=TRUE) return;
@@ -245,16 +242,15 @@ function add_log_line($msg="")
 		fwrite($h,date("Y/m/d H:i", time())." ".$user->getLogin()." (".$_SERVER['REMOTE_ADDR'].") ".basename($_SERVER["REQUEST_URI"], ".php").$msg."\n");
 		fclose($h);
 	}
-}
+} /* }}} */
 
-function showtree()
-{
+function showtree() { /* {{{ */
 	global $settings;
 	
 	if (isset($_GET["showtree"])) return $_GET["showtree"];
 	else if ($settings->_enableFolderTree==0) return 0;
 	
 	return 1;
-}
+} /* }}} */
 
 ?>
