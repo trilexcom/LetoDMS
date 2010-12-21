@@ -355,7 +355,7 @@ class LetoDMS_User {
 		$queryStr = "DELETE FROM tblACLs WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 
-		//Eintrag aus tblUsers löschen
+		//Eintrag aus tblUserImagess löschen
 		$queryStr = "DELETE FROM tblUserImages WHERE userID = " . $this->_id;
 		if (!$db->getResult($queryStr)) return false;
 
@@ -476,6 +476,23 @@ class LetoDMS_User {
 		}
 
 		return $this->_hasImage;
+	} /* }}} */
+
+	/**
+	 * Get the image from the users profile
+	 *
+	 * @return array image data
+	 */
+	function getImage() { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		$queryStr = "SELECT * FROM tblUserImages WHERE userID = " . $this->_id;
+		$resArr = $db->getResultArray($queryStr);
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+
+		$resArr = $resArr[0];
+		return $resArr;
 	} /* }}} */
 
 	function setImage($tmpfile, $mimeType) { /* {{{ */
