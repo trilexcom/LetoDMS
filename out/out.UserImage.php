@@ -23,22 +23,19 @@ include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Authentication.php");
 
+/* Get the user as passed to the script. This allows to show
+ * pictures of other users as well
+ */
 $userid = sanitizeString($_GET["userid"]);
-$myUser = $dms->getUser($userid); //es soll ja auch möglich sein, die bilder von anderen anzuzeigen
+$myUser = $dms->getUser($userid);
 
 if (!$myUser->hasImage())
 	UI::exitError(getMLText("user_image"),getMLText("no_user_image"));
 
-$queryStr = "SELECT * FROM tblUserImages WHERE userID = " . $userid;
-$resArr = $db->getResultArray($queryStr);
-if (is_bool($resArr) && $resArr == false)
-	return false;
-
-$resArr = $resArr[0];
-
-header("ContentType: " . $resArr["mimeType"]);
-
-print base64_decode($resArr["image"]);
+if($resArr = $myUser->getImage()) {
+	header("ContentType: " . $resArr["mimeType"]);
+	print base64_decode($resArr["image"]);
+}
 exit;
 
 ?>
