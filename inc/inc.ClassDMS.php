@@ -748,5 +748,31 @@ class LetoDMS_DMS {
 		return $this->getKeywordCategory($this->db->getInsertID());
 	} /* }}} */
 
+	/**
+	 * Get all notifications for a group
+	 *
+	 * @param 
+	 * @return array array notifications
+	 */
+	function getNotificationsByGroup($group, $type=0) { /* {{{ */
+		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
+		 "WHERE `tblNotify`.`groupID` = ". $group->getID();
+		if($type) {
+			$queryStr .= " AND `tblNotify`.`targetType` = ".$type;
+		}
+
+	} /* }}} */
+
+	/**
+	 * Get all notifications for a user
+	 *
+	 * @return array array notifications
+	 */
+	function getNotificationsByUser($user, $type) { /* {{{ */
+		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
+		 "WHERE `tblNotify`.`userID` = ". $user->getID();
+
+	} /* }}} */
+
 }
 ?>
