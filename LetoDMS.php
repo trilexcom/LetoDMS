@@ -46,4 +46,14 @@ require_once('inc/inc.ClassGroup.php');
  */
 require_once('inc/inc.ClassUser.php');
 
+/**
+ * @uses LetoDMS_KeywordCategory
+ */
+require_once('inc/inc.ClassKeywords.php');
+
+/**
+ * @uses LetoDMS_Notification
+ */
+require_once('inc/inc.ClassNotification.php');
+
 ?>
