@@ -380,6 +380,10 @@ class LetoDMS_Folder {
 		}
 	} /* }}} */
 
+	/**
+	 * FIXME: this function makes no sense here because it creates links
+	 * only valid in the letodms application
+	 */
 	function getFolderPathHTML($tagAll=false) { /* {{{ */
 		$path = $this->getPath();
 		$txtpath = "";

@@ -48,7 +48,7 @@ class LetoDMS_File {
 	}
 
 	function makeDir($path) {
-		/*
+		
 		if (strncmp($path, DIRECTORY_SEPARATOR, 1) == 0) {
 			$mkfolder = DIRECTORY_SEPARATOR;
 		}
@@ -68,13 +68,12 @@ class LetoDMS_File {
 			$mkfolder .= DIRECTORY_SEPARATOR;
 		}
 
-		return true;*/
+		return true;
 
 		// patch from alekseynfor safe_mod or open_basedir
 
 		global $settings;
 		$path = substr_replace ($path, "/", 0, strlen($settings->_contentDir));
-
 		$mkfolder = $settings->_contentDir;
 
 		$path = preg_split( "/[\\\\\/]/" , $path );

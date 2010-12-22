@@ -19,6 +19,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
+include("../inc/inc.Utils.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
@@ -38,7 +39,7 @@ if (!is_object($folder)) {
 	UI::exitError(getMLText("search"),getMLText("invalid_folder_id"));
 }
 
-$folderPathHTML = $folder->getFolderPathHTML(true);
+$folderPathHTML = getFolderPathHTML($folder, true);
 
 UI::htmlStartPage(getMLText("search"));
 UI::globalNavigation($folder);

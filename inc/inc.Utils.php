@@ -244,6 +244,22 @@ function add_log_line($msg="") { /* {{{ */
 	}
 } /* }}} */
 
+	function getFolderPathHTML($folder, $tagAll=false) { /* {{{ */
+		$path = $folder->getPath();
+		$txtpath = "";
+		for ($i = 0; $i < count($path); $i++) {
+			if ($i +1 < count($path)) {
+				$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
+					$path[$i]->getName()."</a> / ";
+			}
+			else {
+				$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
+										 $path[$i]->getName()."</a>" : $path[$i]->getName());
+			}
+		}
+		return $txtpath;
+	} /* }}} */
+	
 function showtree() { /* {{{ */
 	global $settings;
 	

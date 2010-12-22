@@ -47,7 +47,7 @@ function getNotificationList($as_group, $folders) {
 		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
 		 "WHERE `tblNotify`.`groupID` IN (". $grpList .")";
 		 		
-	}else{
+	} else {
 		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
 			"WHERE `tblNotify`.`userID` = '". $user->getID()."'" ;
 	}

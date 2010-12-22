@@ -19,6 +19,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
+include("../inc/inc.Utils.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
@@ -44,7 +45,7 @@ if (isset($_GET["orderby"]) && strlen($_GET["orderby"])==1 ) {
 	$orderby=$_GET["orderby"];
 }else $orderby="";
 
-$folderPathHTML = $folder->getFolderPathHTML();
+$folderPathHTML = getFolderPathHTML($folder);
 
 if ($folder->getAccessMode($user) < M_READ) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));

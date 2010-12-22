@@ -39,7 +39,7 @@ if (!is_object($folder)) {
 	UI::exitError(getMLText("folder_title", array("foldername" => getMLText("invalid_folder_id"))),getMLText("invalid_folder_id"));
 }
 
-$folderPathHTML = $folder->getFolderPathHTML(true);
+$folderPathHTML = getFolderPathHTML($folder, true);
 
 if ($folder->getAccessMode($user) < M_READWRITE) {
 	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("access_denied"));

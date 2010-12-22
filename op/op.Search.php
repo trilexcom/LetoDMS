@@ -18,6 +18,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
+include("../inc/inc.Utils.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
@@ -148,7 +149,7 @@ if (!is_object($startFolder)) {
 
 // Now that the target folder has been identified, it is possible to create
 // the full navigation bar.
-$folderPathHTML = $startFolder->getFolderPathHTML(true);
+$folderPathHTML = getFolderPathHTML($startFolder, true);
 UI::htmlStartPage(getMLText("search_results"));
 UI::globalNavigation($startFolder);
 UI::pageNavigation($folderPathHTML, "", $startFolder);
