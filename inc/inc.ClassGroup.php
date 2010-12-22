@@ -161,14 +161,16 @@ class LetoDMS_Group {
 	} /* }}} */
 
 	/**
-	 * Entfernt die Gruppe aus dem System.
-	 * Dies ist jedoch nicht mit einem Löschen des entsprechenden Eintrags aus tblGroups geschehen - vielmehr
-	 * muss dafür gesorgt werden, dass die Gruppe nirgendwo mehr auftaucht. D.h. auch die Tabellen tblACLs,
-	 * tblNotify und tblGroupMembers müssen berücksichtigt werden.
+	 * Delete user group
+	 * This function deletes the user group and all it references, like access
+	 * control lists, notifications, as a child of other groups, etc.
+	 *
+	 * @param object $user the user doing the removal (needed for entry in
+	 *        review log.
+	 * @return boolean true on success or false in case of an error
 	 */
-	function remove() { /* {{{ */
+	function remove($user) { /* {{{ */
 		$db = $this->_dms->getDB();
-		$user = $this->_dms->user;
 
 		$queryStr = "DELETE FROM tblGroups WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))

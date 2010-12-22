@@ -67,7 +67,7 @@ else if ($action == "removegroup") {
 		UI::exitError(getMLText("admin_tools"),getMLText("invalid_group_id"));
 	}
 
-	if (!$group->remove()) {
+	if (!$group->remove($user)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
 	

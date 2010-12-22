@@ -123,7 +123,7 @@ else if ($action == "removeuser") {
 	}
 
 	$userToAssign = $dms->getUser($_POST["assignTo"]);
-	if (!$userToRemove->remove($userToAssign)) {
+	if (!$userToRemove->remove($user, $userToAssign)) {
 		UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 	}
 		

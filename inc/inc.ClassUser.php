@@ -284,13 +284,14 @@ class LetoDMS_User {
 	 * Do not remove folders and documents of the user, but assign them
 	 * to a different user.
 	 *
+	 * @param object $user the user doing the removal (needed for entry in
+	 *        review log.
 	 * @param object $assignToUser the user who is new owner of folders and
 	 *        documents which previously were owned by the delete user.
 	 * @return boolean true on success or false in case of an error
 	 */
-	function remove( $assignToUser=null ) { /* {{{ */
+	function remove($user, $assignToUser=null) { /* {{{ */
 		$db = $this->_dms->getDB();
-		$user = $this->_dms->user;
 
 		/* Records like folders and documents that formely have belonged to
 		 * the user will assign to another user. If no such user is set,
