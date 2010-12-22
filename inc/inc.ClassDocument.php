@@ -130,13 +130,13 @@ class LetoDMS_Document { /* {{{ */
 	} /* }}} */
 
 	/*
-	 * Return the directory of the document in th file system relativ
+	 * Return the directory of the document in the file system relativ
 	 * to the contentDir
 	 *
 	 * @return string directory of document
 	 */
 	function getDir() { /* {{{ */
-		return $this->_dms->contentOffsetDir."/".$this->_id."/";
+		return $this->_id."/";
 	} /* }}} */
 
 	/*
