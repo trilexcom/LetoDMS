@@ -22,9 +22,44 @@ require_once("inc.ClassDocument.php");
 require_once("inc.ClassGroup.php");
 require_once("inc.ClassUser.php");
 require_once("inc.ClassKeywords.php");
+require_once("inc.ClassNotification.php");
 
 /**
- * Class to represent the complete document management system
+ * Class to represent the complete document management system.
+ * This class is needed to do most of the dms operations. It needs
+ * an instance of {@link LetoDMS_DatabaseAccess} to access the
+ * underlying database. Many methods are factory functions which create
+ * objects representing the entities in the dms, like folders, documents,
+ * users, or groups.
+ *
+ * Each dms has its own database for meta data and data store for document
+ * content. All folders and documents are organized in a hierachy like
+ * a regular file system starting with a {@link $rootFolderID}
+ *
+ * This class does not enforce any access rights on documents and folders
+ * by design. It is up to the calling application to use the methods
+ * {@link LetoDMS_Folder::getAccessMode} and
+ * {@link LetoDMS_Document::getAccessMode} and interpret them as desired.
+ * Though, there are two convinient functions to filter a list users or
+ * documents/folders by a given access right. See
+ * {@link LetoDMS_DMS::filterAccess}
+ * and {@link LetoDMS_DMS::filterUsersByAccess}
+ *
+ * Though, this class has two methods to set the currently logged in user
+ * ({@link setUser} and {@link login}), none of them need to be called, because
+ * there is currently no class within the LetoDMS core which needs the logged
+ * in user.
+ *
+ * <code>
+ * <?php
+ * include("inc/inc.ClassDMS.php");
+ * $db = new LetoDMS_DatabaseAccess($type, $hostname, $user, $passwd, $name);
+ * $db->connect() or die ("Could not connect to db-server");
+ * $dms = new LetoDMS_DMS($db, $contentDir);
+ * $dms->setRootFolderID(1);
+ * ...
+ * ?>
+ * </code>
  *
  * @category   DMS
  * @package    LetoDMS
@@ -43,28 +78,18 @@ class LetoDMS_DMS {
 
 	/**
 	 * @var object $user reference to currently logged in user. This must be
-	 *      an instance of {@link LetoDMS_User}.
-	 * @access public
+	 *      an instance of {@link LetoDMS_User}. This variable is currently not
+	 *      used. It is set by {@link setUser}.
+	 * @access private
 	 */
-	public $user;
+	private $user;
 
 	/**
 	 * @var string $contentDir location in the file system where all the
-	 *      data stores are located. This should be an absolute path.
+	 *      document data is located. This should be an absolute path.
 	 * @access public
 	 */
 	public $contentDir;
-
-	/**
-	 * @var string $contentOffsetDir location in the file system relative to
-	 *      {@link $contentDir} where all the documents belonging to a
-	 *      data store are saved. This is basically a subdirectory of
-	 *      {@link $contentDir}. It is very helpful if several instances
-	 *      of the dms shall be used in parallel. This is often used with
-	 *      a separate database for each instance of the dms.
-	 * @access public
-	 */
-	public $contentOffsetDir;
 
 	/**
 	 * @var integer $rootFolderID ID of root folder
@@ -73,7 +98,8 @@ class LetoDMS_DMS {
 	public $rootFolderID;
 
 	/**
-	 * @var boolean $enableConverting set to true if conversion of content is desired
+	 * @var boolean $enableConverting set to true if conversion of content
+	 *      is desired
 	 * @access public
 	 */
 	public $enableConverting;
@@ -129,10 +155,20 @@ class LetoDMS_DMS {
 		return $newArr;
 	} /* }}} */
 
-	function __construct($db, $contentDir, $contentOffsetDir) { /* {{{ */
+	/**
+	 * Create a new instance of the dms
+	 *
+	 * @param object $db object to access the underlying database
+	 * @param string $contentDir path in filesystem containing the data store
+	 *        all document contents is stored
+	 * @return object instance of LetoDMS_DMS
+	 */
+	function __construct($db, $contentDir) { /* {{{ */
 		$this->db = $db;
-		$this->contentDir = $contentDir;
-		$this->contentOffsetDir = $contentOffsetDir;
+		if(substr($contentDir, -1) == '/')
+			$this->contentDir = $contentDir;
+		else
+			$this->contentDir = $contentDir.'/';
 		$this->rootFolderID = 1;
 		$this->enableAdminRevApp = false;
 		$this->enableConverting = false;
@@ -143,11 +179,25 @@ class LetoDMS_DMS {
 		return $this->db;
 	} /* }}} */
 
+	/**
+	 * Set id of root folder
+	 * This function must be called right after creating an instance of
+	 * LetoDMS_DMS
+	 *
+	 * @param interger $id id of root folder
+	 */
 	function setRootFolderID($id) { /* {{{ */
 		$this->rootFolderID = $id;
 	} /* }}} */
 
+	/**
+	 * Get root folder
+	 *
+	 * @return object/boolean return the object of the root folder or false if
+	 *        the root folder id was not set before with {@link setRootFolderID}.
+	 */
 	function getRootFolder() { /* {{{ */
+		if(!$this->rootFolderID) return false;
 		return $this->getFolder($this->rootFolderID);
 	} /* }}} */
 
@@ -170,7 +220,7 @@ class LetoDMS_DMS {
 	/**
 	 * Login as a user
 	 *
-	 * Checks if the given credentials are valid returns a user object.
+	 * Checks if the given credentials are valid and returns a user object.
 	 * It also sets the property $user for later access on the currently
 	 * logged in user
 	 *
@@ -489,10 +539,13 @@ class LetoDMS_DMS {
 	/**
 	 * Return a folder by its name
 	 *
-	 * This function retrieves a folder from the database by its id.
+	 * This function retrieves a folder from the database by its name. The
+	 * search covers the whole database. If
+	 * the parameter $folder is not null, it will search for the name
+	 * only within this parent folder. It will not be done recursively.
 	 *
-	 * @param string $name
-	 * @param object $folder
+	 * @param string $name name of the folder
+	 * @param object $folder parent folder
 	 * @return object/boolean found folder or false
 	 */
 	function getFolderByName($name, $folder=null) { /* {{{ */
@@ -593,6 +646,12 @@ class LetoDMS_DMS {
 		return $this->getUser($this->db->getInsertID());
 	} /* }}} */
 
+	/**
+	 * Get a group by its id
+	 *
+	 * @param integer $id id of group
+	 * @return object/boolean group or false if no group was found
+	 */
 	function getGroup($id) { /* {{{ */
 		if (!is_numeric($id))
 			die ("invalid groupid");
@@ -612,6 +671,12 @@ class LetoDMS_DMS {
 		return $group;
 	} /* }}} */
 
+	/**
+	 * Get a group by its name
+	 *
+	 * @param string $name name of group
+	 * @return object/boolean group or false if no group was found
+	 */
 	function getGroupByName($name) { /* {{{ */
 		$queryStr = "SELECT `tblGroups`.* FROM `tblGroups` WHERE `tblGroups`.`name` = '".$name."'";
 		$resArr = $this->db->getResultArray($queryStr);
@@ -751,8 +816,9 @@ class LetoDMS_DMS {
 	/**
 	 * Get all notifications for a group
 	 *
-	 * @param 
-	 * @return array array notifications
+	 * @param object $group group for which notifications are to be retrieved
+	 * @param integer $type type of item (T_DOCUMENT or T_FOLDER)
+	 * @return array array of notifications
 	 */
 	function getNotificationsByGroup($group, $type=0) { /* {{{ */
 		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
@@ -761,17 +827,46 @@ class LetoDMS_DMS {
 			$queryStr .= " AND `tblNotify`.`targetType` = ".$type;
 		}
 
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$notifications = array();
+		foreach ($resArr as $row) {
+			$not = new LetoDMS_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
+			$not->setDMS($this);
+			array_push($notifications, $cat);
+		}
+
+		return $notifications;
 	} /* }}} */
 
 	/**
 	 * Get all notifications for a user
 	 *
-	 * @return array array notifications
+	 * @param object $user user for which notifications are to be retrieved
+	 * @param integer $type type of item (T_DOCUMENT or T_FOLDER)
+	 * @return array array of notifications
 	 */
 	function getNotificationsByUser($user, $type) { /* {{{ */
 		$queryStr = "SELECT `tblNotify`.* FROM `tblNotify` ".
 		 "WHERE `tblNotify`.`userID` = ". $user->getID();
+		if($type) {
+			$queryStr .= " AND `tblNotify`.`targetType` = ".$type;
+		}
 
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$notifications = array();
+		foreach ($resArr as $row) {
+			$not = new LetoDMS_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
+			$not->setDMS($this);
+			array_push($notifications, $cat);
+		}
+
+		return $notifications;
 	} /* }}} */
 
 }
