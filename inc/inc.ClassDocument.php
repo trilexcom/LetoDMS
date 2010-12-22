@@ -319,6 +319,19 @@ class LetoDMS_Document { /* {{{ */
 
 	function inheritsAccess() { return $this->_inheritAccess; }
 
+	/**
+	 * Set inherited access mode
+	 * Setting inherited access mode will set or unset the internal flag which
+	 * controls if the access mode is inherited from the parent folder or not.
+	 * It will not modify the
+	 * access control list for the current object. It will remove all
+	 * notifications of users which do not even have read access anymore
+	 * after setting or unsetting inherited access.
+	 *
+	 * @param boolean $inheritAccess set to true for setting and false for
+	 *        unsetting inherited access mode
+	 * @return boolean true if operation was successful otherwise false
+	 */
 	function setInheritAccess($inheritAccess) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -380,6 +393,11 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Check if the document has expired
+	 *
+	 * @return boolean true if document has expired otherwise false
+	 */
 	function hasExpired() { /* {{{ */
 		if (intval($this->_expires) == 0) return false;
 		if (time()>$this->_expires+24*60*60) return true;
@@ -402,8 +420,19 @@ class LetoDMS_Document { /* {{{ */
 		return false;
 	} /* }}} */
 
+	/**
+	 * Check if document is locked
+	 *
+	 * @return boolean true if locked otherwise false
+	 */
 	function isLocked() { return $this->_locked != -1; }
 
+	/**
+	 * Lock or unlock document
+	 *
+	 * @param $falseOrUser user object for locking or false for unlocking
+	 * @return boolean true if operation was successful otherwise false
+	 */
 	function setLocked($falseOrUser) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -426,6 +455,11 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Get the user currently locking the document
+	 *
+	 * @return object user have a lock
+	 */
 	function getLockingUser() { /* {{{ */
 		if (!$this->isLocked())
 			return false;
@@ -448,6 +482,11 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Delete all entries for this folder from the access control list
+	 *
+	 * @return boolean true if operation was successful otherwise false
+	 */
 	function clearAccessList() { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -498,6 +537,16 @@ class LetoDMS_Document { /* {{{ */
 		return $this->_accessList[$mode];
 	} /* }}} */
 
+	/**
+	 * Add access right to folder
+	 * This function may change in the future. Instead of passing the a flag
+	 * and a user/group id a user or group object will be expected.
+	 *
+	 * @param integer $mode access mode
+	 * @param integer $userOrGroupID id of user or group
+	 * @param integer $isUser set to 1 if $userOrGroupID is the id of a
+	 *        user
+	 */
 	function addAccess($mode, $userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -518,6 +567,16 @@ class LetoDMS_Document { /* {{{ */
 		return true;
 	} /* }}} */
 
+	/**
+	 * Change access right of document
+	 * This function may change in the future. Instead of passing the a flag
+	 * and a user/group id a user or group object will be expected.
+	 *
+	 * @param integer $newMode access mode
+	 * @param integer $userOrGroupID id of user or group
+	 * @param integer $isUser set to 1 if $userOrGroupID is the id of a
+	 *        user
+	 */
 	function changeAccess($newMode, $userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -672,6 +731,9 @@ class LetoDMS_Document { /* {{{ */
 
 	/**
 	 * Add a user/group to the notification list
+	 * This function does not check if the currently logged in user
+	 * is allowed to add a notification. This must be checked by the calling
+	 * application.
 	 *
 	 * @param $userOrGroupID integer id of user or group to add
 	 * @param $isUser integer 1 if $userOrGroupID is a user,
@@ -784,6 +846,9 @@ class LetoDMS_Document { /* {{{ */
 
 	/**
 	 * Remove a user or group from the notification list
+	 * This function does not check if the currently logged in user
+	 * is allowed to remove a notification. This must be checked by the calling
+	 * application.
 	 *
 	 * @param $userOrGroupID id of user or group
 	 * @param $isUser boolean true if a user is passed in $userOrGroupID, false

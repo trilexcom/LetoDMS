@@ -320,6 +320,9 @@ class LetoDMS_Folder {
 
 	/**
 	 * Returns a list of subfolders
+	 * This function does not check for access rights. Use
+	 * {@link LetoDMS_DMS::filterAccess} for checking each folder against
+	 * the currently logged in user and the access rights.
 	 *
 	 * @param string $orderby if set to 'n' the list is ordered by name, otherwise
 	 *        it will be ordered by sequence
@@ -380,26 +383,6 @@ class LetoDMS_Folder {
 		}
 	} /* }}} */
 
-	/**
-	 * FIXME: this function makes no sense here because it creates links
-	 * only valid in the letodms application
-	 */
-	function getFolderPathHTML($tagAll=false) { /* {{{ */
-		$path = $this->getPath();
-		$txtpath = "";
-		for ($i = 0; $i < count($path); $i++) {
-			if ($i +1 < count($path)) {
-				$txtpath .= "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
-					$path[$i]->getName()."</a> / ";
-			}
-			else {
-				$txtpath .= ($tagAll ? "<a href=\"../out/out.ViewFolder.php?folderid=".$path[$i]->getID()."&showtree=".showtree()."\">".
-										 $path[$i]->getName()."</a>" : $path[$i]->getName());
-			}
-		}
-		return $txtpath;
-	} /* }}} */
-	
 	function getFolderPathPlain() { /* {{{ */
 		$path="";
 		$folderPath = $this->getPath();
@@ -412,7 +395,10 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	/**
-	 * Überprüft, ob dieser Ordner ein Unterordner von $folder ist
+	 * Check, if this folder is a subfolder of a given folder
+	 *
+	 * @param object $folder parent folder
+	 * @return boolean true if folder is a subfolder
 	 */
 	function isDescendant($folder) { /* {{{ */
 		if ($this->_parentID == $folder->getID())
@@ -426,6 +412,16 @@ class LetoDMS_Folder {
 			return false;
 	} /* }}} */
 
+	/**
+	 * Get all documents of the folder
+	 * This function does not check for access rights. Use
+	 * {@link LetoDMS_DMS::filterAccess} for checking each document against
+	 * the currently logged in user and the access rights.
+	 *
+	 * @param string $orderby if set to 'n' the list is ordered by name, otherwise
+	 *        it will be ordered by sequence
+	 * @return array list of documents or false in case of an error
+	 */
 	function getDocuments($orderby="") { /* {{{ */
 		$db = $this->_dms->getDB();
 		
@@ -447,6 +443,32 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	// $comment will be used for both document and version leaving empty the version_comment 
+	/**
+	 * Add a new document to the folder
+	 * This function will add a new document and its content from a given file. 
+	 * It does not check for access rights on the folder. The new documents
+	 * default access right is read only and the access right is inherited.
+	 *
+	 * @param string $name name of new document
+	 * @param string $comment comment of new document
+	 * @param integer $expires expiration date as a unix timestamp or 0 for no
+	 *        expiration date
+	 * @param object $owner owner of the new document
+	 * @param string $keywords keywords of new document
+	 * @param string $tmpFile the path of the file containing the content
+	 * @param string $orgFileName the original file name
+	 * @param string $fileType usually the extension of the filename
+	 * @param string $mimeType mime type of the content
+	 * @param integer $sequence position of new document within the folder
+	 * @param array $reviewers list of users who must review this document
+	 * @param array $approvers list of users who must approve this document
+	 * @param string $reqversion version number of the content
+	 * @param string $version_comment comment of the content. If left empty
+	 *        the $comment will be used.
+	 * @return array/boolean false in case of error, otherwise an array
+	 *        containing two elements. The first one is the new document, the
+	 *        second one is the result set returned when inserting the content.
+	 */
 	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
 		$db = $this->_dms->getDB();
 		
@@ -567,6 +589,16 @@ class LetoDMS_Folder {
 		return true;
 	} /* }}} */
 
+	/**
+	 * Add access right to folder
+	 * This function may change in the future. Instead of passing the a flag
+	 * and a user/group id a user or group object will be expected.
+	 *
+	 * @param integer $mode access mode
+	 * @param integer $userOrGroupID id of user or group
+	 * @param integer $isUser set to 1 if $userOrGroupID is the id of a
+	 *        user
+	 */
 	function addAccess($mode, $userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -587,6 +619,16 @@ class LetoDMS_Folder {
 		return true;
 	} /* }}} */
 
+	/**
+	 * Change access right of folder
+	 * This function may change in the future. Instead of passing the a flag
+	 * and a user/group id a user or group object will be expected.
+	 *
+	 * @param integer $newMode access mode
+	 * @param integer $userOrGroupID id of user or group
+	 * @param integer $isUser set to 1 if $userOrGroupID is the id of a
+	 *        user
+	 */
 	function changeAccess($newMode, $userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -626,12 +668,18 @@ class LetoDMS_Folder {
 		return true;
 	} /* }}} */
 
-	/*
-	 * Liefert die Art der Zugriffsberechtigung für den User $user; Mögliche Rechte: n (keine), r (lesen), w (schreiben+lesen), a (alles)
-	 * Zunächst wird Geprüft, ob die Berechtigung geerbt werden soll; in diesem Fall wird die Anfrage an den Eltern-Ordner weitergeleitet.
-	 * Ansonsten werden die ACLs durchgegangen: Die höchstwertige Berechtigung gilt.
-	 * Wird bei den ACLs nicht gefunden, wird die Standard-Berechtigung zurückgegeben.
-	 * Ach ja: handelt es sich bei $user um den Besitzer ist die Berechtigung automatisch "a".
+	/**
+	 * Get the access mode of a user on the folder
+	 * This function returns the access mode for a given user. An administrator
+	 * and the owner of the folder has unrestricted access. A guest user has
+	 * read only access or no access if access rights are further limited
+	 * by access control lists. All other users have access rights according
+	 * to the access control lists or the default access. This function will
+	 * recursive check for access rights of parent folders if access rights
+	 * are inherited.
+	 *
+	 * @param object $user user for which access shall be checked
+	 * @return integer access mode
 	 */
 	function getAccessMode($user) { /* {{{ */
 		/* Admins have full access */
@@ -647,21 +695,6 @@ class LetoDMS_Folder {
 			else return M_NONE;
 		}
 		
-		//Berechtigung erben??
-		// wird über GetAccessList() bereits realisiert.
-		// durch das Verwenden der folgenden Zeilen wären auch Owner-Rechte vererbt worden.
-		/*
-		if ($this->inheritsAccess())
-		{
-			if (isset($this->_parentID))
-			{
-				if (!$this->getParent())
-					return false;
-				return $this->_parent->getAccessMode($user);
-			}
-		}
-		*/
-
 		/* check ACLs */
 		$accessList = $this->getAccessList();
 		if (!$accessList) return false;
@@ -679,8 +712,16 @@ class LetoDMS_Folder {
 		return $this->getDefaultAccess();
 	} /* }}} */
 
+	/**
+	 * Get the access mode for a group on the folder
+	 * This function returns the access mode for a given group. The algorithmn
+	 * applied to get the access mode is the same as describe at
+	 * {@link getAccessMode}
+	 *
+	 * @param object $group group for which access shall be checked
+	 * @return integer access mode
+	 */
 	function getGroupAccessMode($group) { /* {{{ */
-
 		$highestPrivileged = M_NONE;
 		$foundInACL = false;
 		$accessList = $this->getAccessList();
@@ -692,17 +733,25 @@ class LetoDMS_Folder {
 				$foundInACL = true;
 				if ($groupAccess->getMode() > $highestPrivileged)
 					$highestPrivileged = $groupAccess->getMode();
-				if ($highestPrivileged == M_ALL) //höher geht's nicht -> wir können uns die arbeit schenken
+				if ($highestPrivileged == M_ALL) /* no need to check further */
 					return $highestPrivileged;
 			}
 		}
 		if ($foundInACL)
 			return $highestPrivileged;
 
-		//Standard-Berechtigung verwenden
+		/* Take default access */
 		return $this->getDefaultAccess();
 	} /* }}} */
 
+	/**
+	 * Get a list of all notification
+	 * This function returns all users and groups that have registerd a
+	 * notification for the folder
+	 *
+	 * @return array array with a the elements 'users' and 'groups' which
+	 *        contain a list of users and groups.
+	 */
 	function getNotifyList() { /* {{{ */
 		if (!isset($this->_notifyList)) {
 			$db = $this->_dms->getDB();
@@ -725,7 +774,10 @@ class LetoDMS_Folder {
 	} /* }}} */
 
 	/*
-	 * Adds notify for a user or group to folder
+	 * Add a user/group to the notification list
+	 * This function does not check if the currently logged in user
+	 * is allowed to add a notification. This must be checked by the calling
+	 * application.
 	 *
 	 * @param integer $userOrGroupID
 	 * @param boolean $isUser true if $userOrGroupID is a user id otherwise false
@@ -737,7 +789,6 @@ class LetoDMS_Folder {
 	 *     0: Update successful.
 	 */
 	function addNotify($userOrGroupID, $isUser) { /* {{{ */
-		GLOBAL $user;
 		$db = $this->_dms->getDB();
 
 		$userOrGroup = ($isUser) ? "userID" : "groupID";
@@ -751,6 +802,12 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
+		/*
+		 * The calling application should enforce the policy on who is allowed
+		 * to add someone to the notification system. If is shall remain here
+		 * the currently logged in user should be passed to this function
+		 *
+		GLOBAL $user;
 		if ($user->isGuest()) {
 			return -2;
 		}
@@ -766,6 +823,7 @@ class LetoDMS_Folder {
 				}
 			}
 		}
+		*/
 
 		//
 		// Verify that user / group has read access to the document.
@@ -836,6 +894,9 @@ class LetoDMS_Folder {
 
 	/*
 	 * Removes notify for a user or group to folder
+	 * This function does not check if the currently logged in user
+	 * is allowed to remove a notification. This must be checked by the calling
+	 * application.
 	 *
 	 * @param integer $userOrGroupID
 	 * @param boolean $isUser true if $userOrGroupID is a user id otherwise false
@@ -846,7 +907,6 @@ class LetoDMS_Folder {
 	 *     0: Update successful.
 	 */
 	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
-		GLOBAL  $user;
 		$db = $this->_dms->getDB();
 		
 		/* Verify that user / group exists. */
@@ -860,6 +920,12 @@ class LetoDMS_Folder {
 		/* Verify that the requesting user has permission to add the target to
 		 * the notification system.
 		 */
+		/*
+		 * The calling application should enforce the policy on who is allowed
+		 * to add someone to the notification system. If is shall remain here
+		 * the currently logged in user should be passed to this function
+		 *
+		GLOBAL  $user;
 		if ($user->isGuest()) {
 			return -2;
 		}
@@ -875,6 +941,7 @@ class LetoDMS_Folder {
 				}
 			}
 		}
+		*/
 
 		//
 		// Check to see if the target is in the database.
