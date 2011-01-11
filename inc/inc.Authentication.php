@@ -16,35 +16,25 @@ $refer=urlencode($_SERVER["REQUEST_URI"]);
 if (!strncmp("/op", $refer, 3)) {
 	$refer="";
 }
-if (!isset($_COOKIE["mydms_session"]))
-{
+if (!isset($_COOKIE["mydms_session"])) {
 	header("Location: " . $settings->_httpRoot . "out/out.Login.php?referuri=".$refer);
 	exit;
 }
 
 require_once("inc.Utils.php");
 require_once("inc.ClassEmail.php");
+require_once("inc.ClassSession.php");
 
+/* Load session */
 $dms_session = sanitizeString($_COOKIE["mydms_session"]);
-
-$queryStr = "SELECT * FROM tblSessions WHERE id = '".$dms_session."'";
-$resArr = $db->getResultArray($queryStr);
-if (is_bool($resArr) && $resArr == false)
-	die ("Error while reading from tblSessions: " . $db->getErrorMsg());
-
-if (count($resArr) == 0)
-{
+$session = new LetoDMS_Session($db);
+if(!$resArr = $session->load($dms_session)) {
 	setcookie("mydms_session", $dms_session, time()-3600, $settings->_httpRoot); //delete cookie
 	header("Location: " . $settings->_httpRoot . "out/out.Login.php?referuri=".$refer);
 	exit;
 }
 
-$resArr = $resArr[0];
-
-$queryStr = "UPDATE tblSessions SET lastAccess = " . mktime() . " WHERE id = '" . $resArr["id"] . "'";
-if (!$db->getResult($queryStr))
-	die ("Error while updating tblSessions: " . $db->getErrorMsg());
-
+/* Load user data */
 $user = $dms->getUser($resArr["userID"]);
 if (!is_object($user)) {
 	setcookie("mydms_session", $dms_session, time()-3600, $settings->_httpRoot); //delete cookie
