@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2010 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,29 +21,21 @@
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
 include("../inc/inc.ClassDMS.php");
+include("../inc/inc.ClassSession.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 
-//Code when running PHP as Module -----------------------------------------------------------------
-
-/*
-setcookie("mydms_logged_out", "true", 0, $settings->_httpRoot);
-header("Location: ../out/out.ViewFolder.php");
-print "Logout successful";
-*/
-
-//Code when running PHP in CGI-Mode ---------------------------------------------------------------
-
-//Delete from tblSessions
+// Delete session from database
 
 $dms_session = $_COOKIE["mydms_session"];
 $dms_session = sanitizeString($dms_session);
 
-$queryStr = "DELETE FROM tblSessions WHERE id = '$dms_session'";
-if (!$db->getResult($queryStr))
+$session = new LetoDMS_Session($db);
+if(!$session->delete($dms_session)) {
 	UI::exitError(getMLText("logout"),$db->getErrorMsg());
+}
 
-//Delete Cookie
+// Delete Cookie
 setcookie("mydms_session", $_COOKIE["mydms_session"], time()-3600, $settings->_httpRoot);
 
 //Forward to Login-page

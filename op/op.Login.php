@@ -21,6 +21,7 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassDMS.php");
+include("../inc/inc.ClassSession.php");
 include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.ClassUI.php");
@@ -169,26 +170,17 @@ if (is_bool($user)) {
 	// authentication system.
 	//
 
-	//Retrieve user information from the database.
-	$queryStr = "SELECT * FROM tblUsers WHERE login = '".$login."'";
-	$resArr = $db->getResultArray($queryStr);
-	if (is_bool($resArr) && $resArr == false) {
-		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("internal_error")." - database: " . $db->getErrorMsg().
-									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
-		exit;
-	}
-
-	if (count($resArr) == 0) {
+	// Try to find user with given login.
+	$user = $dms->getUserByLogin($login);
+	if (!$user) {
 		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("login_error_text")."</p>\n".
 									"<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
 		exit;
 	}
 
-	$resArr = $resArr[0];
-	$userid = $resArr["id"];
-	$user = $dms->getUser($userid);
+	$userid = $user->getID();
 
-	if (($resArr["id"] == $settings->_guestID) && (!$settings->_enableGuestLogin)) {
+	if (($userid == $settings->_guestID) && (!$settings->_enableGuestLogin)) {
 		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("guest_login_disabled").
 									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
 		exit;
@@ -197,7 +189,7 @@ if (is_bool($user)) {
 	//Vergleichen des Passwortes (falls kein guest-login)
 	// Assume that the password has been sent via HTTP POST. It would be careless
 	// (and dangerous) for passwords to be sent via GET.
-	if (($resArr["id"] != $settings->_guestID) && (md5($pwd) != $resArr["pwd"])) {
+	if (($userid != $settings->_guestID) && (md5($pwd) != $user->getPwd())) {
 		_printMessage(getMLText("login_error_title"),	"<p>".getMLText("login_error_text").
 									"</p>\n<p><a href='".$settings->_httpRoot."op/op.Logout.php'>".getMLText("back")."</a></p>\n");
 		exit;
@@ -212,20 +204,6 @@ if (is_bool($user)) {
 	}
 	
 }
-
-
-// Löschen von Sitzungen, die älter als 24h sind
-// Delete any sessions that are more than 24 hours old. Probably not the most
-// reliable place to put this check -- move to inc.Authentication.php?
-$queryStr = "DELETE FROM tblSessions WHERE " . mktime() . " - lastAccess > 86400";
-if (!$db->getResult($queryStr)) {
-	_printMessage(getMLText("login_error_title"), "<p>".getMLText("error_occured").": ".$db->getErrorMsg()."</p>");
-	exit;
-}
-
-//Erstellen einer Sitzungs-ID
-$id = "" . rand() . mktime() . rand() . "";
-$id = md5($id);
 
 // Capture the user's language and theme settings.
 if (isset($_POST["lang"]) && strlen($_POST["lang"])>0 && is_numeric(array_search($_POST["lang"],getLanguages())) ) {
@@ -259,14 +237,21 @@ else {
 	}
 }
 
-//Einfügen eines neuen Datensatzes in tblSessions
-$queryStr = "INSERT INTO tblSessions (id, userID, lastAccess, theme, language) ".
-	"VALUES ('".$id."', ".$userid.", ".mktime().", '".$sesstheme."', '".$lang."')";
-if (!$db->getResult($queryStr)) {
+$session = new LetoDMS_Session($db);
+
+// Delete all sessions that are more than 24 hours old. Probably not the most
+// reliable place to put this check -- move to inc.Authentication.php?
+if(!$session->deleteByTime(86400)) {
 	_printMessage(getMLText("login_error_title"), "<p>".getMLText("error_occured").": ".$db->getErrorMsg()."</p>");
 	exit;
 }
-//Setzen des Sitzungs-Cookies
+
+// Create new session in database
+if(!$id = $session->create(array('userid'=>$userid, 'theme'=>$sesstheme, 'lang'=>$lang))) {
+	_printMessage(getMLText("login_error_title"), "<p>".getMLText("error_occured").": ".$db->getErrorMsg()."</p>");
+	exit;
+}
+
 // Set the session cookie.
 setcookie("mydms_session", $id, 0, $settings->_httpRoot);
 
