@@ -616,6 +616,11 @@ class LetoDMS_DMS {
 		return $user;
 	} /* }}} */
 
+	/**
+	 * Return list of all users
+	 *
+	 * @return array of instances of LetoDMS_User or false
+	 */
 	function getAllUsers() { /* {{{ */
 		$queryStr = "SELECT * FROM tblUsers ORDER BY login";
 		$resArr = $this->db->getResultArray($queryStr);
@@ -634,6 +639,19 @@ class LetoDMS_DMS {
 		return $users;
 	} /* }}} */
 
+	/**
+	 * Add a new user
+	 *
+	 * @param string $login login name
+	 * @param string $pwd password of new user
+	 * @param string $email Email of new user
+	 * @param string $language language of new user
+	 * @param string $comment comment of new user
+	 * @param integer $role role of new user (can be 0=normal, 1=admin, 2=guest)
+	 * @param integer $isHidden hide user in all lists, if this is set login
+	 *        is still allowed
+	 * @return object of LetoDMS_User
+	 */
 	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $role=0, $isHidden=0) { /* {{{ */
 		if (is_object($this->getUserByLogin($login))) {
 			return false;
