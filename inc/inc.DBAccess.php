@@ -78,11 +78,11 @@ class LetoDMS_DatabaseAccess {
 	}
 
 	/**
-	 * Baut Verbindung zur Datenquelle auf und liefert
-	 * true bei Erfolg, andernfalls false
+	 * Connect to database
+	 *
+	 * @return boolean true if connection could be established, otherwise false
 	 */
-	function connect()
-	{
+	function connect() { /* {{{ */
 		$this->_conn = ADONewConnection($this->_driver);
 		if ($this->_database)
 			$this->_conn->Connect($this->_hostname, $this->_user, $this->_passw, $this->_database);
@@ -94,25 +94,30 @@ class LetoDMS_DatabaseAccess {
 
 		$this->_connected = true;
 		return true;
-	}
+	} /* }}} */
 
 	/**
-	 * Stellt sicher, dass eine Verbindung zur Datenquelle aufgebaut ist
-	 * true bei Erfolg, andernfalls false
+	 * Make sure a database connection exisits
+	 *
+	 * This function checks for a database connection. If it does not exists
+	 * it will reconnect.
+	 *
+	 * @return boolean true if connection is established, otherwise false
 	 */
-	function ensureConnected()
-	{
+	function ensureConnected() { /* {{{ */
 		if (!$this->_connected) return $this->connect();
 		else return true;
-	}
+	} /* }}} */
 
 	/**
-	 * Führt die SQL-Anweisung $queryStr aus und liefert das Ergebnis-Set als Array (d.h. $queryStr
-	 * muss eine select-anweisung sein).
-	 * Falls die Anfrage fehlschlägt wird false geliefert
+	 * Execute SQL query and return result
+	 *
+	 * Call this function only with sql query which return data records.
+	 *
+	 * @param string $queryStr sql query
+	 * @return array/boolean data if query could be executed otherwise false
 	 */
-	function getResultArray($queryStr)
-	{
+	function getResultArray($queryStr) { /* {{{ */
 		$resArr = array();
 		
 		$res = $this->_conn->Execute($queryStr);
@@ -123,37 +128,45 @@ class LetoDMS_DatabaseAccess {
 		$resArr = $res->GetArray();
 		$res->Close();
 		return $resArr;
-	}
+	} /* }}} */
 
 	/**
-	 * Führt die SQL-Anweisung $queryStr aus (die kein ergebnis-set liefert, z.b. insert, del usw) und
-	 * gibt das resultat zurück
+	 * Execute SQL query
+	 *
+	 * Call this function only with sql query which do not return data records.
+	 *
+	 * @param string $queryStr sql query
+	 * @return boolean true if query could be executed otherwise false
 	 */
-	function getResult($queryStr, $silent=false)
-	{
+	function getResult($queryStr, $silent=false) { /* {{{ */
 		$res = $this->_conn->Execute($queryStr);
 		if (!$res && !$silent)
 			print "<br>" . $this->getErrorMsg() . "<br>" . $queryStr . "</br>";
 		
 		return $res;
-	}
+	} /* }}} */
 
-	function getInsertID()
-	{
+	/**
+	 * Return the id of the last instert record
+	 *
+	 * @return integer id used in last autoincrement
+	 */
+	function getInsertID() { /* {{{ */
 		return $this->_conn->Insert_ID();
-	}
+	} /* }}} */
 
-	function getErrorMsg()
-	{
+	function getErrorMsg() { /* {{{ */
 		return $this->_conn->ErrorMsg();
-	}
+	} /* }}} */
 
-	function getErrorNo()
-	{
+	function getErrorNo() { /* {{{ */
 		return $this->_conn->ErrorNo();
-	}
+	} /* }}} */
 
-	function createTemporaryTable($tableName, $override=false) {
+	/**
+	 * Create various temporary tables to speed up and simplify sql queries
+	 */
+	function createTemporaryTable($tableName, $override=false) { /* {{{ */
 		if (!strcasecmp($tableName, "ttreviewid")) {
 			$queryStr = "CREATE TEMPORARY TABLE IF NOT EXISTS `ttreviewid` (PRIMARY KEY (`reviewID`), INDEX (`maxLogID`)) ".
 				"SELECT `tblDocumentReviewLog`.`reviewID`, ".
@@ -243,7 +256,7 @@ class LetoDMS_DatabaseAccess {
 			return $this->_ttcontentid;
 		}
 		return false;
-	}
+	} /* }}} */
 }
 
 ?>
