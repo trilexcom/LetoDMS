@@ -14,6 +14,7 @@
 /**
  * Include some files
  */
+require_once("inc.DBAccess.php");
 require_once("inc.AccessUtils.php");
 require_once("inc.FileUtils.php");
 require_once("inc.ClassAccess.php");
@@ -40,8 +41,8 @@ require_once("inc.ClassNotification.php");
  * by design. It is up to the calling application to use the methods
  * {@link LetoDMS_Folder::getAccessMode} and
  * {@link LetoDMS_Document::getAccessMode} and interpret them as desired.
- * Though, there are two convinient functions to filter a list users or
- * documents/folders by a given access right. See
+ * Though, there are two convinient functions to filter a list of
+ * documents/folders for which users have access rights for. See
  * {@link LetoDMS_DMS::filterAccess}
  * and {@link LetoDMS_DMS::filterUsersByAccess}
  *
