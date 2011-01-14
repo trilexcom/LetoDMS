@@ -1,6 +1,10 @@
 <?php
 /**
- * Implementation of the user object in the document management system
+ * Implementation of a simple session management.
+ *
+ * LetoDMS uses its own simple session management, storing sessions
+ * into the database. A session holds the currently logged in user,
+ * the theme and the language.
  *
  * @category   DMS
  * @package    LetoDMS
@@ -12,7 +16,12 @@
  */
 
 /**
- * Class to represent a user in the document management system
+ * Class to represent a session
+ *
+ * This class provides some very basic methods to load, save and delete
+ * sessions. It does not set or retrieve a cockie. This is up to the
+ * application. The class basically provides access to the session database
+ * table.
  *
  * @category   DMS
  * @package    LetoDMS
@@ -51,7 +60,7 @@ class LetoDMS_Session {
 	} /* }}} */
 
 	/**
-	 * Load session by its id
+	 * Load session by its id from database
 	 *
 	 * @param string $id id of session
 	 * @return boolean true if successful otherwise false
@@ -70,7 +79,7 @@ class LetoDMS_Session {
 	} /* }}} */
 
 	/**
-	 * Create a new session and saving the given data
+	 * Create a new session and saving the given data into the database
 	 *
 	 * @param array $data data saved in session (the only fields supported
 	 *        are userid, theme, language)
@@ -90,18 +99,18 @@ class LetoDMS_Session {
 	} /* }}} */
 
 	/**
-	 * Delete old sessions older than a given time
+	 * Delete sessions older than a given time from the database
 	 *
 	 * @param integer $sec maximum number of seconds a session may live
 	 * @return boolean true if successful otherwise false
 	 */
-	function deleteByTime($sec) {
+	function deleteByTime($sec) { /* {{{ */
 		$queryStr = "DELETE FROM tblSessions WHERE " . mktime() . " - lastAccess > ".$sec;
 		if (!$this->db->getResult($queryStr)) {
 			return false;
 		}
 		return true;
-	}
+	} /* }}} */
 
 	/**
 	 * Delete session by its id
