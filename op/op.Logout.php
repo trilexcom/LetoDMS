@@ -22,7 +22,6 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
 include("../inc/inc.ClassDMS.php");
 include("../inc/inc.ClassSession.php");
-include("../inc/inc.DBAccess.php");
 include("../inc/inc.DBInit.php");
 
 // Delete session from database
