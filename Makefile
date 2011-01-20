@@ -17,6 +17,6 @@ webdav:
 	rm -rf tmp
 
 doc:
-	phpdoc -d inc -t html
+	phpdoc -d LetoDMS_Core -t html
 
 .PHONY: webdav
