@@ -68,10 +68,14 @@ if (($oldcomment = $version->getComment()) != $comment) {
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
-			
-			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
-			foreach ($document->_notifyList["groups"] as $grp) {
-				$notifier->toGroup($user, $grp, $subject, $message);
+
+			if(isset($document->_notifyList["users"])) {
+				$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
+			}
+			if(isset($document->_notifyList["groups"])) {
+				foreach ($document->_notifyList["groups"] as $grp) {
+					$notifier->toGroup($user, $grp, $subject, $message);
+				}
 			}
 		}
 	}
