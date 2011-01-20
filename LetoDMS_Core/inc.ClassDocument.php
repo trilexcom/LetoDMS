@@ -969,7 +969,7 @@ class LetoDMS_Core_Document { /* {{{ */
 
 		unset($this->_content);
 		unset($this->_latestContent);
-		$docResultSet = new LetoDMS_AddContentResultSet(new LetoDMS_Core_DocumentContent($this, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
+		$docResultSet = new LetoDMS_Core_AddContentResultSet(new LetoDMS_Core_DocumentContent($this, $version, $comment, $date, $user->getID(), $dir, $orgFileName, $fileType, $mimeType));
 
 		// TODO - verify
 		if ($this->_dms->enableConverting && in_array($docResultSet->_content->getFileType(), array_keys($this->_dms->convertFileTypes)))
@@ -2336,7 +2336,7 @@ class LetoDMS_Core_DocumentFile { /* {{{ */
  *             2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_AddContentResultSet { /* {{{ */
+class LetoDMS_Core_AddContentResultSet { /* {{{ */
 
 	var $_indReviewers;
 	var $_grpReviewers;
@@ -2345,7 +2345,7 @@ class LetoDMS_AddContentResultSet { /* {{{ */
 	var $_content;
 	var $_status;
 
-	function LetoDMS_AddContentResultSet($content) {
+	function LetoDMS_Core_AddContentResultSet($content) {
 
 		$this->_content = $content;
 		$this->_indReviewers = null;
