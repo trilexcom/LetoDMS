@@ -4,7 +4,7 @@ SRC=CHANGELOG* inc conf index.php languages op out README reset_db.sql create_ta
 dist:
 	mkdir -p tmp/letoDMS-$(VERSION)
 	cp -a $(SRC) tmp/letoDMS-$(VERSION)
-	(cd tmp; tar --exclude=.svn -czvf ../letoDMS-$(VERSION).tar.gz letoDMS-$(VERSION))
+	(cd tmp; tar --exclude=.svn -czvf ../LetoDMS-$(VERSION).tar.gz letoDMS-$(VERSION))
 	rm -rf tmp
 
 pear:
@@ -13,7 +13,7 @@ pear:
 webdav:
 	mkdir -p tmp/letoDMS-webdav-$(VERSION)
 	cp webdav/* tmp/letoDMS-webdav-$(VERSION)
-	(cd tmp; tar --exclude=.svn -czvf ../letoDMS-webdav-$(VERSION).tar.gz letoDMS-webdav-$(VERSION))
+	(cd tmp; tar --exclude=.svn -czvf ../LetoDMS-webdav-$(VERSION).tar.gz letoDMS-webdav-$(VERSION))
 	rm -rf tmp
 
 doc:
