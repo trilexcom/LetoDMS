@@ -56,4 +56,19 @@ require_once('inc/inc.ClassKeywords.php');
  */
 require_once('inc/inc.ClassNotification.php');
 
+/**
+ * @uses LetoDMS_UserAccess
+ * @uses LetoDMS_GroupAccess
+ */
+require_once('inc/inc.ClassAccess.php');
+
+/**
+ */
+require_once('inc/inc.AccessUtils.php');
+
+/**
+ * @uses LetoDMS_File
+ */
+require_once('inc/inc.FileUtils.php');
+
 ?>
