@@ -20,7 +20,6 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
-include("../LetoDMS_Core.php");
 include("../inc/inc.ClassSession.php");
 include("../inc/inc.DBInit.php");
 

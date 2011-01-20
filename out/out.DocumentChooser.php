@@ -19,7 +19,6 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../LetoDMS_Core.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
