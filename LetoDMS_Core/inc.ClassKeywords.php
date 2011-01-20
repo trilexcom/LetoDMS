@@ -22,7 +22,7 @@
  *             2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_KeywordCategory {
+class LetoDMS_Core_KeywordCategory {
 	/**
 	 * @var integer $_id id of keyword category
 	 * @access protected
@@ -47,7 +47,7 @@ class LetoDMS_KeywordCategory {
 	 */
 	var $_dms;
 
-	function LetoDMS_KeywordCategory($id, $ownerID, $name) {
+	function LetoDMS_Core_KeywordCategory($id, $ownerID, $name) {
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_ownerID = $ownerID;

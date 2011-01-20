@@ -23,7 +23,7 @@
  *             2010 Matteo Lucarelli, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_Folder {
+class LetoDMS_Core_Folder {
 	/**
 	 * @var integer unique id of folder
 	 */
@@ -69,7 +69,7 @@ class LetoDMS_Folder {
 	 */
 	var $_dms;
 
-	function LetoDMS_Folder($id, $name, $parentID, $comment, $date, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
+	function LetoDMS_Core_Folder($id, $name, $parentID, $comment, $date, $ownerID, $inheritAccess, $defaultAccess, $sequence) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_parentID = $parentID;
@@ -321,7 +321,7 @@ class LetoDMS_Folder {
 	/**
 	 * Returns a list of subfolders
 	 * This function does not check for access rights. Use
-	 * {@link LetoDMS_DMS::filterAccess} for checking each folder against
+	 * {@link LetoDMS_Core_DMS::filterAccess} for checking each folder against
 	 * the currently logged in user and the access rights.
 	 *
 	 * @param string $orderby if set to 'n' the list is ordered by name, otherwise
@@ -340,7 +340,7 @@ class LetoDMS_Folder {
 			
 			$this->_subFolders = array();
 			for ($i = 0; $i < count($resArr); $i++)
-//				$this->_subFolders[$i] = new LetoDMS_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
+//				$this->_subFolders[$i] = new LetoDMS_Core_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
 				$this->_subFolders[$i] = $this->_dms->getFolder($resArr[$i]["id"]);
 		}
 		
@@ -415,7 +415,7 @@ class LetoDMS_Folder {
 	/**
 	 * Get all documents of the folder
 	 * This function does not check for access rights. Use
-	 * {@link LetoDMS_DMS::filterAccess} for checking each document against
+	 * {@link LetoDMS_Core_DMS::filterAccess} for checking each document against
 	 * the currently logged in user and the access rights.
 	 *
 	 * @param string $orderby if set to 'n' the list is ordered by name, otherwise
@@ -435,7 +435,7 @@ class LetoDMS_Folder {
 			
 			$this->_documents = array();
 			foreach ($resArr as $row) {
-//				array_push($this->_documents, new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
+//				array_push($this->_documents, new LetoDMS_Core_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
 				array_push($this->_documents, $this->_dms->getDocument($row["id"]));
 			}
 		}
@@ -569,9 +569,9 @@ class LetoDMS_Folder {
 			$this->_accessList[$mode] = array("groups" => array(), "users" => array());
 			foreach ($resArr as $row) {
 				if ($row["userID"] != -1)
-					array_push($this->_accessList[$mode]["users"], new LetoDMS_UserAccess($this->_dms->getUser($row["userID"]), $row["mode"]));
+					array_push($this->_accessList[$mode]["users"], new LetoDMS_Core_UserAccess($this->_dms->getUser($row["userID"]), $row["mode"]));
 				else //if ($row["groupID"] != -1)
-					array_push($this->_accessList[$mode]["groups"], new LetoDMS_GroupAccess($this->_dms->getGroup($row["groupID"]), $row["mode"]));
+					array_push($this->_accessList[$mode]["groups"], new LetoDMS_Core_GroupAccess($this->_dms->getGroup($row["groupID"]), $row["mode"]));
 			}
 		}
 
@@ -1003,13 +1003,13 @@ class LetoDMS_Folder {
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` IN (". $groupIDs .") ".
-						"AND `tblUsers`.`role` != ".LetoDMS_User::role_guest.")";
+						"AND `tblUsers`.`role` != ".LetoDMS_Core_User::role_guest.")";
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE (`tblUsers`.`role` != ".LetoDMS_User::role_guest.") ".
+					"WHERE (`tblUsers`.`role` != ".LetoDMS_Core_User::role_guest.") ".
 					"AND ((`tblUsers`.`id` = ". $this->_ownerID . ") ".
-					"OR (`tblUsers`.`role` = ".LetoDMS_User::role_admin.")".
+					"OR (`tblUsers`.`role` = ".LetoDMS_Core_User::role_admin.")".
 					(strlen($userIDs) == 0 ? "" : " OR (`tblUsers`.`id` IN (". $userIDs ."))").
 					")) ORDER BY `login`";
 			}
@@ -1018,16 +1018,16 @@ class LetoDMS_Folder {
 					$queryStr = "(SELECT `tblUsers`.* FROM `tblUsers` ".
 						"LEFT JOIN `tblGroupMembers` ON `tblGroupMembers`.`userID`=`tblUsers`.`id` ".
 						"WHERE `tblGroupMembers`.`groupID` NOT IN (". $groupIDs .")".
-						"AND `tblUsers`.`role` != ".LetoDMS_User::role_guest." ".
+						"AND `tblUsers`.`role` != ".LetoDMS_Core_User::role_guest." ".
 						(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))");
 				}
 				$queryStr .= (strlen($queryStr)==0 ? "" : " UNION ").
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
 					"WHERE (`tblUsers`.`id` = ". $this->_ownerID . ") ".
-					"OR (`tblUsers`.`role` = ".LetoDMS_User::role_admin."))".
+					"OR (`tblUsers`.`role` = ".LetoDMS_Core_User::role_admin."))".
 					"UNION ".
 					"(SELECT `tblUsers`.* FROM `tblUsers` ".
-					"WHERE `tblUsers`.`role` != ".LetoDMS_User::role_guest." ".
+					"WHERE `tblUsers`.`role` != ".LetoDMS_Core_User::role_guest." ".
 					(strlen($userIDs) == 0 ? ")" : " AND (`tblUsers`.`id` NOT IN (". $userIDs .")))").
 					" ORDER BY `login`";
 			}
@@ -1061,7 +1061,7 @@ class LetoDMS_Folder {
 				$resArr = $db->getResultArray($queryStr);
 				if (!is_bool($resArr)) {
 					foreach ($resArr as $row) {
-						$this->_approversList["groups"][] = new LetoDMS_Group($row["id"], $row["name"], $row["comment"]);
+						$this->_approversList["groups"][] = new LetoDMS_Core_Group($row["id"], $row["name"], $row["comment"]);
 					}
 				}
 			}

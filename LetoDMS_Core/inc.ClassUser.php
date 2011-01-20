@@ -22,7 +22,7 @@
  *             2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_User {
+class LetoDMS_Core_User {
 	/**
 	 * @var integer id of user
 	 *
@@ -83,8 +83,8 @@ class LetoDMS_User {
 	var $_comment;
 
 	/**
-	 * @var string role of user. Can be one of LetoDMS_User::role_user,
-	 *      LetoDMS_User::role_admin, LetoDMS_User::role_guest
+	 * @var string role of user. Can be one of LetoDMS_Core_User::role_user,
+	 *      LetoDMS_Core_User::role_admin, LetoDMS_Core_User::role_guest
 	 *
 	 * @access protected
 	 */
@@ -108,7 +108,7 @@ class LetoDMS_User {
 	const role_admin = '1';
 	const role_guest = '2';
 
-	function LetoDMS_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $role, $isHidden=0) {
+	function LetoDMS_Core_User($id, $login, $pwd, $fullName, $email, $language, $theme, $comment, $role, $isHidden=0) {
 		$this->_id = $id;
 		$this->_login = $login;
 		$this->_pwd = $pwd;
@@ -239,29 +239,29 @@ class LetoDMS_User {
 		return true;
 	} /* }}} */
 
-	function isAdmin() { return ($this->_role == LetoDMS_User::role_admin); }
+	function isAdmin() { return ($this->_role == LetoDMS_Core_User::role_admin); }
 
 	function setAdmin($isAdmin) { /* {{{ */
 		$db = $this->_dms->getDB();
 
-		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_User::role_admin . " WHERE id = " . $this->_id;
+		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_Core_User::role_admin . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->_role = LetoDMS_User::role_admin;
+		$this->_role = LetoDMS_Core_User::role_admin;
 		return true;
 	} /* }}} */
 
-	function isGuest() { return ($this->_role == LetoDMS_User::role_guest); }
+	function isGuest() { return ($this->_role == LetoDMS_Core_User::role_guest); }
 
 	function setGuest($isGuest) { /* {{{ */
 		$db = $this->_dms->getDB();
 
-		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_User::role_guest . " WHERE id = " . $this->_id;
+		$queryStr = "UPDATE tblUsers SET role = " . LetoDMS_Core_User::role_guest . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
-		$this->_role = LetoDMS_User::role_guest;
+		$this->_role = LetoDMS_Core_User::role_guest;
 		return true;
 	} /* }}} */
 
@@ -441,7 +441,7 @@ class LetoDMS_User {
 
 			$this->_groups = array();
 			foreach ($resArr as $row) {
-				$group = new LetoDMS_Group($row["id"], $row["name"], $row["comment"]);
+				$group = new LetoDMS_Core_Group($row["id"], $row["name"], $row["comment"]);
 				array_push($this->_groups, $group);
 			}
 		}

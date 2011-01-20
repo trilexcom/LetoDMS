@@ -2,7 +2,7 @@
 #ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
 
 include("/etc/letodms/conf.Settings.php");
-include("LetoDMS/LetoDMS.php");
+include("LetoDMS/LetoDMS_Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
@@ -88,12 +88,12 @@ if(isset($options['V'])) {
 if($reqversion<1)
 	$reqversion=1;
 
-$db = new LetoDMS_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
+$db = new LetoDMS_Core_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
 $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostname . "\"");
 $db->_conn->debug = 1;
 
 
-$dms = new LetoDMS_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir);
+$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir);
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setGuestID($settings->_guestID);
 $dms->setEnableGuestLogin($settings->_enableGuestLogin);

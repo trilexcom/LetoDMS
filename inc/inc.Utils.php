@@ -101,7 +101,7 @@ function createVersionigFile($document) { /* {{{ */
 	
 	// if directory has been removed recreate it
 	if (!file_exists($settings->_contentDir . $document->getDir())) 
-		if (!LetoDMS_File::makeDir($settings->_contentDir . $document->getDir())) return false;
+		if (!LetoDMS_Core_File::makeDir($settings->_contentDir . $document->getDir())) return false;
 	
 	$handle = fopen($settings->_contentDir . $document->getDir() .$settings-> _versioningFileName , "wb");
 	

@@ -20,7 +20,8 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
+//include("../LetoDMS_Core.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
@@ -71,9 +72,9 @@ UI::contentHeading(getMLText("folder_contents"));
 UI::contentContainerStart();
 
 $subFolders = $folder->getSubFolders($orderby);
-$subFolders = LetoDMS_DMS::filterAccess($subFolders, $user, M_READ);
+$subFolders = LetoDMS_Core_DMS::filterAccess($subFolders, $user, M_READ);
 $documents = $folder->getDocuments($orderby);
-$documents = LetoDMS_DMS::filterAccess($documents, $user, M_READ);
+$documents = LetoDMS_Core_DMS::filterAccess($documents, $user, M_READ);
 
 if ((count($subFolders) > 0)||(count($documents) > 0)){
 	print "<table class=\"folderView\">";
@@ -95,9 +96,9 @@ foreach($subFolders as $subFolder) {
 	$comment = $subFolder->getComment();
 	if (strlen($comment) > 50) $comment = substr($comment, 0, 47) . "...";
 	$subsub = $subFolder->getSubFolders();
-	$subsub = LetoDMS_DMS::filterAccess($subsub, $user, M_READ);
+	$subsub = LetoDMS_Core_DMS::filterAccess($subsub, $user, M_READ);
 	$subdoc = $subFolder->getDocuments();
-	$subdoc = LetoDMS_DMS::filterAccess($subdoc, $user, M_READ);
+	$subdoc = LetoDMS_Core_DMS::filterAccess($subdoc, $user, M_READ);
 	
 	print "<tr class=\"folder\">";
 //	print "<td><img src=\"images/folder_closed.gif\" width=18 height=18 border=0></td>";

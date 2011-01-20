@@ -19,56 +19,56 @@
 /**
  * @uses LetoDMS_DatabaseAccess
  */
-require_once('inc/inc.DBAccess.php');
+require_once('LetoDMS_Core/inc.DBAccess.php');
 
 /**
  * @uses LetoDMS_DMS
  */
-require_once('inc/inc.ClassDMS.php');
+require_once('LetoDMS_Core/inc.ClassDMS.php');
 
 /**
  * @uses LetoDMS_Folder
  */
-require_once('inc/inc.ClassFolder.php');
+require_once('LetoDMS_Core/inc.ClassFolder.php');
 
 /**
  * @uses LetoDMS_Document
  */
-require_once('inc/inc.ClassDocument.php');
+require_once('LetoDMS_Core/inc.ClassDocument.php');
 
 /**
  * @uses LetoDMS_Group
  */
-require_once('inc/inc.ClassGroup.php');
+require_once('LetoDMS_Core/inc.ClassGroup.php');
 
 /**
  * @uses LetoDMS_User
  */
-require_once('inc/inc.ClassUser.php');
+require_once('LetoDMS_Core/inc.ClassUser.php');
 
 /**
  * @uses LetoDMS_KeywordCategory
  */
-require_once('inc/inc.ClassKeywords.php');
+require_once('LetoDMS_Core/inc.ClassKeywords.php');
 
 /**
  * @uses LetoDMS_Notification
  */
-require_once('inc/inc.ClassNotification.php');
+require_once('LetoDMS_Core/inc.ClassNotification.php');
 
 /**
  * @uses LetoDMS_UserAccess
  * @uses LetoDMS_GroupAccess
  */
-require_once('inc/inc.ClassAccess.php');
+require_once('LetoDMS_Core/inc.ClassAccess.php');
 
 /**
  */
-require_once('inc/inc.AccessUtils.php');
+require_once('LetoDMS_Core/inc.AccessUtils.php');
 
 /**
  * @uses LetoDMS_File
  */
-require_once('inc/inc.FileUtils.php');
+require_once('LetoDMS_Core/inc.FileUtils.php');
 
 ?>

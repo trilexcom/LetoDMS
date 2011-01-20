@@ -18,10 +18,10 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-$db = new LetoDMS_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
+$db = new LetoDMS_Core_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
 $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostname . "\"");
 
-$dms = new LetoDMS_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
+$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
 $dms->setEnableConverting($settings->_enableConverting);

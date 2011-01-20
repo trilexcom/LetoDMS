@@ -17,7 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.ClassEmail.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -189,7 +189,7 @@ if (!createFolderTar($folder,$ark)) {
 TarAddFooter($ark);
 fclose($ark);
 
-if (LetoDMS_File::gzcompressfile($ark_name,9)) unlink($ark_name);
+if (LetoDMS_Core_File::gzcompressfile($ark_name,9)) unlink($ark_name);
 else UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 
 add_log_line();

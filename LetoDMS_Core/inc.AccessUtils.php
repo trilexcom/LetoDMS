@@ -14,7 +14,7 @@
 
 /**
  * Used to indicate that a search should return all
- * results in the ACL table. See {@link LetoDMS_Folder::getAccessList()}
+ * results in the ACL table. See {@link LetoDMS_Core_Folder::getAccessList()}
  */
 define("M_ANY", -1);
 

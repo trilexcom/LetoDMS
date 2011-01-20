@@ -17,7 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
@@ -35,7 +35,7 @@ if (@readlink($settings->_contentDir."current.log")==$settings->_contentDir.$_PO
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-if (!LetoDMS_File::removeFile($settings->_contentDir.$_POST["logname"])) {
+if (!LetoDMS_Core_File::removeFile($settings->_contentDir.$_POST["logname"])) {
 	UI::exitError(getMLText("admin_tools"),getMLText("error_occured"));
 }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.8.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
- <name>LetoDMS</name>
+ <name>LetoDMS_Core</name>
  <channel>pear.php.net</channel>
  <summary>Document management system</summary>
  <description>LetoDMS is a web based document management system (DMS). This is
@@ -34,7 +34,7 @@
  </notes>
  <contents>
   <dir baseinstalldir="LetoDMS" name="/">
-   <dir name="inc">
+   <dir name="LetoDMS_Core">
     <file name="inc.ClassDocument.php" role="php">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
@@ -73,7 +73,7 @@
     <file name="getfoldertree.php" role="test" />
     <file name="getusers.php" role="test" />
    </dir> <!-- /tests -->
-   <file name="LetoDMS.php" role="php">
+   <file name="LetoDMS_Core.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
    <file name="README" role="data" />

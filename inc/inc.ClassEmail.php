@@ -38,8 +38,8 @@ class LetoDMS_Email extends LetoDMS_Notify {
 		
 		if ($recipient->getEmail()=="") return 0;
 
-		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_User")) ||
-				(!is_object($recipient) && strcasecmp(get_class($recipient), "LetoDMS_User"))) {
+		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_Core_User")) ||
+				(!is_object($recipient) && strcasecmp(get_class($recipient), "LetoDMS_Core_User"))) {
 			return -1;
 		}
 
@@ -57,8 +57,8 @@ class LetoDMS_Email extends LetoDMS_Notify {
 		global $settings;
 		if (!$settings->_enableEmail) return 0;
 
-		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_User")) ||
-				(!is_object($groupRecipient) && strcasecmp(get_class($groupRecipient), "LetoDMS_Group"))) {
+		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_Core_User")) ||
+				(!is_object($groupRecipient) && strcasecmp(get_class($groupRecipient), "LetoDMS_Core_Group"))) {
 			return -1;
 		}
 
@@ -87,7 +87,7 @@ class LetoDMS_Email extends LetoDMS_Notify {
 		global $settings;
 		if (!$settings->_enableEmail) return 0;
 
-		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_User")) ||
+		if ((!is_object($sender) && strcasecmp(get_class($sender), "LetoDMS_Core_User")) ||
 				(!is_array($recipients) && count($recipients)==0)) {
 			return -1;
 		}
@@ -97,7 +97,7 @@ class LetoDMS_Email extends LetoDMS_Notify {
 
 		$toList = "";
 		foreach ($recipients as $recipient) {
-			if (is_object($recipient) && !strcasecmp(get_class($recipient), "LetoDMS_User")) {
+			if (is_object($recipient) && !strcasecmp(get_class($recipient), "LetoDMS_Core_User")) {
 			
 				if ($recipient->getEmail()!="")
 					$toList .= (strlen($toList)==0 ? "" : ", ") . $recipient->getEmail();

@@ -18,7 +18,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
@@ -72,7 +72,7 @@ $resArr = $db->getResultArray($searchQuery);
 if (!is_bool($resArr) && count($resArr)>0) {
 	echo "<ol>";
 	foreach($resArr as $docArr) {
-		$doc = new LetoDMS_Document($docArr["id"],
+		$doc = new LetoDMS_Core_Document($docArr["id"],
 												$docArr["name"],
 												$docArr["comment"],
 												$docArr["date"],

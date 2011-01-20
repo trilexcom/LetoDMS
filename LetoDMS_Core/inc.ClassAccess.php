@@ -23,11 +23,11 @@
  *             2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_UserAccess { /* {{{ */
+class LetoDMS_Core_UserAccess { /* {{{ */
 	var $_user;
 	var $_mode;
 
-	function LetoDMS_UserAccess($user, $mode) {
+	function LetoDMS_Core_UserAccess($user, $mode) {
 		$this->_user = $user;
 		$this->_mode = $mode;
 	}
@@ -52,11 +52,11 @@ class LetoDMS_UserAccess { /* {{{ */
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_GroupAccess { /* {{{ */
+class LetoDMS_Core_GroupAccess { /* {{{ */
 	var $_group;
 	var $_mode;
 
-	function LetoDMS_GroupAccess($group, $mode) {
+	function LetoDMS_Core_GroupAccess($group, $mode) {
 		$this->_group = $group;
 		$this->_mode = $mode;
 	}

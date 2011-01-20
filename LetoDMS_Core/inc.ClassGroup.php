@@ -21,7 +21,7 @@
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_Group {
+class LetoDMS_Core_Group {
 	/**
 	 * The id of the user group
 	 *
@@ -43,7 +43,7 @@ class LetoDMS_Group {
 	 */
 	var $_dms;
 
-	function LetoDMS_Group($id, $name, $comment) { /* {{{ */
+	function LetoDMS_Core_Group($id, $name, $comment) { /* {{{ */
 		$this->_id = $id;
 		$this->_name = $name;
 		$this->_comment = $comment;
@@ -96,7 +96,7 @@ class LetoDMS_Group {
 			$this->_users = array();
 
 			foreach ($resArr as $row) {
-				$user = new LetoDMS_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["role"], $row['hidden']);
+				$user = new LetoDMS_Core_User($row["id"], $row["login"], $row["pwd"], $row["fullName"], $row["email"], $row["language"], $row["theme"], $row["comment"], $row["role"], $row['hidden']);
 				array_push($this->_users, $user);
 			}
 		}

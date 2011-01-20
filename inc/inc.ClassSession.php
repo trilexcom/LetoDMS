@@ -32,7 +32,7 @@
 class LetoDMS_Session {
 	/**
 	 * @var object $db reference to database object. This must be an instance
-	 *      of {@link LetoDMS_DatabaseAccess}.
+	 *      of {@link LetoDMS_Core_DatabaseAccess}.
 	 * @access protected
 	 */
 	protected $db;

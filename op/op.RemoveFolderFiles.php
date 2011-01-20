@@ -17,7 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.ClassEmail.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
@@ -34,7 +34,7 @@ function removeFolderFiles($folder)
 
 	$documents = $folder->getDocuments();
 	foreach ($documents as $document)
-		LetoDMS_File::removeDir($settings->_contentDir . $document->getDir());
+		LetoDMS_Core_File::removeDir($settings->_contentDir . $document->getDir());
 
 	$subFolders = $folder->getSubFolders();
 	

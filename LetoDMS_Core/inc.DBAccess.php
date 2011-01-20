@@ -30,7 +30,7 @@ else
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_DatabaseAccess {
+class LetoDMS_Core_DatabaseAccess {
 	var $_driver;
 	var $_hostname;
 	var $_database;
@@ -55,7 +55,7 @@ class LetoDMS_DatabaseAccess {
 	/**
 	 * Konstruktor
 	 */
-	function LetoDMS_DatabaseAccess($driver, $hostname, $user, $passw, $database = false)
+	function LetoDMS_Core_DatabaseAccess($driver, $hostname, $user, $passw, $database = false)
 	{
 		$this->_driver = $driver;
 		$this->_hostname = $hostname;

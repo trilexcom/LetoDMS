@@ -28,7 +28,7 @@ require_once("inc.ClassNotification.php");
 /**
  * Class to represent the complete document management system.
  * This class is needed to do most of the dms operations. It needs
- * an instance of {@link LetoDMS_DatabaseAccess} to access the
+ * an instance of {@link LetoDMS_Core_DatabaseAccess} to access the
  * underlying database. Many methods are factory functions which create
  * objects representing the entities in the dms, like folders, documents,
  * users, or groups.
@@ -39,12 +39,12 @@ require_once("inc.ClassNotification.php");
  *
  * This class does not enforce any access rights on documents and folders
  * by design. It is up to the calling application to use the methods
- * {@link LetoDMS_Folder::getAccessMode} and
- * {@link LetoDMS_Document::getAccessMode} and interpret them as desired.
+ * {@link LetoDMS_Core_Folder::getAccessMode} and
+ * {@link LetoDMS_Core_Document::getAccessMode} and interpret them as desired.
  * Though, there are two convinient functions to filter a list of
  * documents/folders for which users have access rights for. See
- * {@link LetoDMS_DMS::filterAccess}
- * and {@link LetoDMS_DMS::filterUsersByAccess}
+ * {@link LetoDMS_Core_DMS::filterAccess}
+ * and {@link LetoDMS_Core_DMS::filterUsersByAccess}
  *
  * Though, this class has two methods to set the currently logged in user
  * ({@link setUser} and {@link login}), none of them need to be called, because
@@ -54,9 +54,9 @@ require_once("inc.ClassNotification.php");
  * <code>
  * <?php
  * include("inc/inc.ClassDMS.php");
- * $db = new LetoDMS_DatabaseAccess($type, $hostname, $user, $passwd, $name);
+ * $db = new LetoDMS_Core_DatabaseAccess($type, $hostname, $user, $passwd, $name);
  * $db->connect() or die ("Could not connect to db-server");
- * $dms = new LetoDMS_DMS($db, $contentDir);
+ * $dms = new LetoDMS_Core_DMS($db, $contentDir);
  * $dms->setRootFolderID(1);
  * ...
  * ?>
@@ -69,17 +69,17 @@ require_once("inc.ClassNotification.php");
  * @copyright  Copyright (C) 2010, Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_DMS {
+class LetoDMS_Core_DMS {
 	/**
 	 * @var object $db reference to database object. This must be an instance
-	 *      of {@link LetoDMS_DatabaseAccess}.
+	 *      of {@link LetoDMS_Core_DatabaseAccess}.
 	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * @var object $user reference to currently logged in user. This must be
-	 *      an instance of {@link LetoDMS_User}. This variable is currently not
+	 *      an instance of {@link LetoDMS_Core_User}. This variable is currently not
 	 *      used. It is set by {@link setUser}.
 	 * @access private
 	 */
@@ -162,7 +162,7 @@ class LetoDMS_DMS {
 	 * @param object $db object to access the underlying database
 	 * @param string $contentDir path in filesystem containing the data store
 	 *        all document contents is stored
-	 * @return object instance of LetoDMS_DMS
+	 * @return object instance of LetoDMS_Core_DMS
 	 */
 	function __construct($db, $contentDir) { /* {{{ */
 		$this->db = $db;
@@ -183,7 +183,7 @@ class LetoDMS_DMS {
 	/**
 	 * Set id of root folder
 	 * This function must be called right after creating an instance of
-	 * LetoDMS_DMS
+	 * LetoDMS_Core_DMS
 	 *
 	 * @param interger $id id of root folder
 	 */
@@ -228,7 +228,7 @@ class LetoDMS_DMS {
 	 * @param string $username login name of user
 	 * @param string $password password of user
 	 *
-	 * @return object instance of class LetoDMS_User or false
+	 * @return object instance of class LetoDMS_Core_User or false
 	 */
 	function login($username, $password) { /* {{{ */
 	} /* }}} */
@@ -252,7 +252,7 @@ class LetoDMS_DMS {
 	 * This function retrieves a document from the database by its id.
 	 *
 	 * @param integer $id internal id of document
-	 * @return object instance of LetoDMS_Document or false
+	 * @return object instance of LetoDMS_Core_Document or false
 	 */
 	function getDocument($id) { /* {{{ */
 		if (!is_numeric($id)) return false;
@@ -277,7 +277,7 @@ class LetoDMS_DMS {
 			$lock = $lockArr[0]["userID"];
 		}
 
-		$document = new LetoDMS_Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
+		$document = new LetoDMS_Core_Document($resArr["id"], $resArr["name"], $resArr["comment"], $resArr["date"], $resArr["expires"], $resArr["owner"], $resArr["folder"], $resArr["inheritAccess"], $resArr["defaultAccess"], $lock, $resArr["keywords"], $resArr["sequence"]);
 		$document->setDMS($this);
 		return $document;
 	} /* }}} */
@@ -300,7 +300,7 @@ class LetoDMS_DMS {
 
 		$documents = array();
 		foreach ($resArr as $row) {
-			$document = new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
+			$document = new LetoDMS_Core_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
 			$document->setDMS($this);
 			$documents[] = $document;
 		}
@@ -336,7 +336,7 @@ class LetoDMS_DMS {
 			return false;
 
 		$row = $resArr[0];
-		$document = new LetoDMS_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
+		$document = new LetoDMS_Core_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], $row["lockUser"], $row["keywords"], $row["sequence"]);
 		$document->setDMS($this);
 		return $document;
 	} /* }}} */
@@ -499,7 +499,7 @@ class LetoDMS_DMS {
 
 		foreach ($resArr as $docArr) {
 
-			$document = new LetoDMS_Document(
+			$document = new LetoDMS_Core_Document(
 				$docArr["id"], $docArr["name"],
 				$docArr["comment"], $docArr["date"],
 				$docArr["expires"], $docArr["owner"],
@@ -518,7 +518,7 @@ class LetoDMS_DMS {
 	 * This function retrieves a folder from the database by its id.
 	 *
 	 * @param integer $id internal id of folder
-	 * @return object instance of LetoDMS_Folder or false
+	 * @return object instance of LetoDMS_Core_Folder or false
 	 */
 	function getFolder($id) { /* {{{ */
 		if (!is_numeric($id)) return false;
@@ -532,7 +532,7 @@ class LetoDMS_DMS {
 			return false;
 
 		$resArr = $resArr[0];
-		$folder = new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["date"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
+		$folder = new LetoDMS_Core_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["date"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 		$folder->setDMS($this);
 		return $folder;
 	} /* }}} */
@@ -565,7 +565,7 @@ class LetoDMS_DMS {
 			return false;
 
 		$resArr = $resArr[0];
-		$folder = new LetoDMS_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["date"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
+		$folder = new LetoDMS_Core_Folder($resArr["id"], $resArr["name"], $resArr["parent"], $resArr["comment"], $resArr["date"], $resArr["owner"], $resArr["inheritAccess"], $resArr["defaultAccess"], $resArr["sequence"]);
 		$folder->setDMS($this);
 		return $folder;
 	} /* }}} */
@@ -576,7 +576,7 @@ class LetoDMS_DMS {
 	 * This function retrieves a user from the database by its id.
 	 *
 	 * @param integer $id internal id of user
-	 * @return object instance of LetoDMS_User or false
+	 * @return object instance of LetoDMS_Core_User or false
 	 */
 	function getUser($id) { /* {{{ */
 		if (!is_numeric($id))
@@ -590,7 +590,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
+		$user = new LetoDMS_Core_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
 	} /* }}} */
@@ -601,7 +601,7 @@ class LetoDMS_DMS {
 	 * This function retrieves a user from the database by its login.
 	 *
 	 * @param integer $login internal login of user
-	 * @return object instance of LetoDMS_User or false
+	 * @return object instance of LetoDMS_Core_User or false
 	 */
 	function getUserByLogin($login) { /* {{{ */
 		$queryStr = "SELECT * FROM tblUsers WHERE login = '".$login."'";
@@ -612,7 +612,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$user = new LetoDMS_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
+		$user = new LetoDMS_Core_User($resArr["id"], $resArr["login"], $resArr["pwd"], $resArr["fullName"], $resArr["email"], $resArr["language"], $resArr["theme"], $resArr["comment"], $resArr["role"], $resArr["hidden"]);
 		$user->setDMS($this);
 		return $user;
 	} /* }}} */
@@ -620,7 +620,7 @@ class LetoDMS_DMS {
 	/**
 	 * Return list of all users
 	 *
-	 * @return array of instances of LetoDMS_User or false
+	 * @return array of instances of LetoDMS_Core_User or false
 	 */
 	function getAllUsers() { /* {{{ */
 		$queryStr = "SELECT * FROM tblUsers ORDER BY login";
@@ -632,7 +632,7 @@ class LetoDMS_DMS {
 		$users = array();
 
 		for ($i = 0; $i < count($resArr); $i++) {
-			$user = new LetoDMS_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["role"], $resArr[$i]["hidden"]);
+			$user = new LetoDMS_Core_User($resArr[$i]["id"], $resArr[$i]["login"], $resArr[$i]["pwd"], $resArr[$i]["fullName"], $resArr[$i]["email"], (isset($resArr["language"])?$resArr["language"]:NULL), (isset($resArr["theme"])?$resArr["theme"]:NULL), $resArr[$i]["comment"], $resArr[$i]["role"], $resArr[$i]["hidden"]);
 			$user->setDMS($this);
 			$users[$i] = $user;
 		}
@@ -651,7 +651,7 @@ class LetoDMS_DMS {
 	 * @param integer $role role of new user (can be 0=normal, 1=admin, 2=guest)
 	 * @param integer $isHidden hide user in all lists, if this is set login
 	 *        is still allowed
-	 * @return object of LetoDMS_User
+	 * @return object of LetoDMS_Core_User
 	 */
 	function addUser($login, $pwd, $fullName, $email, $language, $theme, $comment, $role=0, $isHidden=0) { /* {{{ */
 		if (is_object($this->getUserByLogin($login))) {
@@ -685,7 +685,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group = new LetoDMS_Core_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
 		$group->setDMS($this);
 		return $group;
 	} /* }}} */
@@ -707,7 +707,7 @@ class LetoDMS_DMS {
 
 		$resArr = $resArr[0];
 
-		$group = new LetoDMS_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
+		$group = new LetoDMS_Core_Group($resArr["id"], $resArr["name"], $resArr["comment"]);
 		$group->setDMS($this);
 		return $group;
 	} /* }}} */
@@ -715,7 +715,7 @@ class LetoDMS_DMS {
 	/**
 	 * Get a list of all groups
 	 *
-	 * @return array array of instances of {@link LetoDMS_Group}
+	 * @return array array of instances of {@link LetoDMS_Core_Group}
 	 */
 	function getAllGroups() { /* {{{ */
 		$queryStr = "SELECT * FROM tblGroups ORDER BY name";
@@ -728,7 +728,7 @@ class LetoDMS_DMS {
 
 		for ($i = 0; $i < count($resArr); $i++) {
 
-			$group = new LetoDMS_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
+			$group = new LetoDMS_Core_Group($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["comment"]);
 			$group->setDMS($this);
 			$groups[$i] = $group;
 		}
@@ -741,7 +741,7 @@ class LetoDMS_DMS {
 	 *
 	 * @param string $name name of group
 	 * @param string $comment comment of group
-	 * @return object/boolean instance of {@link LetoDMS_Group} or false in
+	 * @return object/boolean instance of {@link LetoDMS_Core_Group} or false in
 	 *         case of an error.
 	 */
 	function addGroup($name, $comment) { /* {{{ */
@@ -766,7 +766,7 @@ class LetoDMS_DMS {
 			return false;
 
 		$resArr = $resArr[0];
-		$cat = new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+		$cat = new LetoDMS_Core_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
 		$cat->setDMS($this);
 		return $cat;
 	} /* }}} */
@@ -778,7 +778,7 @@ class LetoDMS_DMS {
 			return false;
 
 		$resArr = $resArr[0];
-		$cat = new LetoDMS_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
+		$cat = new LetoDMS_Core_Keywordcategory($resArr["id"], $resArr["owner"], $resArr["name"]);
 		$cat->setDMS($this);
 		return $cat;
 	} /* }}} */
@@ -794,7 +794,7 @@ class LetoDMS_DMS {
 
 		$categories = array();
 		foreach ($resArr as $row) {
-			$cat = new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]);
+			$cat = new LetoDMS_Core_KeywordCategory($row["id"], $row["owner"], $row["name"]);
 			$cat->setDMS($this);
 			array_push($categories, $cat);
 		}
@@ -813,7 +813,7 @@ class LetoDMS_DMS {
 
 		$categories = array();
 		foreach ($resArr as $row) {
-			$cat = new LetoDMS_KeywordCategory($row["id"], $row["owner"], $row["name"]);
+			$cat = new LetoDMS_Core_KeywordCategory($row["id"], $row["owner"], $row["name"]);
 			$cat->setDMS($this);
 			array_push($categories, $cat);
 		}
@@ -852,7 +852,7 @@ class LetoDMS_DMS {
 
 		$notifications = array();
 		foreach ($resArr as $row) {
-			$not = new LetoDMS_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
+			$not = new LetoDMS_Core_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
 			$not->setDMS($this);
 			array_push($notifications, $cat);
 		}
@@ -880,7 +880,7 @@ class LetoDMS_DMS {
 
 		$notifications = array();
 		foreach ($resArr as $row) {
-			$not = new LetoDMS_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
+			$not = new LetoDMS_Core_Notification($row["target"], $row["targetType"], $row["userID"], $row["groupID"]);
 			$not->setDMS($this);
 			array_push($notifications, $cat);
 		}

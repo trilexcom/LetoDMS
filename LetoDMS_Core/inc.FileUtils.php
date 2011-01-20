@@ -24,7 +24,7 @@
  *             2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_File {
+class LetoDMS_Core_File {
 	function renameFile($old, $new) {
 		return @rename($old, $new);
 	}

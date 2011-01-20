@@ -18,7 +18,7 @@
 
 include("../inc/inc.Settings.php");
 include("../inc/inc.Utils.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.ClassEmail.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");

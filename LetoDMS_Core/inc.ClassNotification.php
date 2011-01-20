@@ -20,7 +20,7 @@
  * @copyright  Copyright (C) 2010 Uwe Steinmann
  * @version    Release: @package_version@
  */
-class LetoDMS_Notification { /* {{{ */
+class LetoDMS_Core_Notification { /* {{{ */
 	/**
 	 * @var integer id of target (document or folder)
 	 *
@@ -56,7 +56,7 @@ class LetoDMS_Notification { /* {{{ */
 	 */
 	var $_dms;
 
-	function LetoDMS_Notification($target, $targettype, $userid, $groupid) {
+	function LetoDMS_Core_Notification($target, $targettype, $userid, $groupid) {
 		$this->_target = $target;
 		$this->_targettype = $targettype;
 		$this->_userid = $userid;

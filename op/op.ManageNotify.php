@@ -17,7 +17,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
-include("../inc/inc.ClassDMS.php");
+include("../LetoDMS_Core.php");
 include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
@@ -37,7 +37,7 @@ function add_folder_notify($folder,$userid,$recursefolder,$recursedoc)
 		// include all folder's document
 		
 		$documents = $folder->getDocuments();
-		$documents = LetoDMS_DMS::filterAccess($documents, $dms->getUser($userid), M_READ);
+		$documents = LetoDMS_Core_DMS::filterAccess($documents, $dms->getUser($userid), M_READ);
 
 		foreach($documents as $document)
 			$document->addNotify($userid, true);
@@ -48,7 +48,7 @@ function add_folder_notify($folder,$userid,$recursefolder,$recursedoc)
 		// recurse all folder's folders
 		
 		$subFolders = $folder->getSubFolders();
-		$subFolders = LetoDMS_DMS::filterAccess($subFolders, $dms->getUser($userid), M_READ);
+		$subFolders = LetoDMS_Core_DMS::filterAccess($subFolders, $dms->getUser($userid), M_READ);
 
 		foreach($subFolders as $subFolder)
 			add_folder_notify($subFolder,$userid,$recursefolder,$recursedoc);
