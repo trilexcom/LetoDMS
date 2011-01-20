@@ -31,4 +31,7 @@ if(is_link($_tmp)) {
 if(isset($settings->_ADOdbPath))
 	ini_set('include_path', $settings->_ADOdbPath.":".ini_get('include_path'));
 
+if(isset($settings->_LetoDMSCorePath))
+	ini_set('include_path', $settings->_LetoDMSCorePath.ini_get('include_path'));
+
 ?>
