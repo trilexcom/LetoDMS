@@ -27,4 +27,8 @@ if(is_link($_tmp)) {
 } else {
 	include("../conf/conf.Settings.php");
 }
+
+if(isset($settings->_ADOdbPath))
+	ini_set('include_path', $settings->_ADOdbPath.":".ini_get('include_path'));
+
 ?>
