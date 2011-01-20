@@ -14,12 +14,8 @@
 
 /**
  * Include the adodb database abstraction
- * FIXME: use $settings here should be remove some time
  */
-if(isset($settings->_ADOdbPath))
-	require_once $settings->_ADOdbPath . "adodb/adodb.inc.php";
-else
-	require_once "adodb/adodb.inc.php";
+require_once "adodb/adodb.inc.php";
 
 /**
  * Class to represent the database access for the document management
