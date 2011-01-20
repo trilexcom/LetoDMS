@@ -3,7 +3,7 @@
  * Some definitions for access control
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>

@@ -3,7 +3,7 @@
  * Implementation of various file system operations
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
@@ -17,7 +17,7 @@
  * Class to represent a user in the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal,
  *             2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli,

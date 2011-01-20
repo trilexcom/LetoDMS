@@ -3,7 +3,7 @@
  * Implementation of the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
@@ -63,7 +63,7 @@ require_once("inc.ClassNotification.php");
  * </code>
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2010, Uwe Steinmann

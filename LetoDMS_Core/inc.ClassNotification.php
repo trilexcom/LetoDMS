@@ -3,7 +3,7 @@
  * Implementation of a notification object
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
@@ -15,7 +15,7 @@
  * Class to represent a notification
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2010 Uwe Steinmann
  * @version    Release: @package_version@

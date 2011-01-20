@@ -3,7 +3,7 @@
  * Implementation of database access
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
@@ -21,7 +21,7 @@ require_once "adodb/adodb.inc.php";
  * Class to represent the database access for the document management
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli, Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Matteo Lucarelli, 2010 Uwe Steinmann
  * @version    Release: @package_version@

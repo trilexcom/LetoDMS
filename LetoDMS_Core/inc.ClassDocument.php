@@ -3,7 +3,7 @@
  * Implementation of a document in the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL2
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
@@ -26,7 +26,7 @@ define("S_EXPIRED",  -3);
  * Class to represent a document in the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe,
@@ -1469,7 +1469,7 @@ class LetoDMS_Core_Document { /* {{{ */
  * {@link LetoDMS_Core_Document::removeContent()}.
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal,
@@ -2186,7 +2186,7 @@ class LetoDMS_Core_DocumentContent { /* {{{ */
  * to another document.
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal,
@@ -2247,7 +2247,7 @@ class LetoDMS_Core_DocumentLink { /* {{{ */
  * Use {@link LetoDMS_Core_Document::addDocumentFile()} to attach a file.
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal,
@@ -2328,7 +2328,7 @@ class LetoDMS_Core_DocumentFile { /* {{{ */
  * Class to represent a list of document contents
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal,

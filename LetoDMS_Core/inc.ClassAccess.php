@@ -3,7 +3,7 @@
  * Implementation of user and group access object
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL 2
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
@@ -17,7 +17,7 @@
  * This class cannot be used to modify access rights.
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe,
  *             2010 Uwe Steinmann
@@ -47,7 +47,7 @@ class LetoDMS_Core_UserAccess { /* {{{ */
  * This class cannot be used to modify access rights.
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe, 2010 Uwe Steinmann
  * @version    Release: @package_version@

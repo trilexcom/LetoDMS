@@ -3,7 +3,7 @@
  * Implementation of a folder in the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @license    GPL2
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,
  *             Uwe Steinmann <uwe@steinmann.cx>
@@ -16,7 +16,7 @@
  * Class to represent a folder in the document management system
  *
  * @category   DMS
- * @package    LetoDMS
+ * @package    LetoDMS_Core
  * @version    @version@
  * @author     Uwe Steinmann <uwe@steinmann.cx>
  * @copyright  Copyright (C) 2002-2005 Markus Westphal, 2006-2008 Malcolm Cowe,
