@@ -140,6 +140,9 @@ class Settings
 	// NOTE: works only with local autentication (no LDAP)
 	var $_adminIP = "";
 
+	//Path to LetoDMS_Core
+	var $_LetoDMSCorePath = $this->_rootDir;
+
 	// -------------------------------- Database-Setup --------------------------------------------
 
 	//Path to adodb. This is the directory containing the adodb directory
