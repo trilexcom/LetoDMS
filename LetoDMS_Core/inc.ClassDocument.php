@@ -80,6 +80,11 @@ class LetoDMS_Core_Document { /* {{{ */
 	var $_defaultAccess;
 
 	/**
+	 * @var array list of notifications for users and groups
+	 */
+	var $_notifyList;
+
+	/**
 	 * @var boolean true if document is locked, otherwise false
 	 */
 	var $_locked;
@@ -112,6 +117,7 @@ class LetoDMS_Core_Document { /* {{{ */
 		$this->_locked = ($locked == null || $locked == '' ? -1 : $locked);
 		$this->_keywords = $keywords;
 		$this->_sequence = $sequence;
+		$this->_notifyList = array();
 		$this->_dms = null;
 	} /* }}} */
 
@@ -343,14 +349,14 @@ class LetoDMS_Core_Document { /* {{{ */
 
 		// If any of the notification subscribers no longer have read access,
 		// remove their subscription.
-		if($this->_notifyList["users"]) {
+		if(isset($this->_notifyList["users"])) {
 			foreach ($this->_notifyList["users"] as $u) {
 				if ($this->getAccessMode($u) < M_READ) {
 					$this->removeNotify($u->getID(), true);
 				}
 			}
 		}
-		if($this->_notifyList["groups"]) {
+		if(isset($this->_notifyList["groups"])) {
 			foreach ($this->_notifyList["groups"] as $g) {
 				if ($this->getGroupAccessMode($g) < M_READ) {
 					$this->removeNotify($g->getID(), false);

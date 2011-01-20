@@ -60,6 +60,11 @@ class LetoDMS_Core_Folder {
 	var $_defaultAccess;
 
 	/**
+	 * @var array list of notifications for users and groups
+	 */
+	var $_notifyList;
+
+	/**
 	 * @var integer position of folder within the parent folder
 	 */
 	var $_sequence;
@@ -79,6 +84,7 @@ class LetoDMS_Core_Folder {
 		$this->_inheritAccess = $inheritAccess;
 		$this->_defaultAccess = $defaultAccess;
 		$this->_sequence = $sequence;
+		$this->_notifyList = array();
 		$this->_dms = null;
 	} /* }}} */
 
