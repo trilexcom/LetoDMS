@@ -15,6 +15,10 @@
 /**
  * Class to represent a folder in the document management system
  *
+ * A folder in LetoDMS is equivalent to a directory in a regular file
+ * system. It can contain further subfolders and documents. Each folder
+ * has a single parent except for the root folder which has no parent.
+ *
  * @category   DMS
  * @package    LetoDMS_Core
  * @version    @version@

@@ -25,6 +25,16 @@ define("S_EXPIRED",  -3);
 /**
  * Class to represent a document in the document management system
  *
+ * A document in LetoDMS is similar to files in a regular file system.
+ * Documents may have any number of content elements
+ * ({@link LetoDMS_Core_DocumentContent}). These content elements are often
+ * called versions ordered in a timely manner. The most recent content element
+ * is the current version.
+ *
+ * Documents can be linked to other documents and can have attached files.
+ * The document content can be anything that can be stored in a regular
+ * file.
+ *
  * @category   DMS
  * @package    LetoDMS_Core
  * @author     Markus Westphal, Malcolm Cowe, Matteo Lucarelli,

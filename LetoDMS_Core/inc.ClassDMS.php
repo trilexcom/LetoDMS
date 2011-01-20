@@ -33,8 +33,9 @@ require_once("inc.ClassNotification.php");
  * objects representing the entities in the dms, like folders, documents,
  * users, or groups.
  *
- * Each dms has its own database for meta data and data store for document
- * content. All folders and documents are organized in a hierachy like
+ * Each dms has its own database for meta data and a data store for document
+ * content. Both must be specified when creating a new instance of this class.
+ * All folders and documents are organized in a hierachy like
  * a regular file system starting with a {@link $rootFolderID}
  *
  * This class does not enforce any access rights on documents and folders
