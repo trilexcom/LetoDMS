@@ -658,7 +658,7 @@ class LetoDMS_Core_DMS {
 		if (is_object($this->getUserByLogin($login))) {
 			return false;
 		}
-		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, role, isGuest, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$role."', '".$isHidden."')";
+		$queryStr = "INSERT INTO tblUsers (login, pwd, fullName, email, language, theme, comment, role, hidden) VALUES ('".$login."', '".$pwd."', '".$fullName."', '".$email."', '".$language."', '".$theme."', '".$comment."', '".$role."', '".$isHidden."')";
 		$res = $this->db->getResult($queryStr);
 		if (!$res)
 			return false;
