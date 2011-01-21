@@ -52,8 +52,11 @@ class Settings
 	// submitting a review or overriding document status.
 	var $_strictFormCheck = false;
 
-	// path to where mydms is located
-	var $_rootDir = "/var/www/letoDMS-1.10/";
+	// Path to where letoDMS is located
+	var $_rootDir = "/var/www/letoDMS-3.0.0/";
+
+	// Path to LetoDMS_Core
+	var $_coreDir = "/var/www/LetoDMS_Core-3.0.0/";
 
 	// The relative path in the URL, after the domain part. Do not include the
 	// http:// prefix or the web host name. e.g. If the full URL is
@@ -139,9 +142,6 @@ class Settings
 	// leave ampty to avoid the control
 	// NOTE: works only with local autentication (no LDAP)
 	var $_adminIP = "";
-
-	//Path to LetoDMS_Core
-	var $_LetoDMSCorePath = $this->_rootDir;
 
 	// -------------------------------- Database-Setup --------------------------------------------
 
