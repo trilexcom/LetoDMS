@@ -37,6 +37,7 @@ $text["add_document_link"] = "Pridať odkaz";
 $text["add_event"] = "Pridať udalosť";
 $text["add_group"] = "Pridať novú skupinu";
 $text["add_member"] = "Pridať člena";
+$text["add_multiple_files"] = "Pridať viacero súborov (názov súboru sa použije ako názov dokumentu)";
 $text["add_subfolder"] = "Pridať podzložku";
 $text["add_user"] = "Pridať nového používatela";
 $text["admin"] = "Správca";

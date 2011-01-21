@@ -36,6 +36,7 @@ $text["add_document"] = "Přidat dokument";
 $text["add_event"] = "Add event";
 $text["add_group"] = "Přidat novou skupinu";
 $text["add_member"] = "Přidat člena";
+$text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
 $text["add_subfolder"] = "Přidat podadresář";
 $text["add_user"] = "Přidat nového uživatele";
 $text["admin"] = "Správce";

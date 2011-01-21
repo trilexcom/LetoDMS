@@ -36,6 +36,7 @@ $text["add_document_link"] = "Verweis hinzufügen";
 $text["add_event"] = "Ereignis hinzufügen";
 $text["add_group"] = "Neue Gruppe anlegen";
 $text["add_member"] = "Teilnehmer anlegen";
+$text["add_multiple_files"] = "Mehrere Dateien hochladen (Dateiname wird als Dokumentenname verwendet)";
 $text["add_subfolder"] = "Unterordner anlegen";
 $text["add_user"] = "Neuen Benutzer anlegen";
 $text["admin"] = "Administrator";

@@ -36,6 +36,7 @@ $text["add_document_link"] = "Add link";
 $text["add_event"] = "Add event";
 $text["add_group"] = "Add new group";
 $text["add_member"] = "Add a member";
+$text["add_multiple_files"] = "Add multiple files (will use filename as document name)";
 $text["add_subfolder"] = "Add subfolder";
 $text["add_user"] = "Add new user";
 $text["admin"] = "Administrator";
