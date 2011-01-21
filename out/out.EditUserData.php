@@ -28,7 +28,7 @@ if ($user->isGuest()) {
 	UI::exitError(getMLText("edit_user_details"),getMLText("access_denied"));
 }
 
-if (!$user->isAmdin() && ($settings->_disableSelfEdit)) {
+if (!$user->isAdmin() && ($settings->_disableSelfEdit)) {
 	UI::exitError(getMLText("edit_user_details"),getMLText("access_denied"));
 }
 
