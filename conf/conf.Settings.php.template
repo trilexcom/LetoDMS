@@ -62,11 +62,11 @@ class Settings
 	// http:// prefix or the web host name. e.g. If the full URL is
 	// http://www.example.com/mydms/, set $_httpRoot = "/mydms/".
 	// If the URL is http://www.example.com/, set $_httpRoot = "/".
-	var $_httpRoot = "/letoDMS-1.10/";
+	var $_httpRoot = "/letoDMS-3.0.0/";
 
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
-	var $_contentDir = "/var/www/letoDMS-1.10/data/";
+	var $_contentDir = "/var/www/letoDMS-3.0.0/data/";
 
 	// To work around limitations in the underlying file system, a new 
 	// directory structure has been devised that exists within the content 
@@ -89,7 +89,7 @@ class Settings
 	var $_viewOnlineFileTypes = array(".txt", ".text", ".html", ".htm", ".pdf", ".gif", ".png", ".jpg", ".jpeg");
 
 	// enable/disable converting of files
-	var $_enableConverting = true;
+	var $_enableConverting = false;
 
 	// default style (name of a subfolder in folder "styles")
 	var $_theme = "clean";
@@ -102,7 +102,6 @@ class Settings
 	
 	// enable/disable group and user view for all users
 	var $_enableUsersView = true;
-	
 	// false to don't list administrator as reviewer/approver
 	var $_enableAdminRevApp = false;
 	
@@ -121,7 +120,7 @@ class Settings
 	// enable calendar
 	var $_enableCalendar = true;
 
-  // calendar default view ("w" for week,"m" for month,"y" for year)
+	// calendar default view ("w" for week,"m" for month,"y" for year)
 	var $_calendarDefaultView = "y";
 
 	// first day of the week (0=sunday, 6=saturday)
@@ -130,7 +129,7 @@ class Settings
 	// false to don't show the folder tree
 	var $_enableFolderTree = true;
 
-  // 0 to start with tree hidden
+	// 0 to start with tree hidden
 	// 1 to start with tree shown and first level expanded
 	// 2 to start with tree shown fully expanded
 	var $_expandFolderTree = 1;
