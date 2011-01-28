@@ -48,6 +48,10 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 $name     = sanitizeString($_POST["name"]);
 $comment  = sanitizeString($_POST["comment"]);
 
+if($_FILES["userfile"]["error"]) {
+	UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
+}
+
 $userfiletmp = $_FILES["userfile"]["tmp_name"];
 $userfiletype = sanitizeString($_FILES["userfile"]["type"]);
 $userfilename = sanitizeString($_FILES["userfile"]["name"]);
