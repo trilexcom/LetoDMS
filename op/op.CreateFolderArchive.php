@@ -27,25 +27,25 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-// Adds file header to the tar file, it is used before adding file content.
-// f: file resource (provided by eg. fopen)
-// phisfn: path to file
-// archfn: path to file in archive, directory names must be followed by '/'
-// code by calmarius at nospam dot atw dot hu
-function TarAddHeader($f,$phisfn,$archfn)
-{
+/**
+ * Adds file header to the tar file, it is used before adding file content.
+ * code by calmarius at nospam dot atw dot hu
+ *
+ * @param resource $f file resource (provided by eg. fopen)
+ * $param string $phisfn path to file
+ * $param string $archfn path to file in archive, directory names must
+ *        be followed by '/'
+ */
+function TarAddHeader($f,$phisfn,$archfn) { /* {{{ */
     $info=stat($phisfn);
     $ouid=sprintf("%6s ", decoct($info[4]));
     $ogid=sprintf("%6s ", decoct($info[5]));
     $omode=sprintf("%6s ", decoct(fileperms($phisfn)));
     $omtime=sprintf("%11s", decoct(filemtime($phisfn)));
-    if (@is_dir($phisfn))
-    {
+    if (@is_dir($phisfn)) {
          $type="5";
          $osize=sprintf("%11s ", decoct(0));
-    }
-    else
-    {
+    } else {
          $type='';
          $osize=sprintf("%11s ", decoct(filesize($phisfn)));
          clearstatcache();
@@ -72,20 +72,16 @@ function TarAddHeader($f,$phisfn,$archfn)
     fwrite($f,$bdchecksum,8);
     fwrite($f,$chunkafterCS,356);
     return true;
-}
+} /* }}} */
 
 // Writes file content to the tar file must be called after a TarAddHeader
 // f:file resource provided by fopen
 // phisfn: path to file
 // code by calmarius at nospam dot atw dot hu
-function TarWriteContents($f,$phisfn)
-{
-    if (@is_dir($phisfn))
-    {
+function TarWriteContents($f,$phisfn) { /* {{{ */
+    if (@is_dir($phisfn)) {
         return;
-    }
-    else
-    {
+    } else {
         $size=filesize($phisfn);
         $padding=$size % 512 ? 512-$size%512 : 0;
         $f2=fopen($phisfn,"rb");
@@ -93,18 +89,17 @@ function TarWriteContents($f,$phisfn)
         $pstr=sprintf("a%d",$padding);
         fwrite($f,pack($pstr,''));
     }
-}
+} /* }}} */
 
 // Adds 1024 byte footer at the end of the tar file
 // f: file resource
 // code by calmarius at nospam dot atw dot hu
-function TarAddFooter($f)
-{
+function TarAddFooter($f) { /* {{{ */
     fwrite($f,pack('a1024',''));
-}
+} /* }}} */
 
-// thanks to Doudoux 
-function getFolderPathPlainAST($folder) {
+// thanks to Doudoux
+function getFolderPathPlainAST($folder) { /* {{{ */
     $path="";
     $folderPath = $folder->getPath();
     for ($i = 0; $i  < count($folderPath); $i++) {
@@ -112,55 +107,51 @@ function getFolderPathPlainAST($folder) {
         if ($i+1 < count($folderPath)) $path .= "/";
     }
     return $path;
-}
+} /* }}} */
 
-function createFolderTar($folder,$ark)
-{
-	global $settings,$human_readable;
+function createFolderTar($folder,$ark) { /* {{{ */
+	global $human_readable,$dms;
 
 	$documents=$folder->getDocuments();
 	foreach ($documents as $document){
-		
-		if (file_exists($settings->_contentDir.$document->getDir())){
+
+		if (file_exists($dms->contentDir.$document->getDir())){
 
 			if ($human_readable){
-			
-				// create an archive containing the files with original names and DMS path 
-				// thanks to Doudoux 
+				// create an archive containing the files with original names and DMS path
+				// thanks to Doudoux
 				$latestContent = $document->getLatestContent();
-				if (is_object($latestContent))
-				{
+				if (is_object($latestContent)) {
 					TarAddHeader(
 						$ark,
-						$settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType(),
+						$dms->contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType(),
 						getFolderPathPlainAST($folder)."/".$document->getID()."_".mydmsDecodeString($latestContent->getOriginalFileName()));
-						
-				        TarWriteContents($ark, $settings->_contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());			        
+
+				        TarWriteContents($ark, $dms->contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());
 				}
-			}else{
+			} else {
 
 				// create a server backup archive
-				$handle = opendir($settings->_contentDir.$document->getDir());
-				while ($entry = readdir($handle) )
-				{
-					if (!is_dir($settings->_contentDir.$document->getDir().$entry)){
-					
-						TarAddHeader($ark,$settings->_contentDir.$document->getDir().$entry,$document->getDir().$entry);
-						TarWriteContents($ark,$settings->_contentDir.$document->getDir().$entry);
+				$handle = opendir($dms->contentDir.$document->getDir());
+				while ($entry = readdir($handle) ) {
+					if (!is_dir($dms->contentDir.$document->getDir().$entry)){
+
+						TarAddHeader($ark,$dms->contentDir.$document->getDir().$entry,$document->getDir().$entry);
+						TarWriteContents($ark,$dms->contentDir.$document->getDir().$entry);
 					}
 				}
 				closedir($handle);
 			}
-		}	
+		}
 	}
 
 	$subFolders=$folder->getSubfolders();
 	foreach ($subFolders as $folder)
 		if (!createFolderTar($folder,$ark))
 			return false;
-	
+
 	return true;
-}
+} /* }}} */
 
 if (!isset($_GET["targetidform2"]) || !is_numeric($_GET["targetidform2"]) || intval($_GET["targetidform2"])<1) {
 	UI::exitError(getMLText("admin_tools"),getMLText("invalid_folder_id"));
