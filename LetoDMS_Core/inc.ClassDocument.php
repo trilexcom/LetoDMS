@@ -725,7 +725,7 @@ class LetoDMS_Core_Document { /* {{{ */
 	 * @return array list of notifications
 	 */
 	function getNotifyList() { /* {{{ */
-		if (!isset($this->_notifyList)) {
+		if (empty($this->_notifyList)) {
 			$db = $this->_dms->getDB();
 
 			$queryStr ="SELECT * FROM tblNotify WHERE targetType = " . T_DOCUMENT . " AND target = " . $this->_id;
@@ -1551,7 +1551,8 @@ class LetoDMS_Core_DocumentContent { /* {{{ */
 			$this->_user = $this->_document->_dms->getUser($this->_userID);
 		return $this->_user;
 	} /* }}} */
-	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
+//	function getPath() { return $this->_dir . $this->_version . $this->_fileType; }
+	function getPath() { return $this->_document->getID() .'/'. $this->_version . $this->_fileType; }
 
 	function setComment($newComment) { /* {{{ */
 		$db = $this->_document->_dms->getDB();
@@ -1566,14 +1567,14 @@ class LetoDMS_Core_DocumentContent { /* {{{ */
 	} /* }}} */
 
 	function convert() { /* {{{ */
-		if (file_exists($this->_document->_dms->contentDir . $this->_dir . "index.html"))
+		if (file_exists($this->_document->_dms->contentDir . $this->_document->getID() .'/' . "index.html"))
 			return true;
 
 		if (!in_array($this->_fileType, array_keys($this->_document->_dms->convertFileTypes)))
 			return false;
 
-		$source = $this->_document->_dms->contentDir . $this->_dir . $this->getFileName();
-		$target = $this->_document->_dms->contentDir . $this->_dir . "index.html";
+		$source = $this->_document->_dms->contentDir . $this->_document->getID() .'/' . $this->getFileName();
+		$target = $this->_document->_dms->contentDir . $this->_document->getID() .'/' . "index.html";
 	//	$source = str_replace("/", "\\", $source);
 	//	$target = str_replace("/", "\\", $target);
 
@@ -1610,7 +1611,7 @@ class LetoDMS_Core_DocumentContent { /* {{{ */
 	} /* }}} */
 
 	function wasConverted() { /* {{{ */
-		return file_exists($this->_document->_dms->contentDir . $this->_dir . "index.html");
+		return file_exists($this->_document->_dms->contentDir . $this->_document->getID() .'/' . "index.html");
 	} /* }}} */
 
 	function getURL() { /* {{{ */
@@ -2308,7 +2309,7 @@ class LetoDMS_Core_DocumentFile { /* {{{ */
 	}
 
 	function getPath() {
-		return $this->_dir . "f" .$this->_id . $this->_fileType;
+		return $this->_document->getID() . "/f" .$this->_id . $this->_fileType;
 	}
 
 	function __remove() // do not use anymore, will be called from document->removeDocumentFile
