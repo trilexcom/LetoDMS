@@ -763,7 +763,7 @@ class LetoDMS_Core_Folder {
 	 *        contain a list of users and groups.
 	 */
 	function getNotifyList() { /* {{{ */
-		if (!isset($this->_notifyList)) {
+		if (empty($this->_notifyList)) {
 			$db = $this->_dms->getDB();
 
 			$queryStr ="SELECT * FROM tblNotify WHERE targetType = " . T_FOLDER . " AND target = " . $this->_id;
