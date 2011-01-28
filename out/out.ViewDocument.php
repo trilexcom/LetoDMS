@@ -3,6 +3,7 @@
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
+//    Copyright (C) 2011 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -24,8 +25,8 @@ include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
- 
-function filterDocumentLinks($user, $links) {
+
+function filterDocumentLinks($user, $links) { /* {{{ */
 	GLOBAL $settings;
 	
 	$tmp = array();
@@ -33,7 +34,7 @@ function filterDocumentLinks($user, $links) {
 		if ($link->isPublic() || ($link->_userID == $user->getID()) || $user->isAdmin())
 			array_push($tmp, $link);
 	return $tmp;
-}
+} /* }}} */
 
 if (!isset($_GET["documentid"]) || !is_numeric($_GET["documentid"]) || intval($_GET["documentid"])<1) {
 	UI::exitError(getMLText("document_title", array("documentname" => getMLText("invalid_doc_id"))),getMLText("invalid_doc_id"));
@@ -64,7 +65,7 @@ $reviewStatus = $latestContent->getReviewStatus();
 $approvalStatus = $latestContent->getApprovalStatus();
 
 // verify if file exists
-$file_exists=file_exists($settings->_contentDir . $latestContent->getPath());
+$file_exists=file_exists($dms->contentDir . $latestContent->getPath());
 
 UI::htmlStartPage(getMLText("document_title", array("documentname" => $document->getName())));
 UI::globalNavigation($folder);
@@ -136,7 +137,7 @@ print "<td><ul class=\"documentDetail\">\n";
 print "<li>".$latestContent->getOriginalFileName() ."</li>\n";
 
 if ($file_exists)
-	print "<li>". formatted_size(filesize($settings->_contentDir . $latestContent->getPath())) ." ".$latestContent->getMimeType()."</li>";
+	print "<li>". formatted_size(filesize($dms->contentDir . $latestContent->getPath())) ." ".$latestContent->getMimeType()."</li>";
 else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
 $updatingUser = $latestContent->getUser();
@@ -358,7 +359,7 @@ if (count($versions)>1) {
 		$comment = $version->getComment();
 		
 		// verify if file exists
-		$file_exists=file_exists($settings->_contentDir . $version->getPath());
+		$file_exists=file_exists($dms->contentDir . $version->getPath());
 		
 		print "<tr>\n";
 		print "<td><ul class=\"actions\">";
@@ -372,7 +373,7 @@ if (count($versions)>1) {
 		print "<td>".$version->getVersion()."</td>\n";
 		print "<td><ul class=\"documentDetail\">\n";
 		print "<li>".$version->getOriginalFileName()."</li>\n";
-		if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
+		if ($file_exists) print "<li>". formatted_size(filesize($dms->contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
 		else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 		$updatingUser = $version->getUser();
 		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a><li>";
@@ -411,8 +412,8 @@ if (count($files) > 0) {
 	print "</tr>\n</thead>\n<tbody>\n";
 
 	foreach($files as $file) {
-	
-		$file_exists=file_exists($settings->_contentDir . $file->getPath());
+
+		$file_exists=file_exists($dms->contentDir . $file->getPath());
 		
 		$responsibleUser = $file->getUser();
 
@@ -426,7 +427,7 @@ if (count($files) > 0) {
 		print "<td><ul class=\"documentDetail\">\n";
 		print "<li>".$file->getOriginalFileName() ."</li>\n";
 		if ($file_exists)
-			print "<li>". filesize($settings->_contentDir . $file->getPath()) ." bytes ".$file->getMimeType()."</li>";
+			print "<li>". filesize($dms->contentDir . $file->getPath()) ." bytes ".$file->getMimeType()."</li>";
 		else print "<li>".$file->getMimeType()." - <span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
 		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$responsibleUser->getEmail()."\">".$responsibleUser->getFullName()."</a></li>";

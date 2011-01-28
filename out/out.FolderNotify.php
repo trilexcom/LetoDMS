@@ -74,7 +74,7 @@ $userNotifyIDs = array();
 $groupNotifyIDs = array();
 
 print "<table class=\"defaultView\">\n";
-if ((count($notifyList["users"]) == 0) && (count($notifyList["groups"]) == 0)) {
+if (empty($notifyList["users"]) && empty($notifyList["groups"])) {
 	print "<tr><td>".getMLText("empty_notify_list")."</td></tr>";
 }
 else {
