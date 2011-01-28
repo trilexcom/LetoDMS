@@ -3,6 +3,7 @@
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
+//    Copyright (C) 2011 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -59,7 +60,7 @@ if (isset($_GET["version"])){
 	
 	//header("Content-Type: application/force-download; name=\"" . mydmsDecodeString($content->getOriginalFileName()) . "\"");
 	header("Content-Transfer-Encoding: binary");
-	header("Content-Length: " . filesize($settings->_contentDir . $content->getPath() ));
+	header("Content-Length: " . filesize($dms->contentDir . $content->getPath() ));
 	header("Content-Disposition: attachment; filename=\"" . mydmsDecodeString($content->getOriginalFileName()) . "\"");
 	//header("Expires: 0");
 	header("Content-Type: " . $content->getMimeType());
@@ -67,7 +68,7 @@ if (isset($_GET["version"])){
 	header("Cache-Control: must-revalidate");
 	//header("Pragma: no-cache");
 
-	readfile($settings->_contentDir . $content->getPath());
+	readfile($dms->contentDir . $content->getPath());
 
 }else if (isset($_GET["file"])){
 
@@ -103,7 +104,7 @@ if (isset($_GET["version"])){
 
 	header("Content-Type: application/force-download; name=\"" . mydmsDecodeString($file->getOriginalFileName()) . "\"");
 	header("Content-Transfer-Encoding: binary");
-	header("Content-Length: " . filesize($settings->_contentDir . $file->getPath() ));
+	header("Content-Length: " . filesize($dms->contentDir . $file->getPath() ));
 	header("Content-Disposition: attachment; filename=\"" . mydmsDecodeString($file->getOriginalFileName()) . "\"");
 	//header("Expires: 0");
 	header("Content-Type: " . $file->getMimeType());
@@ -111,7 +112,7 @@ if (isset($_GET["version"])){
 	header("Cache-Control: must-revalidate");
 	//header("Pragma: no-cache");
 
-	readfile($settings->_contentDir . $file->getPath());
+	readfile($dms->contentDir . $file->getPath());
 
 }else if (isset($_GET["arkname"])){
 
