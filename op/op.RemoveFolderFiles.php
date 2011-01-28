@@ -27,19 +27,17 @@ if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
 
-function removeFolderFiles($folder)
-{
-	global $settings;
+function removeFolderFiles($folder) {
+	global $dms;
 
 	$documents = $folder->getDocuments();
 	foreach ($documents as $document)
-		LetoDMS_Core_File::removeDir($settings->_contentDir . $document->getDir());
+		LetoDMS_Core_File::removeDir($dms->contentDir . $document->getDir());
 
 	$subFolders = $folder->getSubFolders();
-	
+
 	foreach ($subFolders as $folder)
 		removeFolderFiles($folder);
-	
 
 	return true;
 }
@@ -62,5 +60,4 @@ if (!removeFolderFiles($folder)) {
 add_log_line();
 
 header("Location:../out/out.BackupTools.php");
-
 ?>
