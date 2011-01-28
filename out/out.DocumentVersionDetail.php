@@ -110,7 +110,7 @@ if ($document->isLocked()) {
 UI::contentContainerEnd();
 
 // verify if file exists
-$file_exists=file_exists($settings->_contentDir . $version->getPath());
+$file_exists=file_exists($dms->contentDir . $version->getPath());
 
 UI::contentHeading(getMLText("details_version", array ("version" => $version->getVersion())));
 UI::contentContainerStart();
@@ -138,7 +138,7 @@ print "<td class=\"center\">".$version->getVersion()."</td>\n";
 print "<td><ul class=\"documentDetail\">\n";
 print "<li>".$version->getOriginalFileName()."</li>\n";
 
-if ($file_exists) print "<li>". formatted_size(filesize($settings->_contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
+if ($file_exists) print "<li>". formatted_size(filesize($dms->contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
 else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 
 $updatingUser = $version->getUser();

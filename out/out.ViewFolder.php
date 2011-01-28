@@ -119,8 +119,8 @@ foreach($documents as $document) {
 	$status = $latestContent->getStatus();
 	
 	print "<tr>";
-	
-	if (file_exists($settings->_contentDir . $latestContent->getPath()))
+
+	if (file_exists($dms->contentDir . $latestContent->getPath()))
 		print "<td><a href=\"../op/op.Download.php?documentid=".$docID."&version=".$version."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></a></td>";
 	else print "<td><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></td>";
 	

@@ -23,7 +23,7 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-// TODO: javascript open/close folder
+// TODO: javascript open/close folder
 if (!$user->isAdmin()) {
 	UI::exitError(getMLText("admin_tools"),getMLText("access_denied"));
 }
@@ -66,8 +66,7 @@ $document_count=0;
 $file_count=0;
 $storage_size=0;
 
-function getAccessColor($mode)
-{
+function getAccessColor($mode) {
 	if ($mode == M_NONE)
 		return "gray";
 	else if ($mode == M_READ)
@@ -78,96 +77,92 @@ function getAccessColor($mode)
 		return "red";
 }
 
-function printFolder($folder)
-{
+function printFolder($folder) {
 	global $folder_count,$settings;
-	
+
 	$folder_count++;
 	$folder_size=0;
 	$doc_count=0;
-	
+
 	$color = $folder->inheritsAccess() ? "black" : getAccessColor($folder->getDefaultAccess());
-	
+
 	print "<li class=\"folderClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewFolder.php?folderid=".$folder->getID()."\">".$folder->getName() ."</a>";
-	
+
 	$owner = $folder->getOwner();
 	$color = getAccessColor(M_ALL);
 	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";
-	
+
 	if (! $folder->inheritsAccess())
 		printAccessList($folder);
-	
+
 	$subFolders = $folder->getSubFolders();
 	$documents = $folder->getDocuments();
-	
+
 	print "<ul>";
-	
+
 	foreach ($subFolders as $sub) $folder_size += printFolder($sub);
 	foreach ($documents as $document){
 		$doc_count++;
 		$folder_size += printDocument($document);
 	}
-		
+
 	print "</ul>";
-	
+
 	print "<small>".formatted_size($folder_size).", ".$doc_count." ".getMLText("documents")."</small>\n";
 
 	print "</li>";
-	
+
 	return $folder_size;
 }
 
-function printDocument($document)
-{
-	global $document_count,$file_count,$settings,$storage_size;
-	
+function printDocument($document) {
+	global $document_count, $file_count, $storage_size, $dms;
+
 	$document_count++;
-	
+
 	$local_file_count=0;
 	$folder_size=0;
-	
-	if (file_exists($settings->_contentDir.$document->getDir())){
-		$handle = opendir($settings->_contentDir.$document->getDir());
-		while ($entry = readdir($handle) )
-		{
-			if (is_dir($settings->_contentDir.$document->getDir().$entry)) continue;
+
+	if (file_exists($dms->contentDir.$document->getDir())) {
+		$handle = opendir($dms->contentDir.$document->getDir());
+		while ($entry = readdir($handle) ) {
+			if (is_dir($dms->contentDir.$document->getDir().$entry)) continue;
 			else{
 				$local_file_count++;
-				$folder_size += filesize($settings->_contentDir.$document->getDir().$entry);
+				$folder_size += filesize($dms->contentDir.$document->getDir().$entry);
 			}
 
 		}
 		closedir($handle);
 	}
 	$storage_size += $folder_size;
-	
+
 	$color = $document->inheritsAccess() ? "black" : getAccessColor($document->getDefaultAccess());
 	print "<li class=\"documentClass\">";
 	print "<a style=\"color: $color\" href=\"out.ViewDocument.php?documentid=".$document->getID()."\">".$document->getName()."</a>";
-	
+
 	$owner = $document->getOwner();
 	$color = getAccessColor(M_ALL);
-	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";	
-	
+	print " [<span style=\"color: $color\">".$owner->getFullName()."</span>] ";
+
 	if (! $document->inheritsAccess()) printAccessList($document);
-		
-	print "<small>".formatted_size($folder_size).", ".$local_file_count." ".getMLText("files")."</small>\n";		
-	
+
+	print "<small>".formatted_size($folder_size).", ".$local_file_count." ".getMLText("files")."</small>\n";
+
 	print "</li>";
-	
-	$file_count += $local_file_count;	
+
+	$file_count += $local_file_count;
 	return $folder_size;
 }
 
-function printAccessList($obj)
-{
+function printAccessList($obj) {
 	$accessList = $obj->getAccessList();
 	if (count($accessList["users"]) == 0 && count($accessList["groups"]) == 0)
 		return;
-	
+
 	print " <span>(";
-	
+
 	for ($i = 0; $i < count($accessList["groups"]); $i++)
 	{
 		$group = $accessList["groups"][$i]->getGroup();
