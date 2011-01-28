@@ -42,17 +42,30 @@ class LetoDMS_Core_DatabaseAccess {
 	/*
 	Backup functions
 	*/
-	
-	function TableList()
-	{
+
+	/**
+	 * Return list of all database tables
+	 *
+	 * This function is used to retrieve a list of database tables for backup
+	 *
+	 * @return array list of table names
+	 */
+	function TableList() {
 		return $this->_conn->MetaTables("TABLES");
 	}	
 
 	/**
-	 * Konstruktor
+	 * Constructor of LetoDMS_Core_DatabaseAccess
+	 *
+	 * Sets all database parameters but does not connect.
+	 *
+	 * @param string $driver the database type e.g. mysql, sqlite
+	 * @param string $hostname host of database server
+	 * @param string $user name of user having access to database
+	 * @param string $passw password of user
+	 * @param string $database name of database
 	 */
-	function LetoDMS_Core_DatabaseAccess($driver, $hostname, $user, $passw, $database = false)
-	{
+	function LetoDMS_Core_DatabaseAccess($driver, $hostname, $user, $passw, $database = false) {
 		$this->_driver = $driver;
 		$this->_hostname = $hostname;
 		$this->_database = $database;
