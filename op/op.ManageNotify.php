@@ -27,8 +27,7 @@ if ($user->isGuest()) {
 	UI::exitError(getMLText("my_account"),getMLText("access_denied"));
 }
 
-function add_folder_notify($folder,$userid,$recursefolder,$recursedoc)
-{
+function add_folder_notify($folder,$userid,$recursefolder,$recursedoc) {
 	$folder->addNotify($userid, true);
 	
 	if ($recursedoc){
@@ -57,6 +56,8 @@ function add_folder_notify($folder,$userid,$recursefolder,$recursedoc)
 if (!isset($_GET["type"])) UI::exitError(getMLText("my_account"),getMLText("error_occured"));
 if (!isset($_GET["action"])) UI::exitError(getMLText("my_account"),getMLText("error_occured"));
 
+$userid=$user->getID();
+	
 if ($_GET["type"]=="document"){
 
 	if ($_GET["action"]=="add"){
@@ -67,10 +68,10 @@ if ($_GET["type"]=="document"){
 		$documentid = $_GET["id"];
 	
 	}else UI::exitError(getMLText("my_account"),getMLText("error_occured"));
-	
-	$document = $dms->getDocument($documentid);
-	
-	$userid=$user->getID();
+
+	if(!$documentid || !($document = $dms->getDocument($documentid))) {
+		UI::exitError(getMLText("my_account"),getMLText("error_no_document_selected"));
+	}
 	
 	if ($document->getAccessMode($user) < M_READ) 
 		UI::exitError(getMLText("my_account"),getMLText("error_occured"));
@@ -78,7 +79,7 @@ if ($_GET["type"]=="document"){
 	if ($_GET["action"]=="add") $document->addNotify($userid, true);
 	else if ($_GET["action"]=="del") $document->removeNotify($userid, true);
 	
-}else if ($_GET["type"]=="folder"){
+} else if ($_GET["type"]=="folder") {
 
 	if ($_GET["action"]=="add"){
 		if (!isset($_POST["targetidform1"])) UI::exitError(getMLText("my_account"),getMLText("error_occured"));
@@ -88,10 +89,10 @@ if ($_GET["type"]=="document"){
 		$folderid = $_GET["id"];
 	
 	}else UI::exitError(getMLText("my_account"),getMLText("error_occured"));
-	
-	$folder = $dms->getFolder($folderid);
-	
-	$userid=$user->getID();
+
+	if(!$folderid || !($folder = $dms->getFolder($folderid))) {
+		UI::exitError(getMLText("my_account"),getMLText("error_no_folder_selected"));
+	}
 	
 	if ($folder->getAccessMode($user) < M_READ) 
 		UI::exitError(getMLText("my_account"),getMLText("error_occured"));
@@ -132,7 +133,7 @@ if ($_GET["type"]=="document"){
 		}
 	}
 }
-	
+
 header("Location:../out/out.ManageNotify.php");
 
 ?>

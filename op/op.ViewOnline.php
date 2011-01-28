@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2011 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -55,15 +56,13 @@ if (isset($settings->_viewOnlineFileTypes) && is_array($settings->_viewOnlineFil
 	header("Content-Type: " . $content->getMimeType());
 }
 header("Content-Disposition: filename=\"" . mydmsDecodeString( $document->getName().$content->getFileType()) . "\"");
-header("Content-Length: " . filesize($settings->_contentDir . $content->getPath()));
+header("Content-Length: " . filesize($dms->contentDir . $content->getPath()));
 header("Expires: 0");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
 
-readfile($settings->_contentDir . $content->getPath());
+readfile($dms->contentDir . $content->getPath());
 
 add_log_line();
-
-
 exit;
 ?>
