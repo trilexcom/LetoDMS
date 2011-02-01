@@ -418,6 +418,16 @@ CREATE TABLE `tblEvents` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- 
+-- Table structure for version
+-- 
+
+CREATE TABLE `tblVersion` (
+	`date` datetime,
+	`major` smallint,
+	`minor` smallint,
+	`subminor` smallint
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Initial content for database
@@ -426,3 +436,4 @@ CREATE TABLE `tblEvents` (
 INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1, 0);
 INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 2, 0);
 INSERT INTO tblFolders VALUES (1, 'DMS', 0, 'DMS root', UNIX_TIMESTAMP(), 1, 0, 2, 0);
+INSERT INTO tblVersion VALUES (NOW(), 3, 0, 0);
