@@ -52,7 +52,7 @@ Installation for multiple instances shares the same source by many
 instances but requires to create links which is not in any case possible
 at your web hoster.
 
-0. Quick installation instructions =============================================
+0. Quick installation instructions (single instance) ===========================
 
 You need a working web server with MySQL/PHP5 support and the files
 LetoDMS-<version>.tar.gz and LetoDMS_Core-<version>.tar.gz.
@@ -69,7 +69,6 @@ LetoDMS-<version>.tar.gz and LetoDMS_Core-<version>.tar.gz.
 	writable by the web-server user.
 
 For security reason the data folder should not be inside the public folders.
-The directory must have read/write permission for the web-server user.
 
 * Create a new database on your web server
   e.g. for mysql:
@@ -77,14 +76,17 @@ The directory must have read/write permission for the web-server user.
 * Create a new user for the database with all permissions on the new database
   e.g. for mysql:
 	grant all privileges on letodms.* to letodms@localhost identified by 'secret';
-* Execute "create_tables.sql" in the new database
+	(replace 'secret' with you own password)
+* Import "create_tables.sql" in the new database
+  e.g. for mysql:
+	cat create_tables.sql | mysql -uletodms -p letodms
 
-* Edit the conf/conf.Settings.php to match your preference and settings. 
-  At least $_rootDir, $_httpRoot, $_contentDir, $_ADOdbPath, $_coreDir,
-  $_dbHostname, $_dbDatabase, $_dbUser, $_dbPass must be edited.
-  Note that for the path you probably need to ask your provider because
-	the absolute path on the server is not immediatly viewable in a hosted
-	system.
+* Copy conf/conf.Settings.php.template to conf/conf.Settings.php and
+	edit it to match your preference and settings.  At least $_rootDir,
+	$_httpRoot, $_contentDir, $_ADOdbPath, $_coreDir, $_dbHostname,
+	$_dbDatabase, $_dbUser, $_dbPass must be edited.  Note that for the
+	path you probably need to ask your provider because the absolute
+	path on the server is not immediatly viewable in a hosted system.
 
 
 NOTE: UPDATING FROM A PREVIOUS VERSION
@@ -93,11 +95,11 @@ NOTE: UPDATING FROM A PREVIOUS VERSION
 - make a backup archive of your data folder
 - dump your current database
 - extract the letoDMS archive to your web server
-- edit the inc/inc.Settings.php file to match your previuos settings 
+- edit the conf/conf.Settings.php file to match your previuos settings 
   (you can even replace the file with your own one eventualy adding by hand
   the missing new parameters)
 - login as administrator
- -execute all the update.php script pointing your browser directly:
+- execute all the update.php script pointing your browser directly:
   http://www.yoursite/path/to/dms/UPDATE-vX.X.X/update.php
 
 Each update script must be run, starting from the version previous to the
@@ -129,11 +131,23 @@ LetoDMS_Core-<version>.zip. This file may not be unpacked below the
 document root of your web server. Since it is a pear package it can
 also be installed with 'pear install LetoDMS_Core-<version>.zip'
 
-You will also need to create a directory where the uploaded files
-are stored. This directory should not be accessible via your
-web-server for security reasons (create it outside of your www-root
-directory or put an appropriate .htaccess file in it to prevent direct
-access by the web server.).
+You will also need to create a directory where the uploaded files are
+stored. This directory should not be accessible via your web-server for
+security reasons (create it outside of your www-root directory or put an
+appropriate .htaccess file in it to prevent direct access by the web
+server.). This directory will hold logfiles, backups, and all document
+content files. It will be specified by $settings->_contentDir. The
+document content files are stored in a subdirectory specified by
+$settings->_contentOffsetDir. The default is 'data/1048576'
+
+After unpacking all files and creating the directories your installation
+directory should look like the following:
+
+letoDMS-<version>/
+LetoDMS_Core-<version>/
+data/1048576
+
+letoDMS-<version> will also be your web-root.
 
 Download the ADODB package from SourceForge. The URL for the ADODB project
 page is:
@@ -141,42 +155,21 @@ page is:
         http://adodb.sourceforge.net/
 
 Extract the distribution into a suitable directory. For example, one can
-extract the files into the LetoDMS root directory.
+extract the files next to the LetoDMS root directory.
 
 Now, set up your Database. Use the included script create_tables.sql to
 create all tables. Since the exact procedure differs on the
 different database-systems I cannot give you a detailed instruction
 here. Post any questions concering this problem to the letoDMS-Forum. In
 general, create the database, make sure that the database has been selected
-(e.g. "USE mydms;"), then run the script. As of 1.6.0, you must make sure
-that the database user has "create temporary table" privileges.
+(e.g. "USE mydms;"), then run the script. As of version 1.6.0, you must
+make sure that the database user has "create temporary table" privileges.
 
-N.B. If the create_tables.sql script fails, it may be because the database
-has been configured to use InnoDB tables by default instead of MyISAM tables.
-If this is the case, it will be necessary to alter the sript such that each
-create table command has the text " ENGINE = MyISAM" appended to the end,
-immediately prior to the semi-colon. For example:
-
-  Before:
-
-  CREATE TABLE `tblDocumentLocks` (
-    `document` int(11) NOT NULL default '0',
-    `userID` int(11) NOT NULL default '0',
-    PRIMARY KEY  (`document`)
-  ) ;
-
-  After:
-
-  CREATE TABLE `tblDocumentLocks` (
-    `document` int(11) NOT NULL default '0',
-    `userID` int(11) NOT NULL default '0',
-    PRIMARY KEY  (`document`)
-  ) ENGINE = MyISAM ;
-
-Now edit the configuration file. First, go to the "conf" directory and copy
-(or move) "conf.Settings.php.template" to "conf.Settings.php". Open the file
-and set the variables to the correct values (you will find a short description
-for each variable in the file itself).
+Now edit the configuration file conf/conf.Settings.php.  First, go to
+the "conf" directory and copy (or move) "conf.Settings.php.template"
+to "conf.Settings.php". Open the file and set the variables to the
+correct values (you will find a short description for each variable in
+the file itself).
 
 TIP: You can find out your root-directory by placing the following
 line into a php-file: <?php phpInfo(); ?>
@@ -194,8 +187,8 @@ your web-server does not limit the size either).
 
 3. Email Notification ==========================================================
 
-A new, re-vamped notification system allows users to receive an email when a
-document or folder is changed. This is a new, event-based mechanism that
+A notification system allows users to receive an email when a
+document or folder is changed. This is an event-based mechanism that
 notifies the user as soon as the change has been made and replaces the
 cron mechanism originally developed. Any user that has read access to a
 document or folder can subscribe to be notified of changes. Users that
@@ -234,12 +227,12 @@ files online. Load mod_rewrite and add to following lines to your conf:
 IIS Users can download the IIS Rewrite Engine for example:
 http://www.qwerksoft.com/products/iisrewrite/
 
-Post any questions to the MyDMS forum, please.
+Post any questions to the LetoDMS forum, please.
 
 
 5. Nearly finished =============================================================
 
-Now point your browser to http://your.server.com/mydms/index.php
+Now point your browser to http://your.server.com/letoDMS-<version>/index.php
 and login with "admin" both as username and password.
 After having logged in you should first choose "My Account" and
 change the Administrator's password and email-address.
@@ -249,9 +242,16 @@ CONFIGURING MULTIPLE INSTANCES =================================================
 
 Since version 3.0.0, letoDMS can be set up to run several parallel instances
 sharing the same source but each instance has its own configuration. This is
-quite useful if you intend to host letoDMS for several customers.
+quite useful if you intend to host letoDMS for several customers. This
+approach still allows to have diffenrent version of letoDMS installed
+and will not force you to upgrade a customer instance, because other
+instances are upgraded. A customer instance consists of
+1. a directory containing mostly links to the letoDMS source and a
+   configuration file
+2. a directory containing the document content files
+3. a database
 
-1. Unpack the letoDMS distribution ٍ=============================================
+1. Unpack the letoDMS distribution =============================================
 
 Actually there is no need to set up the database at this point but it won't
 hurt since you'll need one in the next step anyway. The sources of letoDMS
@@ -259,6 +259,8 @@ can be anywhere you like. The do not have to be in you www-root. If you just
 have access to your www-root directory, then put them there.
 
 2. Setup the instance ==========================================================
+
+Unpack the files as described in the quick installation.
 
 Create a directory in your www-root or use www-root for your instance. In the
 second case, you will not be able to create a second instance, because each
@@ -284,7 +286,8 @@ ln -s src/styles styles
 ln -s src/index.php index.php
 
 Create a new directory named conf and copy conf.Settings.php.template from
-your letoDMS source into it. Modify it as explained above.
+your letoDMS source into it without the '.template' in its name.
+Modify it as explained above.
 
 mkdir conf
 cp src/conf/conf.Settings.php.template conf/conf.Settings.php
