@@ -10,7 +10,7 @@ CREATE TABLE `tblACLs` (
   `groupID` int(11) NOT NULL default '-1',
   `mode` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -26,7 +26,7 @@ CREATE TABLE `tblDocumentApproveLog` (
   `date` datetime NOT NULL default '0000-00-00 00:00:00',
   `userID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`approveLogID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -42,7 +42,7 @@ CREATE TABLE `tblDocumentApprovers` (
   `required` int(11) NOT NULL default '0',
   PRIMARY KEY (`approveID`),
   UNIQUE KEY `documentID` (`documentID`,`version`,`type`,`required`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -61,7 +61,7 @@ CREATE TABLE `tblDocumentContent` (
   `fileType` varchar(10) NOT NULL default '',
   `mimeType` varchar(70) NOT NULL default '',
   UNIQUE (`document`,`version`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -76,7 +76,7 @@ CREATE TABLE `tblDocumentLinks` (
   `userID` int(11) NOT NULL default '0',
   `public` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -96,7 +96,7 @@ CREATE TABLE `tblDocumentFiles` (
   `fileType` varchar(10) NOT NULL default '',
   `mimeType` varchar(70) NOT NULL default '',  
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 
@@ -110,7 +110,7 @@ CREATE TABLE `tblDocumentLocks` (
   `document` int(11) NOT NULL default '0',
   `userID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`document`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -126,7 +126,7 @@ CREATE TABLE `tblDocumentReviewLog` (
   `date` datetime NOT NULL default '0000-00-00 00:00:00',
   `userID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`reviewLogID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -142,7 +142,7 @@ CREATE TABLE `tblDocumentReviewers` (
   `required` int(11) NOT NULL default '0',
   PRIMARY KEY  (`reviewID`),
   UNIQUE KEY `documentID` (`documentID`,`version`,`type`,`required`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -156,7 +156,7 @@ CREATE TABLE `tblDocumentStatus` (
   `version` smallint(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`statusID`),
   UNIQUE KEY `documentID` (`documentID`,`version`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -173,7 +173,7 @@ CREATE TABLE `tblDocumentStatusLog` (
   `userID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`statusLogID`),
   KEY `statusID` (`statusID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -196,7 +196,7 @@ CREATE TABLE `tblDocuments` (
   `keywords` text NOT NULL,
   `sequence` double NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -216,7 +216,7 @@ CREATE TABLE `tblFolders` (
   `sequence` double NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `parent` (`parent`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -229,7 +229,7 @@ CREATE TABLE `tblGroupMembers` (
   `userID` int(11) NOT NULL default '0',
   `manager` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`groupID`,`userID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -242,7 +242,7 @@ CREATE TABLE `tblGroups` (
   `name` varchar(50) default NULL,
   `comment` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -255,7 +255,7 @@ CREATE TABLE `tblKeywordCategories` (
   `name` varchar(255) NOT NULL default '',
   `owner` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -268,7 +268,7 @@ CREATE TABLE `tblKeywords` (
   `category` int(11) NOT NULL default '0',
   `keywords` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -282,7 +282,7 @@ CREATE TABLE `tblNotify` (
   `userID` int(11) NOT NULL default '-1',
   `groupID` int(11) NOT NULL default '-1',
   PRIMARY KEY  (`target`,`targetType`,`userID`,`groupID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -297,7 +297,7 @@ CREATE TABLE `tblSessions` (
   `theme` varchar(30) NOT NULL default '',
   `language` varchar(30) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -311,7 +311,7 @@ CREATE TABLE `tblUserImages` (
   `image` blob NOT NULL,
   `mimeType` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -331,7 +331,7 @@ CREATE TABLE `tblUsers` (
   `role` smallint(1) NOT NULL default '0',
   `hidden` smallint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -348,7 +348,7 @@ CREATE TABLE `tblDirPath` (
   `dirID` int(11) NOT NULL auto_increment,
   `dirPath` varchar(255) NOT NULL,
   PRIMARY KEY  (`dirPath`,`dirID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -356,7 +356,7 @@ CREATE TABLE `tblPathList` (
   `id` int(11) NOT NULL auto_increment,
   `parentPath` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -369,7 +369,7 @@ CREATE TABLE `tblMandatoryReviewers` (
   `reviewerUserID` int(11) NOT NULL default '0',
   `reviewerGroupID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`userID`,`reviewerUserID`,`reviewerGroupID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- 
 -- Table structure for mandatory approvers
@@ -380,7 +380,7 @@ CREATE TABLE `tblMandatoryApprovers` (
   `approverUserID` int(11) NOT NULL default '0',
   `approverGroupID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`userID`,`approverUserID`,`approverGroupID`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- 
 -- Table structure for events (calendar)
@@ -395,8 +395,18 @@ CREATE TABLE `tblEvents` (
   `date` int(12) default NULL,
   `userID` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- 
+-- Table structure for version
+-- 
+
+CREATE TABLE `tblVersion` (
+	`date` datetime,
+	`major` smallint,
+	`minor` smallint,
+	`subminor` smallint
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Initial content for database
@@ -405,3 +415,4 @@ CREATE TABLE `tblEvents` (
 INSERT INTO tblFolders VALUES (1, 'DMS', 0, 'DMS root', UNIX_TIMESTAMP(), 1, 0, 2, 0);
 INSERT INTO tblUsers VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'address@server.com', '', '', '', 1, 0);
 INSERT INTO tblUsers VALUES (2, 'guest', NULL, 'Guest User', NULL, '', '', '', 2, 0);
+INSERT INTO tblVersion VALUES (NOW(), 3, 0, 0);
