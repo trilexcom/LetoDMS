@@ -126,7 +126,7 @@ print "<td><ul class=\"actions\">";
 
 if ($file_exists){
 	print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\">".getMLText("download")."</a></li>";
-	if ($latestContent->viewOnline())
+	if ($settings->_viewOnlineFileTypes && in_array(strtolower($latestContent->getFileType()), $settings->_viewOnlineFileTypes))
 		print "<li><a target=\"_blank\" href=\"../op/op.ViewOnline.php?documentid=".$documentid."&version=". $latestContent->getVersion()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a></li>";
 }else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($latestContent->getFileType())."\" title=\"".$latestContent->getMimeType()."\"></li>";
 
@@ -365,7 +365,7 @@ if (count($versions)>1) {
 		print "<td><ul class=\"actions\">";
 		if ($file_exists){
 			print "<li><a href=\"../op/op.Download.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">".getMLText("download")."</a>";
-			if ($version->viewOnline())
+			if ($settings->_viewOnlineFileTypes && in_array(strtolower($latestContent->getFileType()), $settings->_viewOnlineFileTypes))
 				print "<li><a target=\"_blank\" href=\"../op/op.ViewOnline.php?documentid=".$documentid."&version=".$version->getVersion()."\"><img src=\"images/view.gif\" class=\"mimeicon\">" . getMLText("view_online") . "</a>";
 		}else print "<li><img class=\"mimeicon\" src=\"images/icons/".UI::getMimeIcon($version->getFileType())."\" title=\"".$version->getMimeType()."\">";
 		
