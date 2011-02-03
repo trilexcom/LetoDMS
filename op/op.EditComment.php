@@ -79,9 +79,9 @@ if (($oldcomment = $version->getComment()) != $comment) {
 			}
 		}
 	}
-}
-else {
-	UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	else {
+		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
 }
 
 add_log_line("?documentid=".$documentid);
