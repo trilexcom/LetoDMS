@@ -27,6 +27,10 @@ $db = new LetoDMS_Core_DatabaseAccess($settings->_dbDriver, $settings->_dbHostna
 $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostname . "\"");
 
 $dms = new LetoDMS_Core_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
+if(!$dms->checkVersion()) {
+	echo "Database update needed.";
+	exit;
+}
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
 $dms->setEnableConverting($settings->_enableConverting);
