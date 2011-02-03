@@ -120,6 +120,12 @@ class LetoDMS_Core_DMS {
 	public $viewOnlineFileTypes;
 
 	/**
+	 * @var string $version version of pear package
+	 * @access public
+	 */
+	public $version;
+
+	/**
 	 * Filter objects out which are not accessible in a given mode by a user.
 	 *
 	 * @param array $objArr list of objects (either documents or folders)
@@ -175,10 +181,55 @@ class LetoDMS_Core_DMS {
 		$this->enableAdminRevApp = false;
 		$this->enableConverting = false;
 		$this->convertFileTypes = array();
+		$this->version = '@package_version@';
+		if($this->version[0] == '@')
+			$this->version = '3.0.0';
 	} /* }}} */
 
 	function getDB() { /* {{{ */
 		return $this->db;
+	} /* }}} */
+
+	/**
+	 * Return the database version
+	 *
+	 * @return array array with elements major, minor, subminor, date
+	 */
+	function getDBVersion() { /* {{{ */
+		$tbllist = $this->db->TableList();
+		if(!array_search('tblVersion', $tbllist))
+			return false;
+		$queryStr = "SELECT * FROM tblVersion order by major,minor,subminor limit 1";
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		if (count($resArr) != 1)
+			return false;
+		$resArr = $resArr[0];
+		return $resArr;
+	} /* }}} */
+
+	/**
+	 * Check if the version in the database is the same as of this package
+	 * Only the major and minor version number will be checked.
+	 *
+	 * @return boolean returns false if versions do not match
+	 */
+	function checkVersion() { /* {{{ */
+		$tbllist = $this->db->TableList();
+		if(!array_search('tblVersion', $tbllist))
+			return false;
+		$queryStr = "SELECT * FROM tblVersion order by major,minor,subminor limit 1";
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && $resArr == false)
+			return false;
+		if (count($resArr) != 1)
+			return false;
+		$resArr = $resArr[0];
+		$ver = explode('.', $this->version);
+		if(($resArr['major'] != $ver[0]) || ($resArr['minor'] != $ver[1]))
+			return false;
+		return true;
 	} /* }}} */
 
 	/**
