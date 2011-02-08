@@ -1071,7 +1071,8 @@ class LetoDMS_Core_Folder {
 				$resArr = $db->getResultArray($queryStr);
 				if (!is_bool($resArr)) {
 					foreach ($resArr as $row) {
-						$this->_approversList["groups"][] = new LetoDMS_Core_Group($row["id"], $row["name"], $row["comment"]);
+						$group = $this->_dms->getGroup($row["id"]);
+						$this->_approversList["groups"][] = $group;
 					}
 				}
 			}
