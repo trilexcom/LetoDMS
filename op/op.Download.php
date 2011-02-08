@@ -26,7 +26,7 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-if (isset($_GET["version"])){
+if (isset($_GET["version"])) {
 
 	// document download
 	
@@ -70,7 +70,7 @@ if (isset($_GET["version"])){
 
 	readfile($dms->contentDir . $content->getPath());
 
-}else if (isset($_GET["file"])){
+} elseif (isset($_GET["file"])) {
 
 	// file download
 	
@@ -114,7 +114,7 @@ if (isset($_GET["version"])){
 
 	readfile($dms->contentDir . $file->getPath());
 
-}else if (isset($_GET["arkname"])){
+} elseif (isset($_GET["arkname"])) {
 
 	// backup download
 	
@@ -142,7 +142,7 @@ if (isset($_GET["version"])){
 	
 	readfile($settings->_contentDir .$_GET["arkname"] );
 	
-}else if (isset($_GET["logname"])){
+} elseif (isset($_GET["logname"])) {
 
 	// log download
 	
@@ -162,7 +162,7 @@ if (isset($_GET["version"])){
 	
 	readfile($settings->_contentDir .$_GET["logname"] );
 	
-}else if (isset($_GET["vfile"])){
+} elseif (isset($_GET["vfile"])) {
 
 	// versioning info download
 	
@@ -177,10 +177,10 @@ if (isset($_GET["version"])){
 	// update infos
 	createVersionigFile($document);
 	
-	header("Content-Type: text/plain; name=\"" . $_GET["logname"] . "\"");
+	header("Content-Type: text/plain; name=\"" . $settings->_versioningFileName . "\"");
 	//header("Content-Type: application/force-download; name=\"" . $settings->_versioningFileName . "\"");
 	header("Content-Transfer-Encoding: binary");
-	header("Content-Length: " . filesize($settings->_contentDir.$document->getDir().$settings->_versioningFileName )."\"");
+	header("Content-Length: " . filesize($dms->contentDir.$document->getDir().$settings->_versioningFileName )."\"");
 	header("Content-Disposition: attachment; filename=\"". $settings->_versioningFileName . "\"");
 	//header("Expires: 0");
 	//header("Content-Type: " . $content->getMimeType());
@@ -188,9 +188,9 @@ if (isset($_GET["version"])){
 	header("Cache-Control: must-revalidate");
 	//header("Pragma: no-cache");	
 	
-	readfile($settings->_contentDir . $document->getDir() .$settings->_versioningFileName);
+	readfile($dms->contentDir . $document->getDir() .$settings->_versioningFileName);
 	
-}else if (isset($_GET["dumpname"])){
+} elseif (isset($_GET["dumpname"])) {
 
 	// dump file download
 	
