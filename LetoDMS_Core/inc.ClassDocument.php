@@ -1458,7 +1458,8 @@ class LetoDMS_Core_Document { /* {{{ */
 				$resArr = $db->getResultArray($queryStr);
 				if (!is_bool($resArr)) {
 					foreach ($resArr as $row) {
-						$this->_approversList["groups"][] = new LetoDMS_Core_Group($row["id"], $row["name"], $row["comment"]);
+						$group = $this->_dms->getGroup($row["id"]);
+						$this->_approversList["groups"][] = $group;
 					}
 				}
 			}
@@ -1621,100 +1622,6 @@ class LetoDMS_Core_DocumentContent { /* {{{ */
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/" . $this->getOriginalFileName();
 		else
 			return "/" . $this->_document->getID() . "/" . $this->_version . "/index.html";
-	} /* }}} */
-
-	// $send_email=FALSE is used when removing entire document
-	// to avoid one email for every version
-	// This function is deprecated. It was replaced by LetoDMS_Core_Document::removeContent()
-	function __remove($send_email=TRUE) { /* {{{ */
-		GLOBAL $user;
-		$db = $this->_document->_dms->getDB();
-
-		$emailList = array();
-		$emailList[] = $this->_userID;
-
-		if (file_exists( $this->_document->_dms->contentDir.$version->getPath() ))
-			if (!LetoDMS_Core_File::removeFile( $this->_document->_dms->contentDir.$version->getPath() ))
-				return false;
-
-		$status = $this->getStatus();
-		$stID = $status["statusID"];
-
-		$queryStr = "DELETE FROM tblDocumentContent WHERE `document` = " . $this->_document->getID() .	" AND `version` = " . $this->_version;
-		if (!$db->getResult($queryStr))
-			return false;
-
-		$queryStr = "DELETE FROM `tblDocumentStatusLog` WHERE `statusID` = '".$stID."'";
-		if (!$db->getResult($queryStr))
-			return false;
-
-		$queryStr = "DELETE FROM `tblDocumentStatus` WHERE `documentID` = '". $this->_document->getID() ."' AND `version` = '" . $this->_version."'";
-		if (!$db->getResult($queryStr))
-			return false;
-
-		$status = $this->getReviewStatus();
-		$stList = "";
-		foreach ($status as $st) {
-			$stList .= (strlen($stList)==0 ? "" : ", "). "'".$st["reviewID"]."'";
-			if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
-				$emailList[] = $st["required"];
-			}
-		}
-		if (strlen($stList)>0) {
-			$queryStr = "DELETE FROM `tblDocumentReviewLog` WHERE `tblDocumentReviewLog`.`reviewID` IN (".$stList.")";
-			if (!$db->getResult($queryStr))
-				return false;
-		}
-		$queryStr = "DELETE FROM `tblDocumentReviewers` WHERE `documentID` = '". $this->_document->getID() ."' AND `version` = '" . $this->_version."'";
-		if (!$db->getResult($queryStr))
-			return false;
-		$status = $this->getApprovalStatus();
-		$stList = "";
-		foreach ($status as $st) {
-			$stList .= (strlen($stList)==0 ? "" : ", "). "'".$st["approveID"]."'";
-			if ($st["status"]==0 && !in_array($st["required"], $emailList)) {
-				$emailList[] = $st["required"];
-			}
-		}
-		if (strlen($stList)>0) {
-			$queryStr = "DELETE FROM `tblDocumentApproveLog` WHERE `tblDocumentApproveLog`.`approveID` IN (".$stList.")";
-			if (!$db->getResult($queryStr))
-				return false;
-		}
-		$queryStr = "DELETE FROM `tblDocumentApprovers` WHERE `documentID` = '". $this->_document->getID() ."' AND `version` = '" . $this->_version."'";
-		if (!$db->getResult($queryStr))
-			return false;
-
-		// Notify affected users.
-		if ($send_email && $this->_notifier){
-
-			$recipients = array();
-			foreach ($emailList as $eID) {
-				$eU = $this->_document->_dms->getUser($eID);
-				$recipients[] = $eU;
-			}
-			$subject = "###SITENAME###: ".$this->_document->getName().", v.".$this->_version." - ".getMLText("version_deleted_email");
-			$message = getMLText("version_deleted_email")."\r\n";
-			$message .=
-				getMLText("document").": ".$this->_document->getName()."\r\n".
-				getMLText("version").": ".$this->_version."\r\n".
-				getMLText("comment").": ".$this->getComment()."\r\n".
-				getMLText("user").": ".$user->getFullName()." <". $user->getEmail() ."> ";
-
-			$subject=mydmsDecodeString($subject);
-			$message=mydmsDecodeString($message);
-
-			LetoDMS_Email::toList($user, $recipients, $subject, $message);
-
-			// Send notification to subscribers.
-			$nl=$this->_document->getNotifyList();
-			LetoDMS_Email::toList($user, $nl["users"], $subject, $message);
-			foreach ($nl["groups"] as $grp) {
-				LetoDMS_Email::toGroup($user, $grp, $subject, $message);
-			}
-		}
-
-		return true;
 	} /* }}} */
 
 	function getStatus($forceTemporaryTable=false) { /* {{{ */
@@ -2238,15 +2145,6 @@ class LetoDMS_Core_DocumentLink { /* {{{ */
 
 	function isPublic() { return $this->_public; }
 
-	function __remove() { // Do not use anymore
-		$db = $this->_document->_dms->getDB();
-
-		$queryStr = "DELETE FROM tblDocumentLinks WHERE id = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
-
-		return true;
-	}
 } /* }}} */
 
 /**
@@ -2312,21 +2210,6 @@ class LetoDMS_Core_DocumentFile { /* {{{ */
 		return $this->_document->getID() . "/f" .$this->_id . $this->_fileType;
 	}
 
-	function __remove() // do not use anymore, will be called from document->removeDocumentFile
-	{
-		$db = $this->_document->_dms->getDB();
-
-		if (file_exists( $this->_document->_dms->contentDir.$this->getPath() ))
-			if (!LetoDMS_Core_File::removeFile( $this->_document->_dms->contentDir.$this->getPath() ))
-				return false;
-
-
-		$queryStr = "DELETE FROM tblDocumentFiles WHERE document = " . $this->_document->getID() . " AND id = " . $this->_id;
-		if (!$db->getResult($queryStr))
-			return false;
-
-		return true;
-	}
 } /* }}} */
 
 //
