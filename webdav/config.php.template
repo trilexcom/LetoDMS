@@ -1,0 +1,13 @@
+<?php
+/* Make sure to use the same parameter as for your letodms installation */
+$g_config['type'] = 'mysql';
+$g_config['hostname'] = 'localhost';
+$g_config['name'] = 'letodms';
+$g_config['user'] = 'letodms';
+$g_config['passwd'] = 'letodms';
+
+$g_config['contentDir'] = '/var/lib/letodms/content/';
+$g_config['contentOffsetDir'] = '1048576';
+
+$g_config['logfile'] = '/tmp/letodms-webdav.log';
+?>
