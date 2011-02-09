@@ -69,10 +69,6 @@
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
    </dir> <!-- /DTD -->
-   <dir name="tests">
-    <file name="getfoldertree.php" role="test" />
-    <file name="getusers.php" role="test" />
-   </dir> <!-- /tests -->
    <file name="LetoDMS_Core.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
