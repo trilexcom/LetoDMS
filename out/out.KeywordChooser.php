@@ -3,6 +3,7 @@
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //    Copyright (C) 2010 Matteo Lucarelli
+//    Copyright (C) 2011 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -24,7 +25,13 @@ include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 include("../inc/inc.Authentication.php");
 
-$categories = $dms->getAllKeywordCategories(array($user->getID(), $settings->_adminID));
+$allusers = $dms->getAllUsers();
+$userids = array($user->getID());
+foreach($allusers as $u) {
+	if($u->isAdmin())
+		$userids[] = $u->getId();
+}
+$categories = $dms->getAllKeywordCategories($userids);^M
 
 UI::htmlStartPage(getMLText("use_default_keywords"));
 
