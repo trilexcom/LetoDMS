@@ -108,7 +108,7 @@ UI::contentContainerStart();
 <select name="ownerid">
 <option value="-1"><?php printMLText("all_users");?>
 <?php
-$allUsers = getAllUsers();
+$allUsers = $dms->getAllUsers();
 foreach ($allUsers as $userObj)
 {
 	if ($userObj->isGuest())
