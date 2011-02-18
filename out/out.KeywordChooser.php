@@ -33,13 +33,18 @@ foreach($allusers as $u) {
 }
 $categories = $dms->getAllKeywordCategories($userids);
 
+if($_GET['target']) {
+	$target = $_GET['target'];
+} else {
+	$target = 'form1';
+}
 UI::htmlStartPage(getMLText("use_default_keywords"));
 
 ?>
 
 
 <script language="JavaScript">
-var targetObj = opener.document.form1.keywords;
+var targetObj = opener.document.<?= $target ?>;
 var myTA;
 
 
