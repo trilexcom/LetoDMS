@@ -550,16 +550,7 @@ class LetoDMS_Core_DMS {
 		}
 
 		foreach ($resArr as $docArr) {
-
-			$document = new LetoDMS_Core_Document(
-				$docArr["id"], $docArr["name"],
-				$docArr["comment"], $docArr["date"],
-				$docArr["expires"], $docArr["owner"],
-				$docArr["folder"], $docArr["inheritAccess"],
-				$docArr["defaultAccess"], $docArr["lockUser"],
-				$docArr["keywords"], $docArr["sequence"]);
-			$document->setDMS($this);
-			$docs[] = $document;
+			$docs[] = $this->getDocument($docArr['id']);
 		}
 		return(array('totalDocs'=>$totalDocs, 'totalPages'=>$totalPages, 'docs'=>$docs));
 	} /* }}} */

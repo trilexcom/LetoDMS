@@ -994,12 +994,13 @@ class LetoDMS_Core_Folder {
 				// to the folder.
 				$tmpList = $this->getAccessList(M_NONE, O_LTEQ);
 			}
-			foreach ($tmpList["groups"] as $group) {
-				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $group->getGroupID();
+			foreach ($tmpList["groups"] as $groupAccess) {
+				$groupIDs .= (strlen($groupIDs)==0 ? "" : ", ") . $groupAccess->getGroupID();
 			}
-			foreach ($tmpList["users"] as $user) {
+			foreach ($tmpList["users"] as $userAccess) {
+				$user = $userAccess->getUser();
 				if (!$user->isGuest()) {
-					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $user->getUserID();
+					$userIDs .= (strlen($userIDs)==0 ? "" : ", ") . $userAccess->getUserID();
 				}
 			}
 
