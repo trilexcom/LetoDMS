@@ -1,7 +1,7 @@
 <?php
 
 require_once "HTTP/WebDAV/Server.php";
-require_once "LetoDMS/LetoDMS_Core.php";
+require_once "LetoDMS/Core.php";
 
 /**
  * LetoDMS access using WebDAV
