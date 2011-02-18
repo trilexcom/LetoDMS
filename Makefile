@@ -1,5 +1,5 @@
-VERSION=3.0.0-RC1
-SRC=CHANGELOG* inc conf index.php languages op out README reset_db.sql create_tables.sql create_tables-innodb.sql drop-tables-innodb.sql delete_all_contents.sql styles TODO UPDATE-* LICENSE Makefile package.xml
+VERSION=3.0.0-RC2
+SRC=CHANGELOG* inc conf index.php languages op out README reset_db.sql create_tables.sql create_tables-innodb.sql drop-tables-innodb.sql delete_all_contents.sql styles TODO UPDATE-* LICENSE Makefile
 
 dist:
 	mkdir -p tmp/letoDMS-$(VERSION)
@@ -8,7 +8,7 @@ dist:
 	rm -rf tmp
 
 pear:
-	pear package
+	(cd LetoDMS_Core/; pear package)
 
 webdav:
 	mkdir -p tmp/letoDMS-webdav-$(VERSION)
