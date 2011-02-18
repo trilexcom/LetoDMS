@@ -155,7 +155,7 @@ for ($file_num=0;$file_num<count($_FILES["userfile"]["tmp_name"]);$file_num++){
 	                            $userfiletmp, basename($userfilename),
 	                            $fileType, $userfiletype, $sequence,
 	                            $reviewers, $approvers, $reqversion,$version_comment);
-	
+
 	if (is_bool($res) && !$res) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 	} else {
