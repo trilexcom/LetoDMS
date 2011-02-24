@@ -101,6 +101,7 @@ class LetoDMS_Core_DatabaseAccess {
 		if (!$this->_conn)
 			return false;
 
+		$this->_conn->Execute('SET NAMES utf8');
 		$this->_connected = true;
 		return true;
 	} /* }}} */
