@@ -716,7 +716,7 @@ class LetoDMS_Core_DMS {
 	 */
 	function getGroup($id) { /* {{{ */
 		if (!is_numeric($id))
-			die ("invalid groupid");
+			return false;
 
 		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
@@ -801,7 +801,7 @@ class LetoDMS_Core_DMS {
 
 	function getKeywordCategory($id) { /* {{{ */
 		if (!is_numeric($id))
-			die ("invalid id");
+			return false;
 
 		$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
