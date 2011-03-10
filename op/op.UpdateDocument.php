@@ -49,12 +49,12 @@ if ($document->isLocked()) {
 }
 
 if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["size"] > 0 && $_FILES['userfile']['error']==0) {
-		
+
 	$comment  = sanitizeString($_POST["comment"]);
 	$userfiletmp = $_FILES["userfile"]["tmp_name"];
 	$userfiletype = sanitizeString($_FILES["userfile"]["type"]);
 	$userfilename = sanitizeString($_FILES["userfile"]["name"]);
-		
+
 	$lastDotIndex = strrpos(basename($userfilename), ".");
 	if (is_bool($lastDotIndex) && !$lastDotIndex)
 		$fileType = ".";
@@ -64,7 +64,7 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 	// Get the list of reviewers and approvers for this document.
 	$reviewers = array();
 	$approvers = array();
-	
+
 	// Retrieve the list of individual reviewers from the form.
 	$reviewers["i"] = array();
 	if (isset($_POST["indReviewers"])) {
@@ -94,7 +94,7 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 			$approvers["g"][] = $grp;
 		}
 	}
-	
+
 	// add mandatory reviewers/approvers
 	$docAccess = $folder->getApproversList();
 	$res=$user->getMandatoryReviewers();
@@ -133,7 +133,7 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 				}
 		}
 	}
-	
+
 
 	$contentResult=$document->addContent($comment, $user, $userfiletmp, basename($userfilename), $fileType, $userfiletype, $reviewers, $approvers);
 	if (is_bool($contentResult) && !$contentResult) {
@@ -154,19 +154,19 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 
 			$subject=mydmsDecodeString($subject);
 			$message=mydmsDecodeString($message);
-			
+
 			$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
 			foreach ($document->_notifyList["groups"] as $grp) {
 				$notifier->toGroup($user, $grp, $subject, $message);
 			}
-		
+
 			// if user is not owner send notification to owner
-			if ($user->getID()!= $document->_ownerID) 
+			if ($user->getID()!= $document->_ownerID)
 				$notifier->toIndividual($user, $document->getOwner(), $subject, $message);
 		}
 
 		$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, $_POST["expmonth"], $_POST["expday"], $_POST["expyear"]) : false;
-			
+
 		if ($document->setExpires($expires)) {
 			$document->getNotifyList();
 			if($notifier) {
@@ -182,7 +182,7 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"]) && $_FILES["userfile"]["si
 
 				$subject=mydmsDecodeString($subject);
 				$message=mydmsDecodeString($message);
-				
+
 				$notifier->toList($user, $document->_notifyList["users"], $subject, $message);
 				foreach ($document->_notifyList["groups"] as $grp) {
 					$notifier->toGroup($user, $grp, $subject, $message);
