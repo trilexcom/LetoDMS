@@ -40,7 +40,17 @@ UI::contentContainerStart();
 		<li><a href="../out/out.UsrMgr.php"><?php echo getMLText("user_management")?></a></li>
 		<li><a href="../out/out.GroupMgr.php"><?php echo getMLText("group_management")?></a></li>
 		<li><a href="../out/out.DefaultKeywords.php"><?php echo getMLText("global_default_keywords")?></a></li>
+		<li><a href="../out/out.Categories.php"><?php echo getMLText("global_document_categories")?></a></li>
 		<li><a href="../out/out.Info.php"><?php echo getMLText("version_info")?></a></li>
+<?php
+if($settings->_enableFullSearch) {
+?>
+		<li><a href="../out/out.Indexer.php"><?php echo getMLText("update_fulltext_index")?></a></li>
+		<li><a href="../out/out.Indexer.php?create=1"><?php echo getMLText("create_fulltext_index")?></a></li>
+		<li><a href="../out/out.IndexInfo.php"><?php echo getMLText("fulltext_info")?></a></li>
+<?php
+}
+?>
 	</ul>
 <?php
 UI::contentContainerEnd();
