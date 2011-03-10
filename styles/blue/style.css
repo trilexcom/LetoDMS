@@ -190,7 +190,7 @@ a:active {
 	padding: 1px;
 }
 .globalNav li input#searchButton {
-	border-left:0;
+	border-left:0px;
 	padding: 0px;
 }
 .localNav {
