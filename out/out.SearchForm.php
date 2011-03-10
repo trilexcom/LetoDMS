@@ -68,6 +68,8 @@ function checkForm()
 UI::contentHeading(getMLText("search"));
 UI::contentContainerStart();
 ?>
+<div style="width: 35%; float: left;">
+<h2><?= getMLText('databasesearch') ?></h2>
 <form action="../op/op.Search.php" name="form1" onsubmit="return checkForm();">
 <table class="searchform">
 <tr>
@@ -90,6 +92,20 @@ UI::contentContainerStart();
 </td>
 </tr>
 <tr>
+<td><?php printMLText("category");?>:</td>
+<td>
+<select name="categoryids[]" multiple>
+<option value="-1"><?php printMLText("all_categories");?>
+<?php
+$allCats = $dms->getDocumentCategories();
+foreach ($allCats as $catObj) {
+	print "<option value=\"".$catObj->getID()."\">" . $catObj->getName() . "\n";
+}
+?>
+</select>
+</td>
+</tr>
+<tr>
 <td><?php printMLText("status");?>:</td>
 <td>
 <ul class="actions">
@@ -108,7 +124,7 @@ UI::contentContainerStart();
 <select name="ownerid">
 <option value="-1"><?php printMLText("all_users");?>
 <?php
-$allUsers = getAllUsers();
+$allUsers = $dms->getAllUsers();
 foreach ($allUsers as $userObj)
 {
 	if ($userObj->isGuest())
@@ -159,6 +175,70 @@ echo "</td>\n</tr>\n";
 </table>
 
 </form>
+</div>
+<?php
+	if($settings->_enableFullSearch) {
+?>
+<div style="width: 35%; float: left; margin-left: 20px;">
+<form action="../op/op.SearchFulltext.php" name="form2" onsubmit="return checkForm();">
+<table class="searchform">
+<h2><?= getMLText('fullsearch') ?></h2>
+<tr>
+<td><?php printMLText("search_query");?>:</td>
+<td>
+<input name="query">
+<!--
+<select name="mode">
+<option value="1" selected><?php printMLText("search_mode_and");?><br>
+<option value="0"><?php printMLText("search_mode_or");?>
+</select>
+-->
+</td>
+</tr>
+<tr>
+<td><?php printMLText("category_filter");?>:</td>
+<td>
+<select name="categoryids[]" multiple>
+<!--
+<option value="-1"><?php printMLText("all_categories");?>
+-->
+<?php
+$allCats = $dms->getDocumentCategories();
+foreach ($allCats as $catObj) {
+	print "<option value=\"".$catObj->getID()."\">" . $catObj->getName() . "\n";
+}
+?>
+</select>
+</td>
+</tr>
+<tr>
+<td><?php printMLText("owner");?>:</td>
+<td>
+<select name="ownerid">
+<option value="-1"><?php printMLText("all_users");?>
+<?php
+$allUsers = $dms->getAllUsers();
+foreach ($allUsers as $userObj)
+{
+	if ($userObj->isGuest())
+		continue;
+	print "<option value=\"".$userObj->getID()."\">" . $userObj->getFullName() . "\n";
+}
+?>
+</select>
+</td>
+</tr>
+<tr>
+<td colspan="2"><input type="Submit" value="<?php printMLText("search"); ?>"></td>
+</tr>
+</table>
+
+</form>
+</div>
+<div style="clear: both"></div>
+<?php
+	}
+?>
 
 <?php
 UI::contentContainerEnd();
