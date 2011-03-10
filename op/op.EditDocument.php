@@ -46,6 +46,7 @@ if ($document->getAccessMode($user) < M_READWRITE) {
 $name =     sanitizeString($_POST["name"]);
 $comment =  sanitizeString($_POST["comment"]);
 $keywords = sanitizeString($_POST["keywords"]);
+$categories = sanitizeString($_POST["categoryidform1"]);
 $sequence = $_POST["sequence"];
 if (!is_numeric($sequence)) {
 	$sequence="keep";
@@ -122,6 +123,28 @@ if (($oldkeywords = $document->getKeywords()) != $keywords) {
 	}
 	else {
 		UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+	}
+}
+
+if($categories) {
+	$categoriesarr = array();
+	foreach(explode(',', $categories) as $catid) {
+		if($cat = $dms->getDocumentCategory($catid)) {
+			$categoriesarr[] = $cat;
+		}
+		
+	}
+	$oldcategories = $document->getCategories();
+	$oldcatsids = array();
+	foreach($oldcategories as $oldcategory)
+		$oldcatsids[] = $oldcategory->getID();
+
+	if (count($categoriesarr) != count($oldcategories) ||
+			array_diff(explode(',', $categories), $oldcatsids)) {
+		if($document->setCategories($categoriesarr)) {
+		} else {
+			UI::exitError(getMLText("document_title", array("documentname" => $document->getName())),getMLText("error_occured"));
+		}
 	}
 }
 

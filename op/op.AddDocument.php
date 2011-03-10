@@ -47,6 +47,7 @@ $comment  = sanitizeString($_POST["comment"]);
 $version_comment = sanitizeString($_POST["version_comment"]);
 
 $keywords = sanitizeString($_POST["keywords"]);
+$categories = sanitizeString($_POST["categoryidform1"]);
 
 $reqversion = (int)$_POST["reqversion"];
 if ($reqversion<1) $reqversion=1;
@@ -150,16 +151,30 @@ for ($file_num=0;$file_num<count($_FILES["userfile"]["tmp_name"]);$file_num++){
 	if ((count($_FILES["userfile"]["tmp_name"])==1)&&($_POST["name"]!=""))
 		$name = sanitizeString($_POST["name"]);
 	else $name = basename($userfilename);
-	
+
+	$cats = array();
+	if($categories) {
+		$catids = explode(',', $categories);
+		foreach($catids as $catid) {
+			$cats[] = $dms->getDocumentCategory($catid);
+		}
+	}
 	$res = $folder->addDocument($name, $comment, $expires, $user, $keywords,
-	                            $userfiletmp, basename($userfilename),
+															$cats, $userfiletmp, basename($userfilename),
 	                            $fileType, $userfiletype, $sequence,
 	                            $reviewers, $approvers, $reqversion,$version_comment);
-	
+
 	if (is_bool($res) && !$res) {
 		UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 	} else {
 		$document = $res[0];
+		if(isset($GLOBALS['LETODMS_HOOKS']['postAddDocument'])) {
+			foreach($GLOBALS['LETODMS_HOOKS']['postAddDocument'] as $hookObj) {
+				if (method_exists($hookObj, 'postAddDocument')) {
+					$hookObj->postAddDocument($document);
+				}
+			}
+		}
 		// Send notification to subscribers.
 		if($notifier) {
 			$folder->getNotifyList();
