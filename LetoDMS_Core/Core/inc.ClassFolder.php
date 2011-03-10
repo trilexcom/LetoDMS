@@ -479,7 +479,7 @@ class LetoDMS_Core_Folder {
 	 *        containing two elements. The first one is the new document, the
 	 *        second one is the result set returned when inserting the content.
 	 */
-	function addDocument($name, $comment, $expires, $owner, $keywords, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
+	function addDocument($name, $comment, $expires, $owner, $keywords, $categories, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
 		$db = $this->_dms->getDB();
 		
 		$expires = (!$expires) ? 0 : $expires;
@@ -511,6 +511,9 @@ class LetoDMS_Core_Folder {
 			return false;
 		}
 
+		if($categories) {
+			$document->setCategories($categories);
+		}
 		return array($document, $res);
 	} /* }}} */
 	
