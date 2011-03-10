@@ -2,6 +2,7 @@
 //    MyDMS. Document Management System
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
+//    Copyright (C) 2011 Uwe Steinmann
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -26,14 +27,20 @@ include("../inc/inc.Authentication.php");
 
 // Redirect to the search page if the navigation search button has been
 // selected without supplying any search terms.
-if (isset($_GET["navBar"]) && strlen($_GET["query"])==0) {
+if (isset($_GET["navBar"])) {
 	if (!isset($_GET["folderid"]) || !is_numeric($_GET["folderid"]) || intval($_GET["folderid"])<1) {
 		$folderid=$settings->_rootFolderID;
 	}
 	else {
 		$folderid = $_GET["folderid"];
 	}
-	header("Location: ../out/out.SearchForm.php?folderid=".$folderid);
+	if(strlen($_GET["query"])==0) {
+		header("Location: ../out/out.SearchForm.php?folderid=".$folderid);
+	} else {
+		if($_GET["fullsearch"]) {
+			header("Location: ../op/op.SearchFulltext.php?folderid=".$folderid."&query=".$_GET["query"]);
+		}
+	}
 }
 
 //
@@ -203,6 +210,15 @@ if (isset($_GET["obsolete"])){
 if (isset($_GET["expired"])){
 	$status[] = S_EXPIRED;
 }
+
+// category
+$categories = array();
+if(isset($_GET['categoryids']) && $_GET['categoryids']) {
+	foreach($_GET['categoryids'] as $catid) {
+		$categories[] = $dms->getDocumentCategory($catid);
+	}
+}
+
 //
 // Get the page number to display. If the result set contains more than
 // 25 entries, it is displayed across multiple pages.
@@ -224,7 +240,7 @@ if (isset($_GET["pg"])) {
 
 // ------------------------------------- Suche starten --------------------------------------------
 $startTime = getTime();
-$resArr = $dms->search($query, 25, ($pageNumber-1)*25, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate);
+$resArr = $dms->search($query, 25, ($pageNumber-1)*25, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate, $categories);
 $searchTime = getTime() - $startTime;
 $searchTime = round($searchTime, 2);
 // ---------------------------------- Ausgabe der Ergebnisse --------------------------------------
