@@ -106,6 +106,18 @@ print "<a class=\"infos\" href=\"mailto:".$owner->getEmail()."\">".$owner->getFu
 <td><?php printMLText("keywords");?>:</td>
 <td><?php print $document->getKeywords();?></td>
 </tr>
+<tr>
+<td><?php printMLText("categories");?>:</td>
+<td>
+<?php
+	$cats = $document->getCategories();
+	$ct = array();
+	foreach($cats as $cat)
+		$ct[] = $cat->getName();
+	echo implode(', ', $ct);
+?>
+</td>
+</tr>
 </table>
 <?php
 UI::contentContainerEnd();
