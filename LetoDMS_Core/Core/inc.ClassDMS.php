@@ -408,7 +408,7 @@ class LetoDMS_Core_DMS {
 	 * @param creationenddate array search for documents created before this date
 	 * @return array containing the elements total and docs
 	 */
-	function search($query, $limit=0, $offset=0, $mode='AND', $searchin=array(), $startFolder=null, $owner=null, $status = array(), $creationstartdate=array(), $creationenddate=array()) { /* {{{ */
+	function search($query, $limit=0, $offset=0, $mode='AND', $searchin=array(), $startFolder=null, $owner=null, $status = array(), $creationstartdate=array(), $creationenddate=array(), $categories=array()) { /* {{{ */
 		// Split the search string into constituent keywords.
 		$tkeys=array();
 		if (strlen($query)>0) {
@@ -457,6 +457,16 @@ class LetoDMS_Core_DMS {
 			$searchOwner = "`tblDocuments`.`owner` = '".$owner->getId()."'";
 		}
 
+		// Check to see if the search has been restricted to a particular
+		// document category.
+		$searchCategories = "";
+		if ($categories) {
+			$catids = array();
+			foreach($categories as $category)
+				$catids[] = $category->getId();
+			$searchCategories = "`tblDocumentCategory`.`categoryID` in (".implode(',', $catids).")";
+		}
+
 		// Is the search restricted to documents created between two specific dates?
 		$searchCreateDate = "";
 		if ($creationstartdate) {
@@ -491,6 +501,7 @@ class LetoDMS_Core_DMS {
 			"LEFT JOIN `ttstatid` ON `ttstatid`.`maxLogID` = `tblDocumentStatusLog`.`statusLogID` ".
 			"LEFT JOIN `ttcontentid` ON `ttcontentid`.`maxVersion` = `tblDocumentStatus`.`version` AND `ttcontentid`.`document` = `tblDocumentStatus`.`documentID` ".
 			"LEFT JOIN `tblDocumentLocks` ON `tblDocuments`.`id`=`tblDocumentLocks`.`document` ".
+			"LEFT JOIN `tblDocumentCategory` ON `tblDocuments`.`id`=`tblDocumentCategory`.`documentID` ".
 			"WHERE `ttstatid`.`maxLogID`=`tblDocumentStatusLog`.`statusLogID` ".
 			"AND `ttcontentid`.`maxVersion` = `tblDocumentContent`.`version`";
 
@@ -502,6 +513,9 @@ class LetoDMS_Core_DMS {
 		}
 		if (strlen($searchOwner)>0) {
 			$searchQuery .= " AND (".$searchOwner.")";
+		}
+		if (strlen($searchCategories)>0) {
+			$searchQuery .= " AND (".$searchCategories.")";
 		}
 		if (strlen($searchCreateDate)>0) {
 			$searchQuery .= " AND (".$searchCreateDate.")";
@@ -716,7 +730,7 @@ class LetoDMS_Core_DMS {
 	 */
 	function getGroup($id) { /* {{{ */
 		if (!is_numeric($id))
-			die ("invalid groupid");
+			return false;
 
 		$queryStr = "SELECT * FROM tblGroups WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
@@ -801,7 +815,7 @@ class LetoDMS_Core_DMS {
 
 	function getKeywordCategory($id) { /* {{{ */
 		if (!is_numeric($id))
-			die ("invalid id");
+			return false;
 
 		$queryStr = "SELECT * FROM tblKeywordCategories WHERE id = " . $id;
 		$resArr = $this->db->getResultArray($queryStr);
@@ -873,6 +887,66 @@ class LetoDMS_Core_DMS {
 			return false;
 
 		return $this->getKeywordCategory($this->db->getInsertID());
+	} /* }}} */
+
+	function getDocumentCategory($id) { /* {{{ */
+		if (!is_numeric($id))
+			return false;
+
+		$queryStr = "SELECT * FROM tblCategory WHERE id = " . $id;
+		$resArr = $this->db->getResultArray($queryStr);
+		if ((is_bool($resArr) && !$resArr) || (count($resArr) != 1))
+			return false;
+
+		$resArr = $resArr[0];
+		$cat = new LetoDMS_Core_DocumentCategory($resArr["id"], $resArr["name"]);
+		$cat->setDMS($this);
+		return $cat;
+	} /* }}} */
+
+	function getDocumentCategories() { /* {{{ */
+		$queryStr = "SELECT * FROM tblCategory";
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$categories = array();
+		foreach ($resArr as $row) {
+			$cat = new LetoDMS_Core_DocumentCategory($row["id"], $row["name"]);
+			$cat->setDMS($this);
+			array_push($categories, $cat);
+		}
+
+		return $categories;
+	} /* }}} */
+
+	function getDocumentCategoryByName($name) { /* {{{ */
+		$queryStr = "SELECT * FROM tblCategory where name='".$name."'";
+
+		$resArr = $this->db->getResultArray($queryStr);
+		if (is_bool($resArr) && !$resArr)
+			return false;
+
+		$categories = array();
+		foreach ($resArr as $row) {
+			$cat = new LetoDMS_Core_DocumentCategory($row["id"], $row["name"]);
+			$cat->setDMS($this);
+			array_push($categories, $cat);
+		}
+
+		return $categories;
+	} /* }}} */
+
+	function addDocumentCategory($name) { /* {{{ */
+		if (is_object($this->getDocumentCategoryByName($name))) {
+			return false;
+		}
+		$queryStr = "INSERT INTO tblCategory (name) VALUES ('$name')";
+		if (!$this->db->getResult($queryStr))
+			return false;
+
+		return $this->getDocumentCategory($this->db->getInsertID());
 	} /* }}} */
 
 	/**
