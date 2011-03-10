@@ -123,6 +123,7 @@ class UI {
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/".$theme."/style.css\"/>\n";
 		echo "<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../styles/print.css\" media=\"print\"/>\n";
 		echo "<link rel='shortcut icon' href='../styles/".$theme."/favicon.ico' type='image/x-icon'/>\n";
+		echo "<script type='text/javascript' src='../js/jquery.min.js'></script>\n";
 		echo "<title>".(strlen($settings->_siteName)>0 ? $settings->_siteName : "LetoDMS").(strlen($title)>0 ? ": " : "").$title."</title>\n";
 		echo "</head>\n";
 		echo "<body".(strlen($bodyClass)>0 ? " class=\"".$bodyClass."\"" : "").">\n";
@@ -169,6 +170,7 @@ class UI {
 		echo "<div class=\"globalTR\"></div>\n";
 		echo "<ul class=\"globalNav\">\n";
 		echo "<li id=\"first\"><a href=\"../out/out.ViewFolder.php?folderid=".$settings->_rootFolderID."\">".getMLText("content")."</a></li>\n";
+		echo "<li><a href=\"../out/out.SearchForm.php?folderid=".$settings->_rootFolderID."\">".getMLText("search")."</a></li>\n";
 		if ($settings->_enableCalendar) echo "<li><a href=\"../out/out.Calendar.php?mode=".$settings->_calendarDefaultView."\">".getMLText("calendar")."</a></li>\n";
 		if (!$user->isGuest()) echo "<li><a href=\"../out/out.MyDocuments.php?inProcess=1\">".getMLText("my_documents")."</a></li>\n";
 		if (!$user->isGuest()) echo "<li><a href=\"../out/out.MyAccount.php\">".getMLText("my_account")."</a></li>\n";
@@ -183,7 +185,11 @@ class UI {
 		echo "<input type=\"hidden\" name=\"searchin[]\" value=\"1\" />";
 		echo "<input type=\"hidden\" name=\"searchin[]\" value=\"2\" />";
 		echo "<input type=\"hidden\" name=\"searchin[]\" value=\"3\" />";
-		echo "<input name=\"query\" type=\"text\" size=\"20\" /><input type=\"submit\" value=\"".getMLText("search")."\" id=\"searchButton\"/></form>\n";
+		echo "<input name=\"query\" type=\"text\" size=\"20\" />";
+		if($settings->_enableFullSearch) {
+			echo "<input type=\"checkbox\" name=\"fullsearch\" value=\"1\" title=\"".getMLText('fullsearch_hint')."\"/> ".getMLText('fullsearch_hint')."";
+		}
+		echo "<input type=\"submit\" value=\"".getMLText("search")."\" id=\"searchButton\"/></form>\n";
 		echo "</li>\n</ul>\n";
 		echo "<div id=\"logo\"><img src='../styles/logo.png'></div>\n";
 		echo "<div class=\"siteName\">".
@@ -253,6 +259,7 @@ class UI {
 		else if ($accessMode >= M_READWRITE) {
 			echo "<li id=\"first\"><a href=\"../out/out.AddSubFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("add_subfolder")."</a></li>\n";
 			echo "<li><a href=\"../out/out.AddDocument.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("add_document")."</a></li>\n";
+			echo "<li><a href=\"../out/out.AddMultiDocument.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("add_multiple_documents")."</a></li>\n";
 			echo "<li><a href=\"../out/out.EditFolder.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_folder_props")."</a></li>\n";
 			echo "<li><a href=\"../out/out.FolderNotify.php?folderid=". $folderID ."&showtree=".showtree()."\">".getMLText("edit_existing_notify")."</a></li>\n";
 			if ($folderID != $settings->_rootFolderID && $folder->getParent())
@@ -547,6 +554,29 @@ class UI {
 		print "&nbsp;&nbsp;<input type=\"Button\" value=\"".getMLText("folder")."...\" onclick=\"chooseFolder".$formName."();\">";
 	}
 
+	function printCategoryChooser($formName, $categories=array()) {
+		global $settings;
+?>
+		<script language="JavaScript">
+		var openDlg;
+		function chooseCategory<?php print $formName ?>() {
+			var current = document.<?= $formName ?>.categoryid<?= $formName ?>;
+			openDlg = open("out.CategoryChooser.php?form=<?php echo $formName?>&cats="+current.value, "openDlg", "width=480,height=480,scrollbars=yes,resizable=yes,status=yes");
+		}
+		</script>
+<?php
+		$ids = $names = array();
+		if($categories) {
+			foreach($categories as $cat) {
+				$ids[] = $cat->getId();
+				$names[] = $cat->getName();
+			}
+		}
+		print "<input type=\"hidden\" name=\"categoryid".$formName."\" value=\"".implode(',', $ids)."\">";
+		print "<input disabled name=\"categoryname".$formName."\" value=\"".implode(' ', $names)."\">";
+		print "&nbsp;&nbsp;<input type=\"Button\" value=\"".getMLText("category")."...\" onclick=\"chooseCategory".$formName."();\">";
+	}
+
 	function getImgPath($img) {
 		global $theme;
 
@@ -562,8 +592,8 @@ class UI {
 	function printImgPath($img) {
 		print UI::getImgPath($img);
 	}
-	
-	function exitError($pagetitle,$error){
+
+	function exitError($pagetitle,$error) { /* {{{ */
 	
 		UI::htmlStartPage($pagetitle);
 		UI::globalNavigation();
@@ -577,11 +607,10 @@ class UI {
 		add_log_line(" UI::exitError error=".$error." pagetitle=".$pagetitle);
 		
 		exit;	
-	}
+	} /* }}} */
 
 	// navigation flag is used for items links (navigation or selection)
-	function printFoldersTree($accessMode, $exclude, $folderID, $currentFolderID=-1, $navigation=false)
-	{	
+	function printFoldersTree($accessMode, $exclude, $folderID, $currentFolderID=-1, $navigation=false) {	/* {{{ */
 		global $dms, $user, $form, $settings;
 		
 		if ($settings->_expandFolderTree==2){
@@ -669,13 +698,12 @@ class UI {
 		print "</ul>\n";
 		
 		if ($folderID == $settings->_rootFolderID) print "</ul>\n";
-	}
-	
-	function printTreeNavigation($folderid,$showtree){
-	
+	} /* }}} */
+
+	function printTreeNavigation($folderid,$showtree){ /* {{{ */
 		global $settings;
 		
-		?>
+?>
 		<script language="JavaScript">
 		function toggleTree(id){
 			
@@ -693,7 +721,7 @@ class UI {
 
 		}
 		</script>
-		<?php
+<?php
 	
 		print "<table width=\"100%\"><tr>";
 
@@ -716,7 +744,309 @@ class UI {
 		}
 
 		print "</td><td>";
+	} /* }}} */
+
+	/**
+	 * Output HTML Code for jumploader
+	 *
+	 * @param string $uploadurl URL where post data is send
+	 * @param integer $folderid id of folder where document is saved
+	 * @param integer $maxfiles maximum number of files allowed to upload
+	 * @param array $fields list of post fields
+	 */
+	function printUploadApplet($uploadurl, $attributes, $maxfiles=0, $fields=array()){ /* {{{ */
+		global $settings;
+?>
+<applet id="jumpLoaderApplet" name="jumpLoaderApplet"
+code="jmaster.jumploader.app.JumpLoaderApplet.class"
+archive="jl_core_z.jar"
+width="715"
+height="400"
+mayscript>
+  <param name="uc_uploadUrl" value="<?= $uploadurl ?>"/>
+  <param name="ac_fireAppletInitialized" value="true"/>
+  <param name="ac_fireUploaderSelectionChanged" value="true"/>
+  <param name="ac_fireUploaderFileStatusChanged" value="true"/>
+  <param name="ac_fireUploaderFileAdded" value="true"/>
+  <param name="uc_partitionLength" value="<?= $settings->_partitionSize ?>"/>
+<?php
+	if($maxfiles) {
+?>
+  <param name="uc_maxFiles" value="<?= $maxfiles ?>"/>
+<?php
 	}
+?>
+</applet>
+<div id="fileLinks">
+</div>
+
+<!-- callback methods -->
+<script language="javascript">
+    /**
+     * applet initialized notification
+     */
+    function appletInitialized(  ) {
+        var uploader = document.jumpLoaderApplet.getUploader();
+        var attrSet = uploader.getAttributeSet();
+        var attr;
+<?php
+	foreach($attributes as $name=>$value) {
+?>
+        attr = attrSet.createStringAttribute( '<?= $name ?>', <?= $value ?> );
+        attr.setSendToServer(1);
+<?php
+	}
+?>
+    }
+    /**
+     * uploader selection changed notification
+     */
+    function uploaderSelectionChanged( uploader ) {
+        dumpAllFileAttributes();
+    }
+    /**
+     * uploader file added notification
+     */
+    function uploaderFileAdded( uploader ) {
+        dumpAllFileAttributes();
+    }
+    /**
+     * file status changed notification
+     */
+    function uploaderFileStatusChanged( uploader, file ) {
+        traceEvent( "uploaderFileStatusChanged, index=" + file.getIndex() + ", status=" + file.getStatus() + ", content=" + file.getResponseContent() );
+        if( file.isFinished() ) { 
+            var serverFileName = file.getId() + "." + file.getName(); 
+            var linkHtml = "<a href='/uploaded/" + serverFileName + "'>" + serverFileName + "</a> " + file.getLength() + " bytes"; 
+            var container = document.getElementById( "fileLinks"); 
+            container.innerHTML += linkHtml + "<br />"; 
+        } 
+    }
+    /**
+     * trace event to events textarea
+     */
+    function traceEvent( message ) {
+        document.debugForm.txtEvents.value += message + "\r\n";
+    }
+</script>
+
+<!-- debug auxiliary methods -->
+<script language="javascript">
+    /**
+     * list attributes of file into html
+     */
+    function listFileAttributes( file, edit, index ) {
+        var attrSet = file.getAttributeSet();
+        var content = "";
+        var attr;
+				var value;
+				if(edit)
+					content += "<form name='form" + index + "' id='form" + index + "' action='#' >";
+        content += "<table>";
+				content += "<tr class='dataRow' colspan='2'><td class='dataText'><b>" + file.getName() + "</b></td></tr>";
+
+<?php
+	if(!$fields || (isset($fields['name']) && $fields['name'])) {
+?>
+        content += "<tr class='dataRow'>";
+        content += "<td class='dataField'><?= getMLText('name') ?></td>";
+				if(attr = attrSet.getAttributeByName('name'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(edit)
+					value = "<input id='name" + index + "' name='name' type='input' value='" + value + "' />";
+        content += "<td class='dataText'>" + value + "</td>";
+        content += "</tr>";
+<?php
+	}
+?>
+
+<?php
+	if(!$fields || (isset($fields['comment']) && $fields['comment'])) {
+?>
+        content += "<tr class='dataRow'>";
+        content += "<td class='dataField'><?= getMLText('comment') ?></td>";
+				if(attr = attrSet.getAttributeByName('comment'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(edit)
+					value = "<textarea id='comment" + index + "' name='comment' cols='40' rows='2'>" + value + "</textarea>";
+        content += "<td class='dataText'>" + value + "</td>";
+        content += "</tr>";
+<?php
+	}
+?>
+
+<?php
+	if(!$fields || (isset($fields['reqversion']) && $fields['reqversion'])) {
+?>
+        content += "<tr class='dataRow'>";
+        content += "<td class='dataField'><?= getMLText('version') ?></td>";
+				if(attr = attrSet.getAttributeByName('reqversion'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(edit)
+					value = "<input id='reqversion" + index + "' name='reqversion' type='input' value='" + value + "' />";
+        content += "<td class='dataText'>" + value + "</td>";
+        content += "</tr>";
+<?php
+	}
+?>
+
+<?php
+	if(!$fields || (isset($fields['version_comment']) && $fields['version_comment'])) {
+?>
+        content += "<tr class='dataRow'>";
+        content += "<td class='dataField'><?= getMLText('comment_for_current_version') ?></td>";
+				if(attr = attrSet.getAttributeByName('version_comment'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(edit)
+					value = "<textarea id='version_comment" + index + "' name='version_comment' cols='40' rows='2'>" + value + "</textarea>";
+        content += "<td class='dataText'>" + value + "</td>";
+        content += "</tr>";
+<?php
+	}
+?>
+
+<?php
+	if(!$fields || (isset($fields['keywords']) && $fields['keywords'])) {
+?>
+        content += "<tr class='dataRow'>";
+        content += "<td class='dataField'><?= getMLText('keywords') ?></td>";
+				if(attr = attrSet.getAttributeByName('keywords'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(edit) {
+					value = "<textarea id='keywords" + index + "' name='keywords' cols='40' rows='2'>" + value + "</textarea>";
+					value += "<br /><a href='javascript:chooseKeywords(\"form" + index + ".keywords" + index +"\");'><?= getMLText("use_default_keywords");?></a>";
+				}
+        content += "<td class='dataText'>" + value + "</td>";
+        content += "</tr>";
+<?php
+	}
+?>
+
+<?php
+	if(!$fields || (isset($fields['categories']) && $fields['categories'])) {
+?>
+				content += "<tr class='dataRow'>";
+				content += "<td class='dataField'><?= getMLText('categories') ?></td>";
+				if(attr = attrSet.getAttributeByName('categoryids'))
+					value = attr.getStringValue();
+				else
+					value = '';
+				if(attr = attrSet.getAttributeByName('categorynames'))
+					value2 = attr.getStringValue();
+				else
+					value2 = '';
+				if(edit) {
+					value = "<input type='hidden' id='categoryidform" + index + "' name='categoryids' value='" + value + "' />";
+					value += "<input disabled id='categorynameform" + index + "' name='categorynames' value='" + value2 + "' />";
+					value += "<br /><a href='javascript:chooseCategory(\"form" + index + "\", \"\");'><?= getMLText("use_default_categories");?></a>";
+				} else {
+					value = value2;
+				}
+        content += "<td class='dataText'>" + value + "</td>";
+				content += "</tr>";
+<?php
+	}
+?>
+
+				if(edit) {
+					content += "<tr class='dataRow'>";
+					content += "<td class='dataField'></td>";
+					content += "<td class='dataText'><input type='button' value='Set' onClick='updateFileAttributes("+index+")'/></td>";
+					content += "</tr>";
+        	content += "</table>";
+        	content += "</form>";
+				} else {
+        	content += "</table>";
+				}
+        return content;
+    }
+    /**
+     * return selected file if and only if single file selected
+     */
+    function getSelectedFile() {
+        var file = null;
+        var uploader = document.jumpLoaderApplet.getUploader();
+        var selection = uploader.getSelection();
+        var numSelected = selection.getSelectedItemCount();
+        if( numSelected == 1 ) {
+            var selectedIndex = selection.getSelectedItemIndexAt( 0 );
+            file = uploader.getFile( selectedIndex );
+        }
+        return file;
+    }
+    /**
+     * dump attributes of all files into html
+     */
+     function dumpAllFileAttributes() {
+         var content = "";
+         var uploader = document.jumpLoaderApplet.getUploader();
+         var files = uploader.getAllFiles();
+        	var file = getSelectedFile();
+				 for (var i = 0; i < uploader.getFileCount() ; i++) { 
+				 		if(uploader.getFile(i) == file)
+							content += listFileAttributes( uploader.getFile(i), 1, i );
+						else
+							content += listFileAttributes( uploader.getFile(i), 0, i );
+         }
+         document.getElementById( "fileList" ).innerHTML = content;
+    }
+     /**
+      * update attributes for the selected file
+      */
+      function updateFileAttributes(index) {
+        var uploader = document.jumpLoaderApplet.getUploader();
+        var file = uploader.getFile( index );
+        if( file != null ) {
+				  var attr;
+					var value;
+          var attrSet = file.getAttributeSet();
+					value = document.getElementById("name"+index);
+          attr = attrSet.createStringAttribute( 'name', (value.value) ? value.value : "" );
+          attr.setSendToServer( 1 );
+					value = document.getElementById("comment"+index);
+          attr = attrSet.createStringAttribute( 'comment', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+					value = document.getElementById("reqversion"+index);
+          attr = attrSet.createStringAttribute( 'reqversion', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+					value = document.getElementById("version_comment"+index);
+          attr = attrSet.createStringAttribute( 'version_comment', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+					value = document.getElementById("keywords"+index);
+          attr = attrSet.createStringAttribute( 'keywords', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+
+					value = document.getElementById("categoryidform"+index);
+          attr = attrSet.createStringAttribute( 'categoryids', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+
+					value = document.getElementById("categorynameform"+index);
+          attr = attrSet.createStringAttribute( 'categorynames', (value.value) ? value.value : ""  );
+          attr.setSendToServer( 1 );
+
+					dumpAllFileAttributes();
+        } else {
+            alert( "Single file should be selected" );
+        }
+     }
+</script>
+<form name="debugForm">
+<textarea name="txtEvents" style="visibility: hidden;width:715px; font:10px monospace" rows="1" wrap="off" id="txtEvents"></textarea></p>
+</form>
+<p></p>
+<p id="fileList"></p>
+<?php
+	} /* }}} */
 }
 
 ?>
