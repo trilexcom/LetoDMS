@@ -77,6 +77,13 @@ class Settings
 	// be any number or string that does not already exist within $_contentDir.	
 	var $_contentOffsetDir = "1048576";
 
+	// File uploaded by the jumploader are first saved into the staging dir
+	// if they are partitioned
+	var $_stagingDir = "/var/www/letoDMS-3.0.0/data/staging/";
+
+	// Size of chunks created by jumploader when uploading files
+	var $_partitionSize = 10000;
+
 	// Maximum number of sub-directories per parent directory. Default: 32700.
 	var $_maxDirID = 32700;
 
@@ -146,6 +153,17 @@ class Settings
 	// leave ampty to turn off access control
 	// NOTE: works only with local autentication (no LDAP)
 	var $_adminIP = "";
+
+	// ----------- Fulltext-Search -------------------------------------------
+	var $_enableFullSearch = 1;
+
+	// Path to LetoDMS_Lucene
+	// If left empty LetoDMS_Lucene will be used from the standard include path
+	var $_luceneDir = "/var/www/LetoDMS_Lucene-3.0.0/";
+
+	var $_indexPath = '/var/www/letoDMS-3.0.0/data/lucene';
+
+	var $_stopWordsFile = '/var/www/letoDMS-3.0.0/conf/stopwords.txt';
 
 	// ----------- Database-Setup --------------------------------------------
 
