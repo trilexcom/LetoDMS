@@ -105,6 +105,11 @@ class LetoDMS_Core_Document { /* {{{ */
 	var $_keywords;
 
 	/**
+	 * @var array list of categories
+	 */
+	var $_categories;
+
+	/**
 	 * @var integer position of document within the parent folder
 	 */
 	var $_sequence;
@@ -127,6 +132,7 @@ class LetoDMS_Core_Document { /* {{{ */
 		$this->_locked = ($locked == null || $locked == '' ? -1 : $locked);
 		$this->_keywords = $keywords;
 		$this->_sequence = $sequence;
+		$this->_categories = array();
 		$this->_notifyList = array();
 		$this->_dms = null;
 	} /* }}} */
@@ -218,6 +224,41 @@ class LetoDMS_Core_Document { /* {{{ */
 			return false;
 
 		$this->_keywords = $newKeywords;
+		return true;
+	} /* }}} */
+
+	function getCategories() {
+		$db = $this->_dms->getDB();
+
+		if(!$this->_categories) {
+			$queryStr = "SELECT * FROM tblCategory where id in (select categoryID from tblDocumentCategory where documentID = ".$this->_id.")";
+			$resArr = $db->getResultArray($queryStr);
+			if (is_bool($resArr) && !$resArr)
+				return false;
+
+			foreach ($resArr as $row) {
+				$cat = new LetoDMS_Core_DocumentCategory($row['id'], $row['name']);
+				$cat->setDMS($this->_dms);
+				$this->_categories[] = $cat;
+			}
+		}
+		return $this->_categories;
+	}
+
+	function setCategories($newCategories) { /* {{{ */
+		$db = $this->_dms->getDB();
+
+		$queryStr = "DELETE from tblDocumentCategory WHERE documentID = ". $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+
+		foreach($newCategories as $cat) {
+			$queryStr = "INSERT INTO tblDocumentCategory (categoryID, documentID) VALUES (". $cat->getId() .", ". $this->_id .")";
+			if (!$db->getResult($queryStr))
+				return false;
+		}
+
+		$this->_categories = $newCategories;
 		return true;
 	} /* }}} */
 
@@ -1350,6 +1391,9 @@ class LetoDMS_Core_Document { /* {{{ */
 		if (!$db->getResult($queryStr))
 			return false;
 		$queryStr = "DELETE FROM tblDocumentFiles WHERE document = " . $this->_id;
+		if (!$db->getResult($queryStr))
+			return false;
+		$queryStr = "DELETE FROM tblDocumentCategory WHERE documentID = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
