@@ -52,6 +52,11 @@ require_once('Core/inc.ClassUser.php');
 require_once('Core/inc.ClassKeywords.php');
 
 /**
+ * @uses LetoDMS_DocumentCategory
+ */
+require_once('Core/inc.ClassDocumentCategory.php');
+
+/**
  * @uses LetoDMS_Notification
  */
 require_once('Core/inc.ClassNotification.php');
