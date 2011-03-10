@@ -17,7 +17,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
 $_tmp = dirname($_SERVER['SCRIPT_FILENAME']);
 if(is_link($_tmp)) {
 	$_arr = preg_split('/\//', $_tmp);
@@ -27,8 +26,5 @@ if(is_link($_tmp)) {
 } else {
 	include("../conf/conf.Settings.php");
 }
-
-if(isset($settings->_ADOdbPath))
-	ini_set('include_path', $settings->_ADOdbPath.":".ini_get('include_path'));
 
 ?>
