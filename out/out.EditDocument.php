@@ -74,7 +74,7 @@ UI::contentHeading(getMLText("edit_document_props") . ": " . $document->getName(
 UI::contentContainerStart();
 ?>
 <form action="../op/op.EditDocument.php" name="form1" onsubmit="return checkForm();" method="POST">
-	<input type="Hidden" name="documentid" value="<?php print $documentid;?>">
+	<input type="hidden" name="documentid" value="<?= $documentid ?>">
 	<table cellpadding="3">
 		<tr>
 			<td class="inputDescription"><?php printMLText("name");?>:</td>
@@ -88,15 +88,19 @@ UI::contentContainerStart();
 			<td valign="top" class="inputDescription"><?php printMLText("keywords");?>:</td>
 			<td class="standardText">
 				<textarea name="keywords" rows="2" cols="80"><?php print $document->getKeywords();?></textarea><br>
-				<a href="javascript:chooseKeywords();"><?php printMLText("use_default_keywords");?></a>
+				<a href="javascript:chooseKeywords('form1.keywords');"><?php printMLText("use_default_keywords");?></a>
 				<script language="JavaScript">
 					var openDlg;
 					
-					function chooseKeywords() {
-						openDlg = open("out.KeywordChooser.php", "openDlg", "width=500,height=400,scrollbars=yes,resizable=yes");
+					function chooseKeywords(target) {
+						openDlg = open("out.KeywordChooser.php?target="+target, "openDlg", "width=500,height=400,scrollbars=yes,resizable=yes");
 					}
 				</script>
 			</td>
+		</tr>
+		<tr>
+			<td><?php printMLText("categories")?>:</td>
+			<td><?php UI::printCategoryChooser("form1", $document->getCategories());?></td>
 		</tr>
 		<?php
 			if ($folder->getAccessMode($user) > M_READ)
