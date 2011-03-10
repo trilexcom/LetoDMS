@@ -129,16 +129,20 @@ $docAccess = $folder->getApproversList();
 	<td><?php printMLText("keywords");?>:</td>
 	<td>
 	<textarea name="keywords" rows="1" cols="80"></textarea><br>
-	<a href="javascript:chooseKeywords();"><?php printMLText("use_default_keywords");?></a>
+	<a href="javascript:chooseKeywords('form1.keywords');"><?php printMLText("use_default_keywords");?></a>
 	<script language="JavaScript">
 	var openDlg;
 
-	function chooseKeywords() {
-		openDlg = open("out.KeywordChooser.php", "openDlg", "width=500,height=400,scrollbars=yes,resizable=yes");
+	function chooseKeywords(target) {
+		openDlg = open("out.KeywordChooser.php?target="+target, "openDlg", "width=500,height=400,scrollbars=yes,resizable=yes");
 	}
 	</script>
 	</td>
 </tr>
+		<tr>
+			<td><?php printMLText("categories")?>:</td>
+			<td><?php UI::printCategoryChooser("form1");?></td>
+		</tr>
 <tr>
 	<td><?php printMLText("expires");?>:</td>
 	<td>
