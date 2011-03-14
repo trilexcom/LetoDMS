@@ -68,7 +68,13 @@ function checkForm()
 UI::contentHeading(getMLText("search"));
 UI::contentContainerStart();
 ?>
+<?php
+	if($settings->_enableFullSearch) {
+?>
 <div style="width: 35%; float: left;">
+<?php
+	}
+?>
 <h2><?= getMLText('databasesearch') ?></h2>
 <form action="../op/op.Search.php" name="form1" onsubmit="return checkForm();">
 <table class="searchform">
@@ -175,10 +181,10 @@ echo "</td>\n</tr>\n";
 </table>
 
 </form>
-</div>
 <?php
 	if($settings->_enableFullSearch) {
 ?>
+</div>
 <div style="width: 35%; float: left; margin-left: 20px;">
 <form action="../op/op.SearchFulltext.php" name="form2" onsubmit="return checkForm();">
 <table class="searchform">
