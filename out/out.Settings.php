@@ -139,6 +139,10 @@ function ShowHide(strId)
         <td><?php printMLText("settings_enableUsersView");?>:</td>
         <td><input name="enableUsersView" type="checkbox" <?php if ($settings->_enableUsersView) echo "checked" ?> /></td>
       </tr>
+      <tr title="<?php printMLText("settings_enableFullSearch_desc");?>">
+        <td><?php printMLText("settings_enableFullSearch");?>:</td>
+        <td><input name="enableFullSearch" type="checkbox" <?php if ($settings->_enableFullSearch) echo "checked" ?> /></td>
+      </tr>
       <tr title="<?php printMLText("settings_enableFolderTree_desc");?>">
         <td><?php printMLText("settings_enableFolderTree");?>:</td>
         <td><input name="enableFolderTree" type="checkbox" <?php if ($settings->_enableFolderTree) echo "checked" ?> /></td>
@@ -205,6 +209,14 @@ function ShowHide(strId)
         <td><?php printMLText("settings_contentDir");?>:</td>
         <td><input name="contentDir" value="<?php echo $settings->_contentDir ?>" size="100" /></td>
       </tr>
+      <tr title="<?php printMLText("settings_stagingDir_desc");?>">
+        <td><?php printMLText("settings_stagingDir");?>:</td>
+        <td><input name="stagingDir" value="<?php echo $settings->_stagingDir ?>" size="100" /></td>
+      </tr>
+      <tr title="<?php printMLText("settings_luceneDir_desc");?>">
+        <td><?php printMLText("settings_luceneDir");?>:</td>
+        <td><input name="luceneDir" value="<?php echo $settings->_luceneDir ?>" size="100" /></td>
+      </tr>
       <tr title="<?php printMLText("settings_logFileEnable_desc");?>">
         <td><?php printMLText("settings_logFileEnable");?>:</td>
         <td><input name="logFileEnable" type="checkbox" <?php if ($settings->_logFileEnable) echo "checked" ?> /></td>
@@ -218,7 +230,10 @@ function ShowHide(strId)
             <OPTION VALUE="m" <?php if ($settings->_logFileRotation=="m") echo "SELECTED" ?> ><?php printMLText("monthly");?></OPTION>
           </SELECT>
       </tr>
-
+      <tr title="<?php printMLText("settings_partitionSize_desc");?>">
+        <td><?php printMLText("settings_partitionSize");?>:</td>
+        <td><input name="partitionSize" value="<?php echo $settings->_partitionSize ?>" size="100" /></td>
+      </tr>
       <!--
         -- SETTINGS - SYSTEM - AUTHENTICATION
       -->

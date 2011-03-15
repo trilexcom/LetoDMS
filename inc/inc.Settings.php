@@ -79,13 +79,17 @@ class Settings { /* {{{ */
 	var $_rootDir = null;
 	// Path to LetoDMS_Core
 	var $_coreDir = null;
-	// Path to LetoDMS_Lucene
-	var $_luceneDir = null;
 	// The relative path in the URL, after the domain part.
 	var $_httpRoot = "/letodms/";
 	// Where the uploaded files are stored (best to choose a directory that
 	// is not accessible through your web-server)
 	var $_contentDir = null;
+	// Where the partitions of an uploaded file by the jumploader is saved
+	var $_stagingDir = null;
+	// Where the lucene fulltext index is saved
+	var $_luceneDir = null;
+	// enable/disable lucene fulltext search
+	var $_enableFullSearch = true;
 	// contentOffsetDirTo
 	var $_contentOffsetDir = "1048576";
 	// Maximum number of sub-directories per parent directory
@@ -114,6 +118,8 @@ class Settings { /* {{{ */
 	var $_logFileEnable = true;
 	// the log file rotation
 	var $_logFileRotation = "d";
+	// size of partitions for file upload by jumploader
+	var $_partitionSize = 2000000;
 	// enable/disable users images
 	var $_enableUserImage = false;
 	// enable/disable calendar
@@ -265,6 +271,7 @@ class Settings { /* {{{ */
     $this->_enableEmail = Settings::boolVal($tab["enableEmail"]);
     $this->_enableUsersView = Settings::boolVal($tab["enableUsersView"]);
     $this->_enableFolderTree = Settings::boolVal($tab["enableFolderTree"]);
+    $this->_enableFullSearch = Settings::boolVal($tab["enableFullSearch"]);
     $this->_expandFolderTree = intval($tab["expandFolderTree"]);
 
     // XML Path: /configuration/site/calendar
@@ -280,8 +287,11 @@ class Settings { /* {{{ */
     $this->_rootDir = strval($tab["rootDir"]);
     $this->_httpRoot = strval($tab["httpRoot"]);
     $this->_contentDir = strval($tab["contentDir"]);
+    $this->_stagingDir = strval($tab["stagingDir"]);
+    $this->_luceneDir = strval($tab["luceneDir"]);
     $this->_logFileEnable = Settings::boolVal($tab["logFileEnable"]);
     $this->_logFileRotation = strval($tab["logFileRotation"]);
+    $this->_partitionSize = strval($tab["partitionSize"]);
 
     // XML Path: /configuration/system/authentication
     $node = $xml->xpath('/configuration/system/authentication');
@@ -470,6 +480,7 @@ class Settings { /* {{{ */
     $this->setXMLAttributValue($node, "enableEmail", $this->_enableEmail);
     $this->setXMLAttributValue($node, "enableUsersView", $this->_enableUsersView);
     $this->setXMLAttributValue($node, "enableFolderTree", $this->_enableFolderTree);
+    $this->setXMLAttributValue($node, "enableFullSearch", $this->_enableFullSearch);
     $this->setXMLAttributValue($node, "expandFolderTree", $this->_expandFolderTree);
 
     // XML Path: /configuration/site/calendar
@@ -484,8 +495,11 @@ class Settings { /* {{{ */
     $this->setXMLAttributValue($node, "rootDir", $this->_rootDir);
     $this->setXMLAttributValue($node, "httpRoot", $this->_httpRoot);
     $this->setXMLAttributValue($node, "contentDir", $this->_contentDir);
+    $this->setXMLAttributValue($node, "stagingDir", $this->_stagingDir);
+    $this->setXMLAttributValue($node, "luceneDir", $this->_luceneDir);
     $this->setXMLAttributValue($node, "logFileEnable", $this->_logFileEnable);
     $this->setXMLAttributValue($node, "logFileRotation", $this->_logFileRotation);
+    $this->setXMLAttributValue($node, "partitionSize", $this->_partitionSize);
 
     // XML Path: /configuration/system/authentication
     $node = $this->getXMLNode($xml, '/configuration/system', 'authentication');
@@ -780,6 +794,24 @@ class Settings { /* {{{ */
 					"systemerror" => $errorMsgPerms
 				);
 			}
+		}
+
+		// $this->_stagingDir
+		if (!file_exists($this->_stagingDir)) {
+			$result["stagingDir"] = array(
+				"status" => "notfound",
+			  "currentvalue" => $this->_stagingDir,
+				"suggestionvalue" => $this->_contentDir . 'staging/'
+			);
+		}
+
+		// $this->_luceneDir
+		if (!file_exists($this->_luceneDir)) {
+			$result["luceneDir"] = array(
+				"status" => "notfound",
+			  "currentvalue" => $this->_luceneDir,
+				"suggestionvalue" => $this->_contentDir . 'lucene/'
+			);
 		}
 
 		// $this->_ADOdbPath

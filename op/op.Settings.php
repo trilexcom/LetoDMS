@@ -63,6 +63,7 @@ if ($action == "saveSettings")
   $settings->_enableConverting = getBoolValue("enableConverting");
   $settings->_enableEmail =getBoolValue("enableEmail");
   $settings->_enableUsersView = getBoolValue("enableUsersView");
+  $settings->_enableFullSearch = getBoolValue("enableFullSearch");
   $settings->_enableFolderTree = getBoolValue("enableFolderTree");
   $settings->_expandFolderTree = intval($_POST["expandFolderTree"]);
 
@@ -75,8 +76,11 @@ if ($action == "saveSettings")
   $settings->_rootDir = $_POST["rootDir"];
   $settings->_httpRoot = $_POST["httpRoot"];
   $settings->_contentDir = $_POST["contentDir"];
+  $settings->_stagingDir = $_POST["stagingDir"];
+  $settings->_luceneDir = $_POST["luceneDir"];
   $settings->_logFileEnable = getBoolValue("logFileEnable");
   $settings->_logFileRotation = $_POST["logFileRotation"];
+  $settings->_partitionSize = $_POST["partitionSize"];
 
   // SETTINGS - SYSTEM - AUTHENTICATION
   $settings->_enableGuestLogin = getBoolValue("enableGuestLogin");
