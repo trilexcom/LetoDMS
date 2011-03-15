@@ -18,7 +18,7 @@
   <email></email>
   <active>yes</active>
  </lead>
- <date>2011-02-17</date>
+ <date>2011-03-15</date>
  <time>08:05:38</time>
  <version>
   <release>3.1.0</release>
@@ -72,10 +72,6 @@
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
    </dir> <!-- /DTD -->
-   <dir name="tests">
-    <file name="getfoldertree.php" role="test" />
-    <file name="getusers.php" role="test" />
-   </dir> <!-- /tests -->
    <file name="Core.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
