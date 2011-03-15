@@ -63,7 +63,6 @@ if( move_uploaded_file( $source_file_path, $target_file_path ) ) {
 		}
 
 		$comment  = sanitizeString($_POST["comment"]);
-		$userfiletmp = $_FILES["userfile"]["tmp_name"];
 
 		$userfiletmp = $settings->_stagingDir.$_POST['fileId'];;
 		$userfiletype = $_FILES[ $file_param_name ]["type"];
@@ -150,6 +149,7 @@ if( move_uploaded_file( $source_file_path, $target_file_path ) ) {
 
 
 		$contentResult=$document->addContent($comment, $user, $userfiletmp, basename($userfilename), $fileType, $userfiletype, $reviewers, $approvers);
+		unlink($userfiletmp);
 		if (is_bool($contentResult) && !$contentResult) {
 			echo getMLText("error_occured");
 		} else {
@@ -206,7 +206,6 @@ if( move_uploaded_file( $source_file_path, $target_file_path ) ) {
 			}
 		}
 		add_log_line("?documentid=".$documentid);
-		header("Location:../out/out.ViewDocument.php?documentid=".$documentid);
 	}
 }
 
