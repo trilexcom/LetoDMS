@@ -73,6 +73,7 @@ if( move_uploaded_file( $source_file_path, $target_file_path ) ) {
 		$res = $document->addDocumentFile($name, $comment, $user, $userfiletmp, 
 																			basename($userfilename),$fileType, $userfiletype );
 																		
+		unlink($userfiletmp);
 		if (is_bool($res) && !$res) {
 			UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("error_occured"));
 		} else {
