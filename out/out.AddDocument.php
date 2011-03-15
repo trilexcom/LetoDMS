@@ -90,6 +90,9 @@ $docAccess = $folder->getApproversList();
 <tr>
 	<td class="warning"><?php echo getMLText("max_upload_size")." : ".ini_get( "upload_max_filesize"); ?></td>
 </tr>
+<tr>
+  <td><?php printf(getMLText('link_alt_updatedocument'), "out.AddMultiDocument.php?folderid=".$folderid."&showtree=".showtree()); ?></td>
+</tr>
 </table><br>
 
 <form action="../op/op.AddDocument.php" enctype="multipart/form-data" method="post" name="form1" onsubmit="return checkForm();">
