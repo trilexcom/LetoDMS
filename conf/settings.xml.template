@@ -20,6 +20,7 @@
        - enableConverting: enable/disable converting of files
        - enableEmail: enable/disable automatic email notification
        - enableUsersView: enable/disable group and user view for all users
+       - enableFullSearch: false to don't use fulltext search
        - enableFolderTree: false to don't show the folder tree
        - expandFolderTree: 0 to start with tree hidden
        -                   1 to start with tree shown and first level expanded
@@ -31,6 +32,7 @@
       enableConverting = "true"
       enableEmail = "true"	
       enableUsersView = "true"
+      enableFullSearch = "true"
       enableFolderTree = "true"
       expandFolderTree = "1"
   
@@ -56,6 +58,8 @@
 	     -           If the URL is http://www.example.com/, set $_httpRoot = "/".
        - contentDir: Where the uploaded files are stored (best to choose a directory that
        -             is not accessible through your web-server)
+			 - stagingDir: Where partial file uploads are saved
+			 - luceneDir: Where the lucene fulltext index iѕ saved
        - logFileEnable: set false to disable log system
        - logFileRotation: the log file rotation (h=hourly, d=daily, m=monthly)
     -->
@@ -63,6 +67,8 @@
       rootDir = ""
       httpRoot = "/letodms/"
       contentDir = ""
+      stagingDir = ""
+      luceneDir = ""
       logFileEnable = "true"
       logFileRotation = "d"
     >
