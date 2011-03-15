@@ -333,6 +333,7 @@ $text["review_summary"] = "Übersicht Prüfungen";
 $text["review_update_failed"] = "Störung bei Aktualisierung des Prüfstatus. Aktualisierung gescheitert.";
 $text["rm_default_keyword_category"] = "Kategorie löschen";
 $text["rm_document"] = "Löschen";
+$text["rm_document_category"] = "Lösche Kategorie";
 $text["rm_file"] = "Datei Löschen";
 $text["rm_folder"] = "Ordner löschen";
 $text["rm_group"] = "Diese Gruppe löschen";
