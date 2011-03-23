@@ -36,6 +36,10 @@ class LetoDMS_Core_UserAccess { /* {{{ */
 
 	function getMode() { return $this->_mode; }
 
+	function isAdmin() {
+		return ($this->_mode == LetoDMS_Core_User::role_admin);
+	} 
+
 	function getUser() {
 		return $this->_user;
 	}
