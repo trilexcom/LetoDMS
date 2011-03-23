@@ -28,6 +28,8 @@ if ($user->isGuest()) {
 }
 
 function add_folder_notify($folder,$userid,$recursefolder,$recursedoc) {
+	global $dms;
+
 	$folder->addNotify($userid, true);
 	
 	if ($recursedoc){
