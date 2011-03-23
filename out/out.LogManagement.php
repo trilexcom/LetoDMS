@@ -85,7 +85,7 @@ else print "</table>\n";
 
 UI::contentContainerEnd();
 
-if (file_exists($settings->_contentDir.$logname)){
+if ($logname && file_exists($settings->_contentDir.$logname)){
 
 	UI::contentHeading("&nbsp;");
 	UI::contentContainerStart();
