@@ -197,7 +197,8 @@ class LetoDMS_Core_DMS {
 	 */
 	function getDBVersion() { /* {{{ */
 		$tbllist = $this->db->TableList();
-		if(!array_search('tblVersion', $tbllist))
+		$tbllist = explode(',',strtolower(join(',',$tbllist)));
+		if(!array_search('tblversion', $tbllist))
 			return false;
 		$queryStr = "SELECT * FROM tblVersion order by major,minor,subminor limit 1";
 		$resArr = $this->db->getResultArray($queryStr);
@@ -217,7 +218,8 @@ class LetoDMS_Core_DMS {
 	 */
 	function checkVersion() { /* {{{ */
 		$tbllist = $this->db->TableList();
-		if(!array_search('tblVersion', $tbllist))
+		$tbllist = explode(',',strtolower(join(',',$tbllist)));
+		if(!array_search('tblversion', $tbllist))
 			return false;
 		$queryStr = "SELECT * FROM tblVersion order by major,minor,subminor limit 1";
 		$resArr = $this->db->getResultArray($queryStr);
