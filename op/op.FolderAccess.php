@@ -92,7 +92,7 @@ if (isset($_GET["groupid"])) {
 		$groupid = -1;
 	}
 	else {
-		if (!is_object(getGroup($_GET["groupid"]))) {
+		if (!is_object($dms->getGroup($_GET["groupid"]))) {
 			UI::exitError(getMLText("folder_title", array("foldername" => $folder->getName())),getMLText("unknown_group"));
 		}
 		$groupid = $_GET["groupid"];
