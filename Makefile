@@ -1,4 +1,4 @@
-VERSION=3.1.0-RC2
+VERSION=3.1.0-RC4
 SRC=CHANGELOG* inc conf index.php languages op out README reset_db.sql create_tables.sql create_tables-innodb.sql drop-tables-innodb.sql delete_all_contents.sql styles js TODO UPDATE-* LICENSE Makefile debian webdav
 
 dist:
