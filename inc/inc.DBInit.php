@@ -19,7 +19,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 if(isset($settings->_ADOdbPath))
-	ini_set('include_path', $settings->_ADOdbPath.":".ini_get('include_path'));
+	ini_set('include_path', $settings->_ADOdbPath. PATH_SEPARATOR .ini_get('include_path'));
 
 if(!empty($settings->_coreDir))
 	require_once($settings->_coreDir.'/Core.php');
