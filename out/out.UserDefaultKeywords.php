@@ -67,7 +67,7 @@ UI::contentContainerStart();
 					$owner = $category->getOwner();
 					if ($owner->getID() != $user->getID()) continue;
 						
-					if ($category->getID()==$_GET["categoryid"]) $selected=$count;									
+					if (isset($_GET["categoryid"]) && $category->getID()==$_GET["categoryid"]) $selected=$count;									
 					print "<option value=\"".$category->getID()."\">" . $category->getName();
 					$count++;					
 				}
