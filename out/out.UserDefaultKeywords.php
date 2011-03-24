@@ -38,11 +38,11 @@ obj = -1;
 function showKeywords(selectObj) {
 	if (obj != -1)
 		obj.style.display = "none";
-	
+
 	id = selectObj.options[selectObj.selectedIndex].value;
 	if (id == -1)
 		return;
-	
+
 	obj = document.getElementById("keywords" + id);
 	obj.style.display = "";
 }
@@ -59,23 +59,23 @@ UI::contentContainerStart();
 				<option value="-1"><?php echo getMLText("choose_category")?>
 				<option value="0"><?php echo getMLText("new_default_keyword_category")?>
 				<?php
-				
+
 				$selected=0;
-				$count=2;								
+				$count=2;
 				foreach ($categories as $category) {
-				
+
 					$owner = $category->getOwner();
 					if ($owner->getID() != $user->getID()) continue;
-						
-					if (isset($_GET["categoryid"]) && $category->getID()==$_GET["categoryid"]) $selected=$count;									
+
+					if (isset($_GET["categoryid"]) && $category->getID()==$_GET["categoryid"]) $selected=$count;
 					print "<option value=\"".$category->getID()."\">" . $category->getName();
-					$count++;					
+					$count++;
 				}
 				?>
 			</select>
 			&nbsp;&nbsp;
 		</td>
-		
+
 		<td id="keywords0" style="display : none;">
 			<form action="../op/op.UserDefaultKeywords.php" method="post" name="addcategory">
 			<input type="Hidden" name="action" value="addcategory">
@@ -84,12 +84,12 @@ UI::contentContainerStart();
 			</form>
 		<td>
 		<?php
-		
+
 	foreach ($categories as $category) {
-	
+
 		$owner = $category->getOwner();
 		if ($owner->getID() != $user->getID()) continue;
-		
+
 		print "<td id=\"keywords".$category->getID()."\" style=\"display : none;\">";
 	?>
 			<table>
@@ -102,7 +102,7 @@ UI::contentContainerStart();
 					<td colspan="2">
 						<?php UI::contentSubHeading("");?>
 					</td>
-				</tr>				
+				</tr>
 				<tr>
 					<td><?php echo getMLText("name")?>:</td>
 					<td>
@@ -118,7 +118,7 @@ UI::contentContainerStart();
 					<td colspan="2">
 						<?php UI::contentSubHeading("");?>
 					</td>
-				</tr>							
+				</tr>
 				<tr>
 					<td><?php echo getMLText("default_keywords")?>:</td>
 					<td>
@@ -153,8 +153,8 @@ UI::contentContainerStart();
 					</form>
 				</tr>
 			</table>
-		</td>		
-		
+		</td>
+
 <?php } ?>
 	</tr></table>
 
