@@ -170,13 +170,13 @@ $startdate = array();
 $stopdate = array();
 if (isset($_GET["creationdate"]) && $_GET["creationdate"]!=null) {
 	$startdate = array('year'=>$_GET["createstartyear"], 'month'=>$_GET["createstartmonth"], 'day'=>$_GET["createstartday"]);
-	if (!checkdate($startdate['month'], $startdate['year'], $startdate['day'])) {
+	if (!checkdate($startdate['month'], $startdate['day'], $startdate['year'])) {
 		UI::contentContainer(getMLText("invalid_create_date_start"));
 		UI::htmlEndPage();
 		exit;
 	}
 	$stopdate = array('year'=>$_GET["createendyear"], 'month'=>$_GET["createendmonth"], 'day'=>$_GET["createendday"]);
-	if (!checkdate($stopdate['month'], $stopdate['year'], $stopdate['day'])) {
+	if (!checkdate($stopdate['month'], $stopdate['day'], $stopdate['year'])) {
 		UI::contentContainer(getMLText("invalid_create_date_end"));
 		UI::htmlEndPage();
 		exit;
