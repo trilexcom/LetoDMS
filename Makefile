@@ -1,4 +1,4 @@
-VERSION=3.0.0-RC4
+VERSION=3.0.0-RC5
 SRC=CHANGELOG* inc conf index.php languages op out README reset_db.sql create_tables.sql create_tables-innodb.sql drop-tables-innodb.sql delete_all_contents.sql styles TODO UPDATE-* LICENSE Makefile
 
 dist:
