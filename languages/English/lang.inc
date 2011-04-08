@@ -262,6 +262,7 @@ $text["link_alt_updatedocument"] = "If you would like to upload files bigger tha
 $text["linked_documents"] = "Related Documents";
 $text["linked_files"] = "Attachments"; 
 $text["local_file"] = "Local file";
+$text["locked_by"] = "Locked by";
 $text["lock_document"] = "Lock";
 $text["lock_message"] = "This document is locked by <a href=\"mailto:[email]\">[username]</a>. Only authorized users can unlock this document.";
 $text["lock_status"] = "Status";

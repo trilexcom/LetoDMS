@@ -262,6 +262,7 @@ $text["link_alt_updatedocument"] = "Wenn Sie ein Dokument hochladen möchten, da
 $text["linked_documents"] = "verknüpfte Dokumente";
 $text["linked_files"] = "Anhänge"; 
 $text["local_file"] = "Lokale Datei";
+$text["locked_by"] = "Gesperrt von";
 $text["lock_document"] = "Sperren";
 $text["lock_message"] = "Diese Datei wurde von Benutzer <a href=\"mailto:[email]\">[username]</a> gesperrt.<br>Die Sperrung kann von authorisierten Benutzern hier aufgehoben werden (siehe Ende der Seite).";
 $text["lock_status"] = "Status";
