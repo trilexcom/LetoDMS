@@ -212,19 +212,20 @@ if (isset($_GET["expired"])){
 //
 // Default page to display is always one.
 $pageNumber=1;
+$limit = 25;
 if (isset($_GET["pg"])) {
 	if (is_numeric($_GET["pg"]) && $_GET["pg"]>0) {
 		$pageNumber = (integer)$_GET["pg"];
 	}
-	else if (!strcasecmp($_GET["pg"], "all")) {
-		$pageNumber = "all";
+	elseif (!strcasecmp($_GET["pg"], "all")) {
+		$limit = 0;
 	}
 }
 
 
 // ------------------------------------- Suche starten --------------------------------------------
 $startTime = getTime();
-$resArr = $dms->search($query, 25, ($pageNumber-1)*25, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate);
+$resArr = $dms->search($query, $limit, ($pageNumber-1)*$limit, $mode, $searchin, $startFolder, $owner, $status, $startdate, $stopdate);
 $searchTime = getTime() - $startTime;
 $searchTime = round($searchTime, 2);
 // ---------------------------------- Ausgabe der Ergebnisse --------------------------------------
