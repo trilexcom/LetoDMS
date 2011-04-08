@@ -2,7 +2,7 @@
 #ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
 
 include("/etc/letodms/conf.Settings.php");
-include("LetoDMS/LetoDMS_Core.php");
+include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
