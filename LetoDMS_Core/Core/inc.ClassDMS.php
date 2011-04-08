@@ -183,7 +183,7 @@ class LetoDMS_Core_DMS {
 		$this->convertFileTypes = array();
 		$this->version = '@package_version@';
 		if($this->version[0] == '@')
-			$this->version = '3.0.0';
+			$this->version = '3.1.0';
 	} /* }}} */
 
 	function getDB() { /* {{{ */
@@ -472,17 +472,17 @@ class LetoDMS_Core_DMS {
 		// Is the search restricted to documents created between two specific dates?
 		$searchCreateDate = "";
 		if ($creationstartdate) {
-			$startdate = makeTimeStamp(0, 0, 0, $createstartdate["year"], $createstartdate["month"], $createstartdate["day"]);
+			$startdate = makeTimeStamp(0, 0, 0, $creationstartdate['year'], $creationstartdate["month"], $creationstartdate["day"]);
 			if ($startdate) {
 				$searchCreateDate .= "`tblDocuments`.`date` >= ".$startdate;
 			}
 		}
 		if ($creationenddate) {
-			$stopdate = makeTimeStamp(23, 59, 59, $createenddate["year"], $createenddate["month"], $createenddate["day"]);
+			$stopdate = makeTimeStamp(23, 59, 59, $creationenddate["year"], $creationenddate["month"], $creationenddate["day"]);
 			if ($stopdate) {
 				if($startdate)
 					$searchCreateDate .= " AND ";
-				$searchCreateDate = "`tblDocuments`.`date` <= ".$stopdate;
+				$searchCreateDate .= "`tblDocuments`.`date` <= ".$stopdate;
 			}
 		}
 
