@@ -126,7 +126,11 @@ foreach($documents as $document) {
 	
 	print "<td><a href=\"out.ViewDocument.php?documentid=".$docID."&showtree=".$showtree."\">" . $document->getName() . "</a></td>\n";
 	print "<td>".$owner->getFullName()."</td>";
-	print "<td>".getOverallStatusText($status["status"])."</td>";
+	print "<td>";
+  if ( $document->isLocked() ) {
+		print "<img src=\"".UI::getImgPath("lock.png")."\" title=\"". getMLText("locked_by").": ".$document->getLockingUser()->getFullName()."\"> ";
+	}
+	print getOverallStatusText($status["status"])."</td>";
 	print "<td>".$version."</td>";
 	print "<td>".$comment."</td>";
 	print "</tr>\n";
