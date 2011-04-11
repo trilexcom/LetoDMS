@@ -150,7 +150,7 @@ if (isset($settings->_ldapHost) && strlen($settings->_ldapHost)>0) {
 				if (!is_bool($search)) {
 					$info = ldap_get_entries($ds, $search);
 					if (!is_bool($info) && $info["count"]==1 && $info[0]["count"]>0) {
-						$user = $dms->addUser($login, null, $info[0]['cn'][0], $info[0]['mail'][0], $settings->_language, $settings->_theme, "");
+						$user = $dms->addUser($login, null, sanitizeString($info[0]['cn'][0]), $info[0]['mail'][0], $settings->_language, $settings->_theme, "");
 					}
 				}
 			}
