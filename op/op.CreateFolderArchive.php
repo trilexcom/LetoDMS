@@ -37,7 +37,9 @@ if (!$user->isAdmin()) {
  *        be followed by '/'
  */
 function TarAddHeader($f,$phisfn,$archfn) { /* {{{ */
-    $info=stat($phisfn);
+    $info=@stat($phisfn);
+		if($info === false)
+			return false;
     $ouid=sprintf("%6s ", decoct($info[4]));
     $ogid=sprintf("%6s ", decoct($info[5]));
     $omode=sprintf("%6s ", decoct(fileperms($phisfn)));
@@ -79,16 +81,17 @@ function TarAddHeader($f,$phisfn,$archfn) { /* {{{ */
 // phisfn: path to file
 // code by calmarius at nospam dot atw dot hu
 function TarWriteContents($f,$phisfn) { /* {{{ */
-    if (@is_dir($phisfn)) {
-        return;
-    } else {
-        $size=filesize($phisfn);
-        $padding=$size % 512 ? 512-$size%512 : 0;
-        $f2=fopen($phisfn,"rb");
-        while (!feof($f2)) fwrite($f,fread($f2,1024*1024));
-        $pstr=sprintf("a%d",$padding);
-        fwrite($f,pack($pstr,''));
-    }
+	if(!file_exists($phisfn))
+		return;
+	if (@is_dir($phisfn)) {
+		return;
+	}
+	$size=filesize($phisfn);
+	$padding=$size % 512 ? 512-$size%512 : 0;
+	$f2=fopen($phisfn,"rb");
+	while (!feof($f2)) fwrite($f,fread($f2,1024*1024));
+	$pstr=sprintf("a%d",$padding);
+	fwrite($f,pack($pstr,''));
 } /* }}} */
 
 // Adds 1024 byte footer at the end of the tar file
@@ -124,10 +127,10 @@ function createFolderTar($folder,$ark) { /* {{{ */
 				if (is_object($latestContent)) {
 					TarAddHeader(
 						$ark,
-						$dms->contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType(),
+						$dms->contentDir.$latestContent->getPath(),
 						getFolderPathPlainAST($folder)."/".$document->getID()."_".mydmsDecodeString($latestContent->getOriginalFileName()));
 
-				        TarWriteContents($ark, $dms->contentDir.$latestContent->getDir().$latestContent->getVersion().$latestContent->getFileType());
+					TarWriteContents($ark, $dms->contentDir.$latestContent->getPath());
 				}
 			} else {
 
