@@ -414,7 +414,7 @@ class LetoDMS_Core_DMS {
 		// Split the search string into constituent keywords.
 		$tkeys=array();
 		if (strlen($query)>0) {
-			$tkeys = split("[\t\r\n ,]+", $query);
+			$tkeys = preg_split("/[\t\r\n ,]+/", $query);
 		}
 
 		// if none is checkd search all
