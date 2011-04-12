@@ -272,6 +272,8 @@ class LetoDMS_Core_Folder {
 
 		// If any of the notification subscribers no longer have read access,
 		// remove their subscription.
+		if (empty($this->_notifyList))
+			$this->getNotifyList();
 		foreach ($this->_notifyList["users"] as $u) {
 			if ($this->getAccessMode($u) < M_READ) {
 				$this->removeNotify($u->getID(), true);
@@ -301,6 +303,8 @@ class LetoDMS_Core_Folder {
 
 		// If any of the notification subscribers no longer have read access,
 		// remove their subscription.
+		if (empty($this->_notifyList))
+			$this->getNotifyList();
 		foreach ($this->_notifyList["users"] as $u) {
 			if ($this->getAccessMode($u) < M_READ) {
 				$this->removeNotify($u->getID(), true);
