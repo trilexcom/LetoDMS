@@ -170,7 +170,7 @@ foreach ($entries as $entry){
 
 	print "<tr>\n";
 	print "<td><a href=\"../op/op.Download.php?dumpname=".$entry."\">".$entry."</a></td>\n";
-	print "<td>".getLongReadableDate(filesize($settings->_contentDir.$entry))."</td>\n";
+	print "<td>".getLongReadableDate(filectime($settings->_contentDir.$entry))."</td>\n";
 	print "<td>".formatted_size(filesize($settings->_contentDir.$entry))."</td>\n";
 	print "<td><ul class=\"actions\">";
 	print "<li><a href=\"out.RemoveDump.php?dumpname=".$entry."\">".getMLText("dump_remove")."</a></li>";
