@@ -31,7 +31,7 @@ foreach($allusers as $u) {
 	if($u->isAdmin())
 		$userids[] = $u->getId();
 }
-$categories = $dms->getAllKeywordCategories($userids);^M
+$categories = $dms->getAllKeywordCategories($userids);
 
 UI::htmlStartPage(getMLText("use_default_keywords"));
 
