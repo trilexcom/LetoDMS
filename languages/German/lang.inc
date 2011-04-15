@@ -341,6 +341,7 @@ $text["rm_user"] = "Diesen Benutzer löschen";
 $text["rm_version"] = "Version löschen";
 $text["role_admin"] = "Administrator";
 $text["role_guest"] = "Gast";
+$text["role_user"] = "Benutzer";
 $text["role"] = "Rolle";
 $text["saturday"] = "Samstag";
 $text["save"] = "Speichern";

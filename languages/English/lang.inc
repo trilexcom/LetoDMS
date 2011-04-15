@@ -343,6 +343,7 @@ $text["rm_user"] = "Remove this user";
 $text["rm_version"] = "Remove version";
 $text["role_admin"] = "Administrator";
 $text["role_guest"] = "Guest";
+$text["role_user"] = "User";
 $text["role"] = "Role";
 $text["saturday"] = "Saturday";
 $text["save"] = "Save";
