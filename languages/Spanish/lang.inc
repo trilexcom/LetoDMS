@@ -3,6 +3,7 @@
 //    Copyright (C) 2002-2005  Markus Westphal
 //    Copyright (C) 2006-2008 Malcolm Cowe
 //
+//
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation; either version 2 of the License, or
@@ -16,9 +17,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//    Translation updated by Francisco Manuel Garcia Claramonte
-//    <francisco@debian.org> for LetoDMS-3.0.   2-feb-2011
 
 $text = array();
 $text["accept"] = "Aceptar";
@@ -107,7 +105,7 @@ $text["creation_date"] = "Creación";
 $text["current_version"] = "Versión actual";
 $text["december"] = "Diciembre";
 $text["default_access"] = "Modo de acceso predefinido";
-$text["default_keyword_category"] = "Categorías predefinidas";
+$text["default_keywords"] = "Palabras clave disponibles";
 $text["delete"] = "Eliminar";
 $text["details"] = "Detalles";
 $text["details_version"] = "Detalles de la versión: [version]";
@@ -137,17 +135,14 @@ $text["download"] = "Descargar";
 $text["draft_pending_approval"] = "Borador - pendiente de aprobación";
 $text["draft_pending_review"] = "Borrador - pendiente de revisión";
 $text["dump_creation"] = "Creación de volcado de BDD"; 
-$text["dump_creation_warning"] = "Con esta operación se creará un volcado a fichero
-del contenido de la base de datos. Después de la creación del volcado el fichero se guardará en la carpeta de datos de su servidor.";
+$text["dump_creation_warning"] = "Con esta operación se creará un volcado a fichero del contenido de la base de datos. Después de la creación del volcado el fichero se guardará en la carpeta de datos de su servidor.";
 $text["dump_list"] = "Ficheros de volcado existentes";
 $text["dump_remove"] = "Eliminar fichero de volcado";
 $text["edit_comment"] = "Editar comentario";
 $text["edit_default_keywords"] = "Editar palabras clave";
-$text["default_keywords"] = "Palabras clave disponibles";
 $text["edit_document_access"] = "Editar acceso";
 $text["edit_document_notify"] = "Lista de notificación";
 $text["edit_document_props"] = "Editar documento";
-$text["edit_document_props_again"] = "Editar documento otra vez";
 $text["edit"] = "editar";
 $text["edit_event"] = "Editar evento";
 $text["edit_existing_access"] = "Editar lista de acceso";
@@ -162,6 +157,8 @@ $text["email"] = "Email";
 $text["email_footer"] = "Siempre se puede cambiar la configuración de correo electrónico utilizando las funciones de «Mi cuenta»";
 $text["email_header"] = "Este es un mensaje automático del servidor de DMS.";
 $text["empty_notify_list"] = "No hay entradas";
+//$text["error_no_document_selected"] = "No document selected";
+//$text["error_no_folder_selected"] = "No folder selected";
 $text["error_occured"] = "Ha ocurrido un error";
 $text["event_details"] = "Detalles del evento";
 $text["expired"] = "Caducado";
@@ -328,6 +325,7 @@ $text["rm_user"] = "Eliminar este usuario";
 $text["rm_version"] = "Eliminar versión";
 $text["role_admin"] = "Administrador";
 $text["role_guest"] = "Invitado";
+//$text["role_user"] = "User";
 $text["role"] = "Rol";
 $text["saturday"] = "Sábado";
 $text["save"] = "Guardar";
@@ -349,7 +347,6 @@ $text["seq_end"] = "Al final";
 $text["seq_keep"] = "Mantener posición";
 $text["seq_start"] = "Primera posición";
 $text["sequence"] = "Secuencia";
-$text["set_default_access"] = "Establecer el modo de acceso por omisión";
 $text["set_expiry"] = "Establecer caducidad";
 $text["set_owner_error"] = "Error estableciendo propietario";
 $text["set_owner"] = "Establecer propietario";
@@ -366,7 +363,7 @@ $text["status_reviewer_rejected"] = "Borrador rechazado";
 $text["status_reviewer_removed"] = "Revisor eliminado del proceso";
 $text["status"] = "Estado";
 $text["status_unknown"] = "Desaconocido";
-$text["subfolder_list"] = "Subdirectorio";
+//$text["storage_size"] = "Storage size";
 $text["submit_approval"] = "Enviar aprobación";
 $text["submit_login"] = "Conectado";
 $text["submit_review"] = "Enviar revisión";
