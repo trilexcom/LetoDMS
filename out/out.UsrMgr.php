@@ -139,7 +139,7 @@ UI::contentContainerStart();
 		</tr>
 		<tr>
 			<td><?php printMLText("role");?>:</td>
-			<td><select name="role"><option value="<?= LetoDMS_Core_User::role_user ?>"><?php printMLText("role_user"); ?></option><option value="<?= LetoDMS_Core_User::role_admin ?>"><?php printMLText("role_admin"); ?></option><option value="<?= LetoDMS_Core_User::role_guest ?>"><?php printMLText("role_guest"); ?></option></select></td>
+			<td><select name="role"><option value="<?php echo LetoDMS_Core_User::role_user; ?>"><?php printMLText("role_user"); ?></option><option value="<?php echo LetoDMS_Core_User::role_admin; ?>"><?php printMLText("role_admin"); ?></option><option value="<?php echo LetoDMS_Core_User::role_guest; ?>"><?php printMLText("role_guest"); ?></option></select></td>
 		</tr>
 		<tr>
 			<td><?php printMLText("is_hidden");?>:</td>
@@ -264,7 +264,7 @@ UI::contentContainerStart();
 		</tr>
 		<tr>
 			<td><?php printMLText("role");?>:</td>
-			<td><select name="role"><option value="<?= LetoDMS_Core_User::role_user ?>"><?php printMLText("role_user"); ?></option><option value="<?= LetoDMS_Core_User::role_admin ?>" <?php if($currUser->getRole() == LetoDMS_Core_User::role_admin) echo "selected"; ?>><?php printMLText("role_admin"); ?></option><option value="<?= LetoDMS_Core_User::role_guest ?>" <?php if($currUser->getRole() == LetoDMS_Core_User::role_guest) echo "selected"; ?>><?php printMLText("role_guest"); ?></option></select></td>
+			<td><select name="role"><option value="<?php echo LetoDMS_Core_User::role_user; ?>"><?php printMLText("role_user"); ?></option><option value="<?php echo LetoDMS_Core_User::role_admin; ?>" <?php if($currUser->getRole() == LetoDMS_Core_User::role_admin) echo "selected"; ?>><?php printMLText("role_admin"); ?></option><option value="<?php echo LetoDMS_Core_User::role_guest; ?>" <?php if($currUser->getRole() == LetoDMS_Core_User::role_guest) echo "selected"; ?>><?php printMLText("role_guest"); ?></option></select></td>
 		</tr>
 		<tr>
 			<td><?php printMLText("is_hidden");?>:</td>
