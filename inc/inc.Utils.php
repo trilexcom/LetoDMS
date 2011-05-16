@@ -230,6 +230,14 @@ function createVersionigFile($document) { /* {{{ */
 } /* }}} */
 
 function add_log_line($msg="") { /* {{{ */
+	global $logger, $user;
+
+	if(!$logger) return;
+	
+	$logger->log($user->getLogin()." (".$_SERVER['REMOTE_ADDR'].") ".basename($_SERVER["REQUEST_URI"], ".php").$msg);
+} /* }}} */
+
+function _add_log_line($msg="") { /* {{{ */
 	global $settings,$user;
 	
 	if ($settings->_logFileEnable!=TRUE) return;

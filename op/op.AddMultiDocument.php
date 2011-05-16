@@ -20,6 +20,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 include("../inc/inc.Settings.php");
+include("../inc/inc.LogInit.php");
 include("../inc/inc.Utils.php");
 include("../inc/inc.ClassEmail.php");
 include("../inc/inc.DBInit.php");
