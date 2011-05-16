@@ -410,12 +410,23 @@ class HTTP_WebDAV_Server_LetoDMS extends HTTP_WebDAV_Server
 			if(get_class($obj) == 'LetoDMS_Core_Folder') {
 				$fullpath .= '/';
 				$filename .= '/';
+				$filesize = 0;
+				$mtime = $obj->getDate();
+			} else {
+				$content = $obj->getLatestContent();
+
+				$mimetype = $content->getMimeType(); 
+
+				$mtime = $content->getDate();
+
+				$fspath = $this->dms->contentDir.'/'.$content->getPath();
+				$filesize = filesize($fspath);
 			}
 //			$name	 = htmlspecialchars($filename);
 			$name = $filename;
 			printf($format, 
-				   number_format(1000),
-				   strftime("%Y-%m-%d %H:%M:%S", time()), 
+				   number_format($filesize),
+				   strftime("%Y-%m-%d %H:%M:%S", $mtime), 
 				   "<a href='".$_SERVER['SCRIPT_NAME'].$fullpath."'>$name</a>");
 		}
 

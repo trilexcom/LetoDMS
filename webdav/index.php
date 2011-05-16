@@ -9,7 +9,7 @@ $db = new LetoDMS_Core_DatabaseAccess($g_config['type'], $g_config['hostname'], 
 $db->connect() or die ("Could not connect to db-server \"" . $g_config['hostname'] . "\"");
 $db->_conn->Execute("set names 'utf8'");
 
-$dms = new LetoDMS_Core_DMS($db, $g_config['contentDir'], $g_config['contentOffsetDir']);
+$dms = new LetoDMS_Core_DMS($db, $g_config['contentDir'].$g_config['contentOffsetDir']);
 
 $log = Log::factory('file', $g_config['logfile']);
 
