@@ -34,17 +34,17 @@ $_configDir = implode('/', $_arr).'/conf';
 // Update previous version <3.0
 // ----------------------------
 if (file_exists("../inc/inc.Settings.old.php")) {
-  // Change class name
-  $str = file_get_contents("../inc/inc.Settings.old.php");
-  $str = str_replace("class Settings" , "class OLDSettingsOLD", $str);
-  $str = str_replace("Settings()" , "OLDSettingsOLD()", $str);
-  file_put_contents("../inc/inc.Settings.old.php", $str);
+	// Change class name
+	$str = file_get_contents("../inc/inc.Settings.old.php");
+	$str = str_replace("class Settings" , "class OLDSettingsOLD", $str);
+	$str = str_replace("Settings()" , "OLDSettingsOLD()", $str);
+	file_put_contents("../inc/inc.Settings.old.php", $str);
 
-  include "inc.Settings.old.php";
+	include "inc.Settings.old.php";
 
-  $settingsOLD = $settings;
+	$settingsOLD = $settings;
 } else {
-  $settingsOLD = null;
+	$settingsOLD = null;
 }
 
 
@@ -53,8 +53,8 @@ if (file_exists("../inc/inc.Settings.old.php")) {
  *
  */
 class Settings { /* {{{ */
-  // Config File Path
-  var $_configFilePath = null;
+	// Config File Path
+	var $_configFilePath = null;
 
 	// Name of site
 	var $_siteName = "letoDMS";
@@ -157,7 +157,7 @@ class Settings { /* {{{ */
 	// SMTP : send from
 	var $_smtpSendFrom = null;
 	// LDAP
-  var $_ldapHost = ""; // URIs are supported, e.g.: ldaps://ldap.host.com
+	var $_ldapHost = ""; // URIs are supported, e.g.: ldaps://ldap.host.com
 	var $_ldapPort = 389; // Optional.
 	var $_ldapBaseDN = "";
 	var $_ldapAccountDomainName = "";
@@ -171,17 +171,17 @@ class Settings { /* {{{ */
 	function Settings() { /* {{{ */
 		$configFilePath = $this->searchConfigFilePath();
 
-    // set $_configFilePath
-    $this->_configFilePath = $configFilePath;
+		// set $_configFilePath
+		$this->_configFilePath = $configFilePath;
 
-    // Load config file
+		// Load config file
 		if (!defined("LETODMS_INSTALL")) {
 			if(!file_exists($configFilePath)) {
 				echo "You does not seem to have a valid configuration. Run the <a href=\"../install/install.php\">install tool</a> first.";
 				exit;
 			}
 		}
-    $this->load($configFilePath);
+		$this->load($configFilePath);
 
 		// files with one of the following endings will be converted with the
 		// given commands for windows users
@@ -223,193 +223,193 @@ class Settings { /* {{{ */
 		return $out;
 	} /* }}} */
 
-  /**
+	/**
 	 * set $_viewOnlineFileTypes
 	 *
 	 * @param string $stringValue string value
-   *
+	 *
 	 */
   function setViewOnlineFileTypesFromString($stringValue) { /* {{{ */
     $this->_viewOnlineFileTypes = explode(";", $stringValue);
   } /* }}} */
 
-  /**
+	/**
 	 * get $_viewOnlineFileTypes in a string value
 	 *
 	 * @return string value
-   *
+	 *
 	 */
   function getViewOnlineFileTypesToString() { /* {{{ */
     return implode(";", $this->_viewOnlineFileTypes);
   } /* }}} */
 
-  /**
+	/**
 	 * Load config file
 	 *
 	 * @param string $configFilePath config file path
-   *
-   * @return true/false
+	 *
+	 * @return true/false
 	 */
 	function load($configFilePath) { /* {{{ */
-    $xml = simplexml_load_string(file_get_contents($configFilePath));
+		$xml = simplexml_load_string(file_get_contents($configFilePath));
 
-    // XML Path: /configuration/site/display
-    $node = $xml->xpath('/configuration/site/display');
-    $tab = $node[0]->attributes();
-    $this->_siteName = strval($tab["siteName"]);
-    $this->_footNote = strval($tab["footNote"]);
-    $this->_printDisclaimer = Settings::boolVal($tab["printDisclaimer"]);
-    $this->_language = strval($tab["language"]);
-    $this->_theme = strval($tab["theme"]);
+		// XML Path: /configuration/site/display
+		$node = $xml->xpath('/configuration/site/display');
+		$tab = $node[0]->attributes();
+		$this->_siteName = strval($tab["siteName"]);
+		$this->_footNote = strval($tab["footNote"]);
+		$this->_printDisclaimer = Settings::boolVal($tab["printDisclaimer"]);
+		$this->_language = strval($tab["language"]);
+		$this->_theme = strval($tab["theme"]);
 
-    // XML Path: /configuration/site/edition
-    $node = $xml->xpath('/configuration/site/edition');
-    $tab = $node[0]->attributes();
-    $this->_strictFormCheck = Settings::boolVal($tab["strictFormCheck"]);
-    $this->setViewOnlineFileTypesFromString(strval($tab["viewOnlineFileTypes"]));
-    $this->_enableConverting = Settings::boolVal($tab["enableConverting"]);
-    $this->_enableEmail = Settings::boolVal($tab["enableEmail"]);
-    $this->_enableUsersView = Settings::boolVal($tab["enableUsersView"]);
-    $this->_enableFolderTree = Settings::boolVal($tab["enableFolderTree"]);
-    $this->_enableFullSearch = Settings::boolVal($tab["enableFullSearch"]);
-    $this->_expandFolderTree = intval($tab["expandFolderTree"]);
+		// XML Path: /configuration/site/edition
+		$node = $xml->xpath('/configuration/site/edition');
+		$tab = $node[0]->attributes();
+		$this->_strictFormCheck = Settings::boolVal($tab["strictFormCheck"]);
+		$this->setViewOnlineFileTypesFromString(strval($tab["viewOnlineFileTypes"]));
+		$this->_enableConverting = Settings::boolVal($tab["enableConverting"]);
+		$this->_enableEmail = Settings::boolVal($tab["enableEmail"]);
+		$this->_enableUsersView = Settings::boolVal($tab["enableUsersView"]);
+		$this->_enableFolderTree = Settings::boolVal($tab["enableFolderTree"]);
+		$this->_enableFullSearch = Settings::boolVal($tab["enableFullSearch"]);
+		$this->_expandFolderTree = intval($tab["expandFolderTree"]);
 
-    // XML Path: /configuration/site/calendar
-    $node = $xml->xpath('/configuration/site/calendar');
-    $tab = $node[0]->attributes();
-    $this->_enableCalendar = Settings::boolVal($tab["enableCalendar"]);
-    $this->_calendarDefaultView = strval($tab["calendarDefaultView"]);
-    $this->_firstDayOfWeek = intval($tab["firstDayOfWeek"]);
+		// XML Path: /configuration/site/calendar
+		$node = $xml->xpath('/configuration/site/calendar');
+		$tab = $node[0]->attributes();
+		$this->_enableCalendar = Settings::boolVal($tab["enableCalendar"]);
+		$this->_calendarDefaultView = strval($tab["calendarDefaultView"]);
+		$this->_firstDayOfWeek = intval($tab["firstDayOfWeek"]);
 
-    // XML Path: /configuration/system/server
-    $node = $xml->xpath('/configuration/system/server');
-    $tab = $node[0]->attributes();
-    $this->_rootDir = strval($tab["rootDir"]);
-    $this->_httpRoot = strval($tab["httpRoot"]);
-    $this->_contentDir = strval($tab["contentDir"]);
-    $this->_stagingDir = strval($tab["stagingDir"]);
-    $this->_luceneDir = strval($tab["luceneDir"]);
-    $this->_logFileEnable = Settings::boolVal($tab["logFileEnable"]);
-    $this->_logFileRotation = strval($tab["logFileRotation"]);
-    $this->_partitionSize = strval($tab["partitionSize"]);
+		// XML Path: /configuration/system/server
+		$node = $xml->xpath('/configuration/system/server');
+		$tab = $node[0]->attributes();
+		$this->_rootDir = strval($tab["rootDir"]);
+		$this->_httpRoot = strval($tab["httpRoot"]);
+		$this->_contentDir = strval($tab["contentDir"]);
+		$this->_stagingDir = strval($tab["stagingDir"]);
+		$this->_luceneDir = strval($tab["luceneDir"]);
+		$this->_logFileEnable = Settings::boolVal($tab["logFileEnable"]);
+		$this->_logFileRotation = strval($tab["logFileRotation"]);
+		$this->_partitionSize = strval($tab["partitionSize"]);
 
-    // XML Path: /configuration/system/authentication
-    $node = $xml->xpath('/configuration/system/authentication');
-    $tab = $node[0]->attributes();
-    $this->_enableGuestLogin = Settings::boolVal($tab["enableGuestLogin"]);
-    $this->_restricted = Settings::boolVal($tab["restricted"]);
-    $this->_enableUserImage = Settings::boolVal($tab["enableUserImage"]);
-    $this->_disableSelfEdit = Settings::boolVal($tab["disableSelfEdit"]);
+		// XML Path: /configuration/system/authentication
+		$node = $xml->xpath('/configuration/system/authentication');
+		$tab = $node[0]->attributes();
+		$this->_enableGuestLogin = Settings::boolVal($tab["enableGuestLogin"]);
+		$this->_restricted = Settings::boolVal($tab["restricted"]);
+		$this->_enableUserImage = Settings::boolVal($tab["enableUserImage"]);
+		$this->_disableSelfEdit = Settings::boolVal($tab["disableSelfEdit"]);
 
-    // XML Path: /configuration/system/authentication/connectors/connector
-    // attributs mandatories : type enable
-    $node = $xml->xpath('/configuration/system/authentication/connectors/connector');
-    $this->_usersConnectors = array();
-    foreach($node as $connectorNode)
-    {
-      $typeConn = strval($connectorNode["type"]);
-      $params = array();
-      foreach($connectorNode->attributes() as $attKey => $attValue)
-      {
-        if ($attKey=="enable")
-          $params[$attKey] = Settings::boolVal($attValue);
-        else
-          $params[$attKey] = strval($attValue);
-      }
+		// XML Path: /configuration/system/authentication/connectors/connector
+		// attributs mandatories : type enable
+		$node = $xml->xpath('/configuration/system/authentication/connectors/connector');
+		$this->_usersConnectors = array();
+		foreach($node as $connectorNode)
+		{
+			$typeConn = strval($connectorNode["type"]);
+			$params = array();
+			foreach($connectorNode->attributes() as $attKey => $attValue)
+			{
+				if ($attKey=="enable")
+					$params[$attKey] = Settings::boolVal($attValue);
+				else
+					$params[$attKey] = strval($attValue);
+			}
 
-      $this->_usersConnectors[$typeConn] = $params;
+			$this->_usersConnectors[$typeConn] = $params;
 
-      // manage old settings parameters
-      if ($params['enable'] && ($typeConn == "ldap"))
-      {
-        $this->_ldapHost = strVal($connectorNode["host"]);
-        $this->_ldapPort = intVal($connectorNode["port"]);
-        $this->_ldapBaseDN = strVal($connectorNode["baseDN"]);
-        $this->_ldapType = 0;
-      }
-      else if ($params['enable'] && ($typeConn == "AD"))
-      {
-        $this->_ldapHost = strVal($connectorNode["host"]);
-        $this->_ldapPort = intVal($connectorNode["port"]);
-        $this->_ldapBaseDN = strVal($connectorNode["baseDN"]);
-        $this->_ldapType = 1;
-        $this->_ldapAccountDomainName = strVal($connectorNode["accountDomainName"]);
-      }
-    }
+			// manage old settings parameters
+			if ($params['enable'] && ($typeConn == "ldap"))
+			{
+				$this->_ldapHost = strVal($connectorNode["host"]);
+				$this->_ldapPort = intVal($connectorNode["port"]);
+				$this->_ldapBaseDN = strVal($connectorNode["baseDN"]);
+				$this->_ldapType = 0;
+			}
+			else if ($params['enable'] && ($typeConn == "AD"))
+			{
+				$this->_ldapHost = strVal($connectorNode["host"]);
+				$this->_ldapPort = intVal($connectorNode["port"]);
+				$this->_ldapBaseDN = strVal($connectorNode["baseDN"]);
+				$this->_ldapType = 1;
+				$this->_ldapAccountDomainName = strVal($connectorNode["accountDomainName"]);
+			}
+		}
 
-    // XML Path: /configuration/system/database
-    $node = $xml->xpath('/configuration/system/database');
-    $tab = $node[0]->attributes();
-    $this->_ADOdbPath = strval($tab["ADOdbPath"]);
-    $this->_dbDriver = strval($tab["dbDriver"]);
-    $this->_dbHostname = strval($tab["dbHostname"]);
-    $this->_dbDatabase = strval($tab["dbDatabase"]);
-    $this->_dbUser = strval($tab["dbUser"]);
-    $this->_dbPass = strval($tab["dbPass"]);
+		// XML Path: /configuration/system/database
+		$node = $xml->xpath('/configuration/system/database');
+		$tab = $node[0]->attributes();
+		$this->_ADOdbPath = strval($tab["ADOdbPath"]);
+		$this->_dbDriver = strval($tab["dbDriver"]);
+		$this->_dbHostname = strval($tab["dbHostname"]);
+		$this->_dbDatabase = strval($tab["dbDatabase"]);
+		$this->_dbUser = strval($tab["dbUser"]);
+		$this->_dbPass = strval($tab["dbPass"]);
 
-    // XML Path: /configuration/system/smtp
-    $node = $xml->xpath('/configuration/system/smtp');
-    if (!empty($node))
-    {
-	    $tab = $node[0]->attributes();
-	    // smtpServer
-	    if (isset($tab["smtpServer"]))
-	    	$this->_smtpServer = strval($tab["smtpServer"]);
-	    else
-	    	$this->_smtpServer = ini_get("SMTP");
-	    // smtpPort
-	    if (isset($tab["smtpPort"]))
-	    	$this->_smtpPort = strval($tab["smtpPort"]);
-	    else
-	    	$this->_smtpPort = ini_get("smtp_port");
-	    // smtpSendFrom
-	    if (isset($tab["smtpSendFrom"]))
-	    	$this->_smtpSendFrom = strval($tab["smtpSendFrom"]);
-	    else
-	    	$this->_smtpSendFrom = ini_get("sendmail_from");
-    }
+		// XML Path: /configuration/system/smtp
+		$node = $xml->xpath('/configuration/system/smtp');
+		if (!empty($node))
+		{
+			$tab = $node[0]->attributes();
+			// smtpServer
+			if (isset($tab["smtpServer"]))
+				$this->_smtpServer = strval($tab["smtpServer"]);
+			else
+				$this->_smtpServer = ini_get("SMTP");
+			// smtpPort
+			if (isset($tab["smtpPort"]))
+				$this->_smtpPort = strval($tab["smtpPort"]);
+			else
+				$this->_smtpPort = ini_get("smtp_port");
+			// smtpSendFrom
+			if (isset($tab["smtpSendFrom"]))
+				$this->_smtpSendFrom = strval($tab["smtpSendFrom"]);
+			else
+				$this->_smtpSendFrom = ini_get("sendmail_from");
+		}
 
-    // XML Path: /configuration/advanced/display
-    $node = $xml->xpath('/configuration/advanced/display');
-    $tab = $node[0]->attributes();
-    $this->_siteDefaultPage = strval($tab["siteDefaultPage"]);
-    $this->_rootFolderID = intval($tab["rootFolderID"]);
-    $this->_titleDisplayHack = Settings::boolval($tab["titleDisplayHack"]);
+		// XML Path: /configuration/advanced/display
+		$node = $xml->xpath('/configuration/advanced/display');
+		$tab = $node[0]->attributes();
+		$this->_siteDefaultPage = strval($tab["siteDefaultPage"]);
+		$this->_rootFolderID = intval($tab["rootFolderID"]);
+		$this->_titleDisplayHack = Settings::boolval($tab["titleDisplayHack"]);
 
-    // XML Path: /configuration/advanced/authentication
-    $node = $xml->xpath('/configuration/advanced/authentication');
-    $tab = $node[0]->attributes();
-    $this->_guestID = intval($tab["guestID"]);
-    $this->_adminIP = strval($tab["adminIP"]);
+		// XML Path: /configuration/advanced/authentication
+		$node = $xml->xpath('/configuration/advanced/authentication');
+		$tab = $node[0]->attributes();
+		$this->_guestID = intval($tab["guestID"]);
+		$this->_adminIP = strval($tab["adminIP"]);
 
-    // XML Path: /configuration/advanced/edition
-    $node = $xml->xpath('/configuration/advanced/edition');
-    $tab = $node[0]->attributes();
-    $this->_enableAdminRevApp = Settings::boolval($tab["enableAdminRevApp"]);
-    $this->_versioningFileName = strval($tab["versioningFileName"]);
+		// XML Path: /configuration/advanced/edition
+		$node = $xml->xpath('/configuration/advanced/edition');
+		$tab = $node[0]->attributes();
+		$this->_enableAdminRevApp = Settings::boolval($tab["enableAdminRevApp"]);
+		$this->_versioningFileName = strval($tab["versioningFileName"]);
 
-    // XML Path: /configuration/advanced/server
-    $node = $xml->xpath('/configuration/advanced/server');
-    $tab = $node[0]->attributes();
-    $this->_coreDir = strval($tab["coreDir"]);
-    $this->_contentOffsetDir = strval($tab["contentOffsetDir"]);
-    $this->_maxDirID = intval($tab["maxDirID"]);
-    $this->_updateNotifyTime = intval($tab["updateNotifyTime"]);
-    if (isset($tab["maxExecutionTime"]))
-    	$this->_maxExecutionTime = intval($tab["maxExecutionTime"]);
-    else
-    	$this->_maxExecutionTime = ini_get("max_execution_time");
-  } /* }}} */
+		// XML Path: /configuration/advanced/server
+		$node = $xml->xpath('/configuration/advanced/server');
+		$tab = $node[0]->attributes();
+		$this->_coreDir = strval($tab["coreDir"]);
+		$this->_contentOffsetDir = strval($tab["contentOffsetDir"]);
+		$this->_maxDirID = intval($tab["maxDirID"]);
+		$this->_updateNotifyTime = intval($tab["updateNotifyTime"]);
+		if (isset($tab["maxExecutionTime"]))
+			$this->_maxExecutionTime = intval($tab["maxExecutionTime"]);
+		else
+			$this->_maxExecutionTime = ini_get("max_execution_time");
+	} /* }}} */
 
-   /**
+	 /**
 	 * set value for one attribut.
-   * Create attribut if not exists.
+	 * Create attribut if not exists.
 	 *
 	 * @param SimpleXMLElement $node node
 	 * @param string $attributName attribut name
 	 * @param string $attributValue attribut value
-   *
-   * @return true/false
+	 *
+	 * @return true/false
 	 */
   function setXMLAttributValue($node, $attributName, $attributValue) { /* {{{ */
     if (is_bool($attributValue)) {
@@ -426,34 +426,34 @@ class Settings { /* {{{ */
     }
   } /* }}} */
 
-  /**
-   * Get XML node, create it if not exists
-   *
-   * @param SimpleXMLElement $rootNode root node
-   * @param string $parentNodeName parent node name
-   * @param string $name name of node
-   *
-   * @return SimpleXMLElement
-   */
-  function getXMLNode($rootNode, $parentNodeName, $name) { /* {{{ */
+	/**
+	 * Get XML node, create it if not exists
+	 *
+	 * @param SimpleXMLElement $rootNode root node
+	 * @param string $parentNodeName parent node name
+	 * @param string $name name of node
+	 *
+	 * @return SimpleXMLElement
+	 */
+	function getXMLNode($rootNode, $parentNodeName, $name) { /* {{{ */
 		$node = $rootNode->xpath($parentNodeName . '/' . $name);
 
-    if (empty($node)) {
-    	$node = $xml->xpath($parentNodeName);
-    	$node = $node[0]->addChild($name);
-    } else {
-    	$node = $node[0];
-    }
+		if (empty($node)) {
+			$node = $xml->xpath($parentNodeName);
+			$node = $node[0]->addChild($name);
+		} else {
+			$node = $node[0];
+		}
 
-    return $node;
-  } /* }}} */
+		return $node;
+	} /* }}} */
 
-  /**
+	/**
 	 * Save config file
 	 *
 	 * @param string $configFilePath config file path
-   *
-   * @return true/false
+	 *
+	 * @return true/false
 	 */
 	function save($configFilePath=NULL) { /* {{{ */
     if (is_null($configFilePath))
@@ -602,12 +602,12 @@ class Settings { /* {{{ */
     return $xml->asXML($configFilePath);
   } /* }}} */
 
-  /**
-   * search and return Config File Path
-   * @return NULL|string Config File Path
-   */
-  function searchConfigFilePath() { /* {{{ */
-  	$configFilePath = null;
+	/**
+	 * search and return Config File Path
+	 * @return NULL|string Config File Path
+	 */
+	function searchConfigFilePath() { /* {{{ */
+		$configFilePath = null;
 
 		// Search config file
 		$_tmp = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -616,38 +616,38 @@ class Settings { /* {{{ */
 			$_arr = preg_split('/\//', $_tmp);
 			array_pop($_arr);
 
-		  $configFilePath = implode('/', $_arr)."/conf/settings.xml";
+			$configFilePath = implode('/', $_arr)."/conf/settings.xml";
 		}
 		else
 		{
 			if (file_exists("../conf/settings.xml"))
-		  	$configFilePath = "../conf/settings.xml";
-		  else if (file_exists("conf/settings.xml"))
-		  	$configFilePath = "conf/settings.xml";
-		  else
-		  {
-		  	echo "Configuration file not found <br>";
-		  	echo "Please create conf/settings.xml file. You can use installation procedure or 'conf/settings.xml.template' file to help you";
-		  	exit;
-		  }
+				$configFilePath = "../conf/settings.xml";
+			else if (file_exists("conf/settings.xml"))
+				$configFilePath = "conf/settings.xml";
+			else
+			{
+				echo "Configuration file not found <br>";
+				echo "Please create conf/settings.xml file. You can use installation procedure or 'conf/settings.xml.template' file to help you";
+				exit;
+			}
 		}
 
-  	return $configFilePath;
-  } /* }}} */
+		return $configFilePath;
+	} /* }}} */
 
-  /**
-   * Returns absolute path for configuration files respecting links
+	/**
+	 * Returns absolute path for configuration files respecting links
 	 *
-   * @return NULL|string config directory
-   */
-  function getConfigDir() { /* {{{ */
+	 * @return NULL|string config directory
+	 */
+	function getConfigDir() { /* {{{ */
 		$_tmp = dirname($_SERVER['SCRIPT_FILENAME']);
 		$_arr = preg_split('/\//', $_tmp);
 		array_pop($_arr);
 
-	  $configDir = implode('/', $_arr)."/conf/";
+		$configDir = implode('/', $_arr)."/conf/";
 		return $configDir;
-  } /* }}} */
+	} /* }}} */
 
 	/**
 	 * get URL from current page
@@ -673,13 +673,13 @@ class Settings { /* {{{ */
 	} /* }}} */
 
 
-  /**
-   * Searches a file in the include_path
-   *
+	/**
+	 * Searches a file in the include_path
+	 *
 	 * @param string $file name of file to search
-   * @return string path where file was found
-   */
-  function findInIncPath($file) { /* {{{ */
+	 * @return string path where file was found
+	 */
+	function findInIncPath($file) { /* {{{ */
 		$incarr = explode(':', ini_get('include_path'));
 		$found = '';
 		foreach($incarr as $path) {
@@ -690,14 +690,14 @@ class Settings { /* {{{ */
 		return $found;
 	} /* }}} */
 
-  /**
-   * Check parameters
-   *
-   *  @return array
-   */
-  function check() { /* {{{ */
-  	// suggestion rootdir
-  	if (file_exists("../inc/inc.Settings.php"))
+	/**
+	 * Check parameters
+	 *
+	 *  @return array
+	 */
+	function check() { /* {{{ */
+		// suggestion rootdir
+		if (file_exists("../inc/inc.Settings.php"))
 			$rootDir = realpath ("../inc/inc.Settings.php");
 		else if (file_exists("inc/inc.Settings.php"))
 			$rootDir = realpath ("inc/inc.Settings.php");
@@ -715,7 +715,7 @@ class Settings { /* {{{ */
 		if (!file_exists($this->_rootDir ."inc/inc.Settings.php")) {
 			$result["rootDir"] = array(
 				"status" => "notfound",
-			  "currentvalue" => $this->_rootDir,
+				"currentvalue" => $this->_rootDir,
 				"suggestionvalue" => $rootDir
 				);
 		}
@@ -747,7 +747,7 @@ class Settings { /* {{{ */
 		if (strpos($tmp, $this->_httpRoot) === false) {
 			$result["httpRoot"] = array(
 				"status" => "notfound",
-			  "currentvalue" => $this->_httpRoot,
+				"currentvalue" => $this->_httpRoot,
 				"suggestionvalue" => $tmp
 				);
 		}
@@ -757,13 +757,13 @@ class Settings { /* {{{ */
 			if (file_exists($rootDir.'data/')) {
 					$result["contentDir"] = array(
 						"status" => "notfound",
-					  "currentvalue" => $this->_contentDir,
+						"currentvalue" => $this->_contentDir,
 						"suggestionvalue" => $rootDir . 'data/'
 					);
 			} else {
 					$result["contentDir"] = array(
 						"status" => "notfound",
-					  "currentvalue" => $this->_contentDir,
+						"currentvalue" => $this->_contentDir,
 						"suggestion" => "createdirectory"
 					);
 			}
@@ -775,11 +775,11 @@ class Settings { /* {{{ */
 				$errorMsgPerms .= "Create folder - ";
 			}
 
-		  if (is_bool(file_put_contents($this->_contentDir.'/_CHECK_TEST_/_CHECK_TEST_', ""))) {
+			if (is_bool(file_put_contents($this->_contentDir.'/_CHECK_TEST_/_CHECK_TEST_', ""))) {
 				$errorMsgPerms .= "Create file - ";
 			}
 
-		  if (!unlink ($this->_contentDir.'/_CHECK_TEST_/_CHECK_TEST_')) {
+			if (!unlink ($this->_contentDir.'/_CHECK_TEST_/_CHECK_TEST_')) {
 				$errorMsgPerms .= "Delete file - ";
 			}
 
@@ -790,7 +790,7 @@ class Settings { /* {{{ */
 			if (!is_null($errorMsgPerms)) {
 				$result["contentDir"] = array(
 					"status" => "perms",
-				  "currentvalue" => $this->_contentDir,
+					"currentvalue" => $this->_contentDir,
 					"systemerror" => $errorMsgPerms
 				);
 			}
@@ -800,7 +800,7 @@ class Settings { /* {{{ */
 		if (!file_exists($this->_stagingDir)) {
 			$result["stagingDir"] = array(
 				"status" => "notfound",
-			  "currentvalue" => $this->_stagingDir,
+				"currentvalue" => $this->_stagingDir,
 				"suggestionvalue" => $this->_contentDir . 'staging/'
 			);
 		}
@@ -809,7 +809,7 @@ class Settings { /* {{{ */
 		if (!file_exists($this->_luceneDir)) {
 			$result["luceneDir"] = array(
 				"status" => "notfound",
-			  "currentvalue" => $this->_luceneDir,
+				"currentvalue" => $this->_luceneDir,
 				"suggestionvalue" => $this->_contentDir . 'lucene/'
 			);
 		}
@@ -839,7 +839,7 @@ class Settings { /* {{{ */
 				$bCheckDB = false;
 				$result["ADOdbPath"] = array(
 					"status" => "notfound",
-				  "currentvalue" => $this->_ADOdbPath,
+					"currentvalue" => $this->_ADOdbPath,
 					"suggestion" => "installADOdb"
 					);
 			}
@@ -847,92 +847,92 @@ class Settings { /* {{{ */
 
 		// database
 		if ($bCheckDB) {
-		  try {
-		    include $this->_ADOdbPath."adodb/adodb.inc.php";
+			try {
+				include $this->_ADOdbPath."adodb/adodb.inc.php";
 
-		    $connTmp = ADONewConnection($this->_dbDriver);
-		    if (!$connTmp) {
-		    	$result["dbDriver"] = array(
+				$connTmp = ADONewConnection($this->_dbDriver);
+				if (!$connTmp) {
+					$result["dbDriver"] = array(
 						"status" => "notfound",
-					  "currentvalue" => $this->_dbDriver,
+						"currentvalue" => $this->_dbDriver,
 						"suggestionvalue" => "mysql"
 					);
-		    } else {
-		      $connTmp->Connect($this->_dbHostname, $this->_dbUser, $this->_dbPass, $this->_dbDatabase);
-		      if (!$connTmp->IsConnected())
-		      {
-		      	$result["dbDatabase"] = array(
+				} else {
+					$connTmp->Connect($this->_dbHostname, $this->_dbUser, $this->_dbPass, $this->_dbDatabase);
+					if (!$connTmp->IsConnected())
+					{
+						$result["dbDatabase"] = array(
 							"status" => "error",
-					  	"currentvalue" => '[host, user, database] ->  [' . $this->_dbHostname . ',' . $this->_dbUser . ',' . $this->_dbDatabase .']',
+							"currentvalue" => '[host, user, database] -> [' . $this->_dbHostname . ',' . $this->_dbUser . ',' . $this->_dbDatabase .']',
 							"systemerror" => $connTmp->ErrorMsg()
 							);
-		      }
+					}
 
-		      $connTmp->Disconnect();
-		    }
-		  } catch(Exception $e) {
-		  	$result["dbDatabase"] = array(
+					$connTmp->Disconnect();
+				}
+			} catch(Exception $e) {
+				$result["dbDatabase"] = array(
 					"status" => "error",
-					"currentvalue" => '[host, user, database] ->  [' . $settings->_dbHostname . ',' . $settings->_dbUser . ',' . $settings->_dbDatabase .']',
+					"currentvalue" => '[host, user, database] -> [' . $settings->_dbHostname . ',' . $settings->_dbUser . ',' . $settings->_dbDatabase .']',
 					"systemerror" => $e->getMessage()
 				);
-		  }
+			}
 		}
 
 		return $result;
-  } /* }}} */
+	} /* }}} */
 
-  /**
-   * Check system configuration
-   *
-   *  @return array
-   *
-   */
-  function checkSystem() { /* {{{ */
+	/**
+	 * Check system configuration
+	 *
+	 * @return array
+	 *
+	 */
+	function checkSystem() { /* {{{ */
 		// result
 		$result = array();
 
 		// Check Apache configuration
 		if (function_exists("apache_get_version")) {
-  		$loaded_extensions = apache_get_modules();
-  		if (!in_array("mod_rewrite", $loaded_extensions)) {
-  			$result["apache_mod_rewrite"] = array(
+			$loaded_extensions = apache_get_modules();
+			if (!in_array("mod_rewrite", $loaded_extensions)) {
+				$result["apache_mod_rewrite"] = array(
 					"status" => "notfound",
 					"suggestion" => "activate_module"
 				);
-  		}
+			}
 		}
 
 		// Check PHP configuration
 		$loaded_extensions = get_loaded_extensions();
 		// gd2
 		if (!in_array("gd", $loaded_extensions)) {
-  		$result["php_gd2"] = array(
+			$result["php_gd2"] = array(
 				"status" => "notfound",
 				"suggestion" => "activate_php_extension"
 			);
-  	}
+		}
 
-    // mbstring
+		// mbstring
 		if (!in_array("mbstring", $loaded_extensions)) {
-  		$result["php_mbstring"] = array(
+			$result["php_mbstring"] = array(
 				"status" => "notfound",
 				"suggestion" => "activate_php_extension"
 			);
-  	}
+		}
 
-    // database
+		// database
 		if (!in_array($this->_dbDriver, $loaded_extensions)) {
-  		$result["php_dbDriver"] = array(
+			$result["php_dbDriver"] = array(
 				"status" => "notfound",
-  			"currentvalue" => $this->_dbDriver,
+				"currentvalue" => $this->_dbDriver,
 				"suggestion" => "activate_php_extension"
 			);
-  	}
+		}
 
 
-    return $result;
-  } /* }}} */
+		return $result;
+	} /* }}} */
 
 } /* }}} */
 
@@ -945,15 +945,15 @@ $settings = new Settings();
 // Update previous version <3.0
 // ----------------------------
 if (isset($settingsOLD)) {
-  $class_vars = get_class_vars(get_class($settingsOLD));
-  foreach ($class_vars as $name => $value) {
-    if (property_exists ("Settings", $name))
-      $settings->$name = $value;
-  }
+	$class_vars = get_class_vars(get_class($settingsOLD));
+	foreach ($class_vars as $name => $value) {
+		if (property_exists ("Settings", $name))
+			$settings->$name = $value;
+	}
 
-  $settings->save();
-  echo "Update finish, you must delete " . realpath("../inc/inc.Settings.old.php") . " file";
-  exit;
+	$settings->save();
+	echo "Update finish, you must delete " . realpath("../inc/inc.Settings.old.php") . " file";
+	exit;
 }
 
 ?>
