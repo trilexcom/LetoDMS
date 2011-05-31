@@ -503,6 +503,7 @@ $text["settings_versioningFileName"] = "Versioning FileName";
 $text["settings_viewOnlineFileTypes_desc"] = "Files with one of the following endings can be viewed online (USE ONLY LOWER CASE CHARACTERS)";
 $text["settings_viewOnlineFileTypes"] = "View Online File Types";
 $text["signed_in_as"] = "Signed in as";
+$text["sign_in"] = "sign in";
 $text["sign_out"] = "sign out";
 $text["space_used_on_data_folder"] = "Space used on data folder";
 $text["status_approval_rejected"] = "Draft rejected";

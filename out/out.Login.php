@@ -22,9 +22,9 @@ include("../inc/inc.Settings.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.ClassUI.php");
 
-UI::htmlStartPage("Sign In", "login");
+UI::htmlStartPage(getMLText("sign_in"), "login");
 UI::globalBanner();
-UI::pageNavigation("Sign In");
+UI::pageNavigation(getMLText("sign_in"));
 ?>
 <script language="JavaScript">
 function checkForm()
