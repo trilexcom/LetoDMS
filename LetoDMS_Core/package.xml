@@ -28,7 +28,7 @@
   <release>beta</release>
   <api>beta</api>
  </stability>
- <license uri="http://opensource.org/licenses/bsd-license">BSD License</license>
+ <license uri="http://opensource.org/licenses/gpl-license">GPL License</license>
  <notes>
 - Initial Release
  </notes>
