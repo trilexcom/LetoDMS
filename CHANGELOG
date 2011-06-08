@@ -1,4 +1,11 @@
 --------------------------------------------------------------------------------
+                     Changes in version 3.0.1
+--------------------------------------------------------------------------------
+- Fixed license in package.xml
+- Removed some php short tags
+- updated czech translation (Thanks to Radek Žufan Tichý <silent.cz@gmail.com>)
+
+--------------------------------------------------------------------------------
                      Changes in version 3.0.0
 --------------------------------------------------------------------------------
 Major reorganisation of code
