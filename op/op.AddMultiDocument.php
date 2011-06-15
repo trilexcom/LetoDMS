@@ -80,7 +80,7 @@ if( move_uploaded_file( $source_file_path, $target_file_path ) ) {
 			$sequence = 1;
 		}
 
-		$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, sanitizeString($_POST["expmonth"]), sanitizeString($_POST["expday"]), sanitizeString($_POST["expyear"])) : false;
+		$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, intval($_POST["expmonth"]), intval($_POST["expday"]), intval($_POST["expyear"])) : false;
 
 		// Get the list of reviewers and approvers for this document.
 		$reviewers = array();

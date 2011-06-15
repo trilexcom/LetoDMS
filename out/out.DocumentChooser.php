@@ -24,7 +24,7 @@ include("../inc/inc.DBInit.php");
 include("../inc/inc.Language.php");
 include("../inc/inc.Authentication.php");
 
-$folderid = sanitizeString($_GET["folderid"]);
+$folderid = intval($_GET["folderid"]);
 $form = sanitizeString($_GET["form"]);
 
 function getImgPath($img) {

@@ -24,8 +24,8 @@ include("../inc/inc.Language.php");
 include("../inc/inc.Authentication.php");
 
 $form = sanitizeString($_GET["form"]);
-$mode = sanitizeString($_GET["mode"]);
-$exclude = sanitizeString($_GET["exclude"]);
+$mode = intval($_GET["mode"]);
+$exclude = intval($_GET["exclude"]);
 
 UI::htmlStartPage(getMLText("choose_target_folder"));
 UI::globalBanner();

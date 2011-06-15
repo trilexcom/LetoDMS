@@ -56,10 +56,10 @@ if ($action == "addcategory") {
 else if ($action == "removecategory") {
 
 	if (isset($_POST["categoryid"])) {
-		$categoryid = sanitizeString($_POST["categoryid"]);
+		$categoryid = intval($_POST["categoryid"]);
 	}
 	else {
-		$categoryid = sanitizeString($_GET["categoryid"]);
+		$categoryid = intval($_GET["categoryid"]);
 	}
 	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
@@ -79,10 +79,10 @@ else if ($action == "removecategory") {
 else if ($action == "editcategory") {
 
 	if (isset($_POST["categoryid"])) {
-		$categoryid = sanitizeString($_POST["categoryid"]);
+		$categoryid = intval($_POST["categoryid"]);
 	}
 	else {
-		$categoryid = sanitizeString($_GET["categoryid"]);
+		$categoryid = intval($_GET["categoryid"]);
 	}
 	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
@@ -108,10 +108,10 @@ else if ($action == "editcategory") {
 else if ($action == "newkeywords") {
 
 	if (isset($_POST["categoryid"])) {
-		$categoryid = sanitizeString($_POST["categoryid"]);
+		$categoryid = intval($_POST["categoryid"]);
 	}
 	else {
-		$categoryid = sanitizeString($_GET["categoryid"]);
+		$categoryid = intval($_GET["categoryid"]);
 	}
 	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
@@ -137,10 +137,10 @@ else if ($action == "newkeywords") {
 else if ($action == "editkeywords") {
 
 	if (isset($_POST["categoryid"])) {
-		$categoryid = sanitizeString($_POST["categoryid"]);
+		$categoryid = intval($_POST["categoryid"]);
 	}
 	else {
-		$categoryid = sanitizeString($_GET["categoryid"]);
+		$categoryid = intval($_GET["categoryid"]);
 	}
 	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
@@ -150,10 +150,10 @@ else if ($action == "editkeywords") {
 		}
 
 		if (isset($_POST["keywordsid"])) {
-			$keywordsid = sanitizeString($_POST["keywordsid"]);
+			$keywordsid = intval($_POST["keywordsid"]);
 		}
 		else {
-			$keywordsid = sanitizeString($_GET["keywordsid"]);
+			$keywordsid = intval($_GET["keywordsid"]);
 		}
 		if (!is_numeric($keywordsid)) {
 			UI::exitError(getMLText("personal_default_keywords"),getMLText("unknown_keyword_category"));
@@ -170,10 +170,10 @@ else if ($action == "editkeywords") {
 else if ($action == "removekeywords") {
 
 	if (isset($_POST["categoryid"])) {
-		$categoryid = sanitizeString($_POST["categoryid"]);
+		$categoryid = intval($_POST["categoryid"]);
 	}
 	else {
-		$categoryid = sanitizeString($_GET["categoryid"]);
+		$categoryid = intval($_GET["categoryid"]);
 	}
 	$category = $dms->getKeywordCategory($categoryid);
 	if (is_object($category)) {
@@ -182,10 +182,10 @@ else if ($action == "removekeywords") {
 			UI::exitError(getMLText("personal_default_keywords"),getMLText("access_denied"));
 		}
 		if (isset($_POST["keywordsid"])) {
-			$keywordsid = sanitizeString($_POST["keywordsid"]);
+			$keywordsid = intval($_POST["keywordsid"]);
 		}
 		else {
-			$keywordsid = sanitizeString($_GET["keywordsid"]);
+			$keywordsid = intval($_GET["keywordsid"]);
 		}
 		if (!is_numeric($keywordsid)) {
 			UI::exitError(getMLText("personal_default_keywords"),getMLText("unknown_keyword_category"));

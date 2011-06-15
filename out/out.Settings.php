@@ -70,11 +70,11 @@ function ShowHide(strId)
       <tr ><td><b> <?php printMLText("settings_Display");?></b></td> </tr>
       <tr title="<?php printMLText("settings_siteName_desc");?>">
         <td><?php printMLText("settings_siteName");?>:</td>
-        <td><input name="siteName" value="<?php echo sanitizeString($settings->_siteName) ?>"/></td>
+        <td><input name="siteName" value="<?php echo $settings->_siteName ?>"/></td>
       </tr>
       <tr title="<?php printMLText("settings_footNote_desc");?>">
         <td><?php printMLText("settings_footNote");?>:</td>
-        <td><input name="footNote" value="<?php echo sanitizeString($settings->_footNote) ?>" size="100"/></td>
+        <td><input name="footNote" value="<?php echo $settings->_footNote ?>" size="100"/></td>
       </tr>
       <tr title="<?php printMLText("settings_printDisclaimer_desc");?>">
         <td><?php printMLText("settings_printDisclaimer");?>:</td>

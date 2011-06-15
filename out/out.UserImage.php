@@ -24,7 +24,7 @@ include("../inc/inc.Authentication.php");
 /* Get the user as passed to the script. This allows to show
  * pictures of other users as well
  */
-$userid = sanitizeString($_GET["userid"]);
+$userid = intval($_GET["userid"]);
 $myUser = $dms->getUser($userid);
 
 if (!$myUser->hasImage())
