@@ -6,38 +6,42 @@ include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
-	echo "  letoadddoc [-d <date>] [-c <caller>] [-n] [-a] [-m] [-h] [-v]\n";
+	echo "  letoadddoc [-c <comment>] [-k <keywords>] [-s <number>] [-n <name>] [-V <version>] [-s <sequence>] [-t <mimetype>] [-h] [-v] -F <folder id> -f <filename>\n";
+	echo "\n";
+	echo "Description:\n";
+	echo "  This program uploads a file into a folder of LetoDMS.\n";
 	echo "\n";
 	echo "Options:\n";
 	echo "  -h: print usage information and exit.\n";
 	echo "  -v: print version and exit.\n";
-	echo "  -F <folder id>: id of folder the file is uploaded\n";
+	echo "  -F <folder id>: id of folder the file is uploaded to\n";
 	echo "  -c <comment>: set comment for file\n";
 	echo "  -k <keywords>: set keywords for file\n";
 	echo "  -s <number>: set sequence for file (used for ordering files within a folder\n";
 	echo "  -n <name>: set name of file\n";
 	echo "  -V <version>: set version of file (defaults to 1).\n";
 	echo "  -f <filename>: upload this file\n";
+	echo "  -s <sequence>: set sequence of file\n";
 	echo "  -t <mimetype> set mimetype of file manually. Do not do that unless you know\n";
 	echo "      what you do. If not set, the mimetype will be determined automatically.\n";
 } /* }}} */
 
-$shortoptions = "F:c:k:s:V:f:t:hv";
+$shortoptions = "F:c:k:s:V:f:n:t:hv";
 if(false === ($options = getopt($shortoptions))) {
 	usage();
-	exit;
+	exit(0);
 }
 
 /* Print help and exit */
 if(isset($options['h'])) {
 	usage();
-	exit;
+	exit(0);
 }
 
 /* Print version and exit */
 if(isset($options['v'])) {
 	echo $version."\n";
-	exit;
+	exit(0);
 }
 
 if(isset($options['F'])) {
@@ -45,7 +49,7 @@ if(isset($options['F'])) {
 } else {
 	echo "Missing folder ID\n";
 	usage();
-	exit;
+	exit(1);
 }
 
 $comment = '';
@@ -73,7 +77,7 @@ if(isset($options['f'])) {
 	$filename = $options['f'];
 } else {
 	usage();
-	exit;
+	exit(1);
 }
 
 $filetype = '';
@@ -112,28 +116,28 @@ if(is_readable($filename)) {
 		}
 	} else {
 		echo "File has zero size\n";
-		exit;
+		exit(1);
 	}
 } else {
 	echo "File is not readable\n";
-	exit;
+	exit(1);
 }
 
 $folder = $dms->getFolder($folderid);
 
 if (!is_object($folder)) {
 	echo "Could not find specified folder\n";
-	exit;
+	exit(1);
 }
 
 if ($folder->getAccessMode($user) < M_READWRITE) {
 	echo "Not sufficient access rights\n";
-	exit;
+	exit(1);
 }
 
 if (!is_numeric($sequence)) {
 	echo "Sequence must be numeric\n";
-	exit;
+	exit(1);
 }
 
 //$expires = ($_POST["expires"] == "true") ? mktime(0,0,0, sanitizeString($_POST["expmonth"]), sanitizeString($_POST["expday"]), sanitizeString($_POST["expyear"])) : false;
@@ -153,6 +157,6 @@ $res = $folder->addDocument($name, $comment, $expires, $user, $keywords,
 
 if (is_bool($res) && !$res) {
 	echo "Could not add document to folder\n";
-	exit;
+	exit(1);
 }
 ?>
