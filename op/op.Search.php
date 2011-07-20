@@ -312,7 +312,8 @@ foreach ($resArr['docs'] as $document) {
 		
 		$owner = $document->getOwner();
 		print "<td>".$owner->getFullName()."</td>";
-		print "<td>".getOverallStatusText($lc->getStatus()). "</td>";
+		$display_status=$lc->getStatus();
+		print "<td>".getOverallStatusText($display_status["status"]). "</td>";
 
 		print "<td class=\"center\">".$lc->getVersion()."</td>";
 		
