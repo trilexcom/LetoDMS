@@ -51,12 +51,12 @@ function checkForm()
 	msg = "";
 	//if (document.form1.userfile[].value == "") msg += "<?php printMLText("js_no_file");?>\n";
 	
-	if(!document.form1.name.disabled){
-	  if (document.form1.name.value == "") msg += "<?php printMLText("js_no_name");?>\n";
-		}
 <?php
 	if (isset($settings->_strictFormCheck) && $settings->_strictFormCheck) {
-	?>
+?>
+	if(!document.form1.name.disabled){
+	  if (document.form1.name.value == "") msg += "<?php printMLText("js_no_name");?>\n";
+	}
 	if (document.form1.comment.value == "") msg += "<?php printMLText("js_no_comment");?>\n";
 	if (document.form1.keywords.value == "") msg += "<?php printMLText("js_no_keywords");?>\n";
 <?php
@@ -72,7 +72,10 @@ function checkForm()
 
 function addFiles()
 {
-	document.getElementById("files").innerHTML += '<br><input type="File" name="userfile[]" size="60">'; 
+	var li = document.createElement('li');
+	li.innerHTML = '<input type="File" name="userfile[]" size="60">';
+	document.getElementById('files').appendChild(li);	
+//	document.getElementById("files").innerHTML += '<br><input type="File" name="userfile[]" size="60">'; 
 	document.form1.name.disabled=true;
 }
 
@@ -93,8 +96,8 @@ $docAccess = $folder->getApproversList();
 </table><br>
 
 <form action="../op/op.AddDocument.php" enctype="multipart/form-data" method="post" name="form1" onsubmit="return checkForm();">
-<input type="Hidden" name="folderid" value="<?php print $folderid; ?>">
-<input type="Hidden" name="showtree" value="<?php echo showtree();?>">
+<input type="hidden" name="folderid" value="<?php print $folderid; ?>">
+<input type="hidden" name="showtree" value="<?php echo showtree();?>">
 <table>
 <tr>
 	<td><?php printMLText("sequence");?>:</td>
@@ -108,9 +111,9 @@ $docAccess = $folder->getApproversList();
 	<td><?php printMLText("local_file");?>:</td>
 	<td>
 	<a href="javascript:addFiles()"><?php printMLtext("add_multiple_files") ?></a>
-	<div id="files">
-	<input type="File" name="userfile[]" size="60">
-	</div>
+	<ol id="files">
+	<li><input type="File" name="userfile[]" size="60"></li>
+	</ol>
 	</td>
 </tr>
 <tr>
