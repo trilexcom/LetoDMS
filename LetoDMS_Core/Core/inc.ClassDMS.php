@@ -414,7 +414,7 @@ class LetoDMS_Core_DMS {
 		// Split the search string into constituent keywords.
 		$tkeys=array();
 		if (strlen($query)>0) {
-			$tkeys = split("[\t\r\n ,]+", $query);
+			$tkeys = preg_split("/[\t\r\n ,]+/", $query);
 		}
 
 		// if none is checkd search all
@@ -923,6 +923,14 @@ class LetoDMS_Core_DMS {
 		return $categories;
 	} /* }}} */
 
+	/**
+	 * Get a category by its name
+	 *
+	 * The name of a category is by default unique.
+	 *
+	 * @param string $name human readable name of category
+	 * @return object instance of LetoDMS_Core_DocumentCategory
+	 */
 	function getDocumentCategoryByName($name) { /* {{{ */
 		$queryStr = "SELECT * FROM tblCategory where name='".$name."'";
 
@@ -930,14 +938,11 @@ class LetoDMS_Core_DMS {
 		if (is_bool($resArr) && !$resArr)
 			return false;
 
-		$categories = array();
-		foreach ($resArr as $row) {
-			$cat = new LetoDMS_Core_DocumentCategory($row["id"], $row["name"]);
-			$cat->setDMS($this);
-			array_push($categories, $cat);
-		}
+		$row = $resArr[0];
+		$cat = new LetoDMS_Core_DocumentCategory($row["id"], $row["name"]);
+		$cat->setDMS($this);
 
-		return $categories;
+		return $cat;
 	} /* }}} */
 
 	function addDocumentCategory($name) { /* {{{ */
