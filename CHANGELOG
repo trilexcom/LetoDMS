@@ -4,6 +4,8 @@
 - Fixed license in package.xml
 - Removed some php short tags
 - updated czech translation (Thanks to Radek Žufan Tichý <silent.cz@gmail.com>)
+- do not ask for a filename if _strictFormCheck is set to false
+- do not erase file selection fields if a new document is added
 
 --------------------------------------------------------------------------------
                      Changes in version 3.0.0
