@@ -464,15 +464,17 @@ class LetoDMS_Core_Document { /* {{{ */
 	// return true if status has changed (to reload page)
 	function verifyLastestContentExpriry(){ /* {{{ */
 		$lc=$this->getLatestContent();
-		$st=$lc->getStatus();
+		if($lc) {
+			$st=$lc->getStatus();
 
-		if (($st["status"]==S_DRAFT_REV || $st["status"]==S_DRAFT_APP) && $this->hasExpired()){
-			$lc->setStatus(S_EXPIRED,"");
-			return true;
-		}
-		else if ($st["status"]==S_EXPIRED && !$this->hasExpired() ){
-			$lc->verifyStatus(true);
-			return true;
+			if (($st["status"]==S_DRAFT_REV || $st["status"]==S_DRAFT_APP) && $this->hasExpired()){
+				$lc->setStatus(S_EXPIRED,"");
+				return true;
+			}
+			else if ($st["status"]==S_EXPIRED && !$this->hasExpired() ){
+				$lc->verifyStatus(true);
+				return true;
+			}
 		}
 		return false;
 	} /* }}} */
