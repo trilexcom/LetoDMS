@@ -126,13 +126,13 @@ class LetoDMS_Core_Folder {
 	 */
 	function setName($newName) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblFolders SET name = '" . $newName . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
 
 		$this->_name = $newName;
-		
+
 		return true;
 	} /* }}} */
 
@@ -140,7 +140,7 @@ class LetoDMS_Core_Folder {
 
 	function setComment($newComment) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblFolders SET comment = '" . $newComment . "' WHERE id = ". $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
@@ -257,7 +257,7 @@ class LetoDMS_Core_Folder {
 			if (!$res) return false;
 			return $this->_parent->getDefaultAccess();
 		}
-		
+
 		return $this->_defaultAccess;
 	} /* }}} */
 
@@ -323,11 +323,11 @@ class LetoDMS_Core_Folder {
 
 	function setSequence($seq) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "UPDATE tblFolders SET sequence = " . $seq . " WHERE id = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$this->_sequence = $seq;
 		return true;
 	} /* }}} */
@@ -344,20 +344,20 @@ class LetoDMS_Core_Folder {
 	 */
 	function getSubFolders($orderby="") { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if (!isset($this->_subFolders)) {
 			if ($orderby=="n") $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY name";
 			else $queryStr = "SELECT * FROM tblFolders WHERE parent = " . $this->_id . " ORDER BY sequence";
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && $resArr == false)
 				return false;
-			
+
 			$this->_subFolders = array();
 			for ($i = 0; $i < count($resArr); $i++)
 //				$this->_subFolders[$i] = new LetoDMS_Core_Folder($resArr[$i]["id"], $resArr[$i]["name"], $resArr[$i]["parent"], $resArr[$i]["comment"], $resArr[$i]["owner"], $resArr[$i]["inheritAccess"], $resArr[$i]["defaultAccess"], $resArr[$i]["sequence"]);
 				$this->_subFolders[$i] = $this->_dms->getFolder($resArr[$i]["id"]);
 		}
-		
+
 		return $this->_subFolders;
 	} /* }}} */
 
@@ -388,10 +388,10 @@ class LetoDMS_Core_Folder {
 		else {
 			$res = $this->getParent();
 			if (!$res) return false;
-			
+
 			$path = $this->_parent->getPath();
 			if (!$path) return false;
-			
+
 			array_push($path, $this);
 			return $path;
 		}
@@ -420,7 +420,7 @@ class LetoDMS_Core_Folder {
 		elseif (isset($this->_parentID)) {
 			$res = $this->getParent();
 			if (!$res) return false;
-			
+
 			return $this->_parent->isDescendant($folder);
 		} else
 			return false;
@@ -438,7 +438,7 @@ class LetoDMS_Core_Folder {
 	 */
 	function getDocuments($orderby="") { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		if (!isset($this->_documents)) {
 			if ($orderby=="n") $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY name";
 			else $queryStr = "SELECT * FROM tblDocuments WHERE folder = " . $this->_id . " ORDER BY sequence";
@@ -446,7 +446,7 @@ class LetoDMS_Core_Folder {
 			$resArr = $db->getResultArray($queryStr);
 			if (is_bool($resArr) && !$resArr)
 				return false;
-			
+
 			$this->_documents = array();
 			foreach ($resArr as $row) {
 //				array_push($this->_documents, new LetoDMS_Core_Document($row["id"], $row["name"], $row["comment"], $row["date"], $row["expires"], $row["owner"], $row["folder"], $row["inheritAccess"], $row["defaultAccess"], isset($row["lockUser"])?$row["lockUser"]:NULL, $row["keywords"], $row["sequence"]));
@@ -485,9 +485,9 @@ class LetoDMS_Core_Folder {
 	 */
 	function addDocument($name, $comment, $expires, $owner, $keywords, $categories, $tmpFile, $orgFileName, $fileType, $mimeType, $sequence, $reviewers=array(), $approvers=array(),$reqversion,$version_comment="") { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$expires = (!$expires) ? 0 : $expires;
-		
+
 		// Must also ensure that the document has a valid folderList.
 		$pathPrefix="";
 		$path = $this->getPath();
@@ -497,14 +497,14 @@ class LetoDMS_Core_Folder {
 		if (strlen($pathPrefix)>1) {
 			$pathPrefix .= ":";
 		}
-		
+
 		$queryStr = "INSERT INTO tblDocuments (name, comment, date, expires, owner, folder, folderList, inheritAccess, defaultAccess, locked, keywords, sequence) VALUES ".
 					"('".$name."', '".$comment."', " . mktime().", ".$expires.", ".$owner->getID().", ".$this->_id.",'".$pathPrefix."', 1, ".M_READ.", -1, '".$keywords."', " . $sequence . ")";
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		$document = $this->_dms->getDocument($db->getInsertID());
-		
+
 		if ($version_comment!="")
 			$res = $document->addContent($version_comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion);
 		else $res = $document->addContent($comment, $owner, $tmpFile, $orgFileName, $fileType, $mimeType, $reviewers, $approvers,$reqversion);
@@ -520,7 +520,7 @@ class LetoDMS_Core_Folder {
 		}
 		return array($document, $res);
 	} /* }}} */
-	
+
 	function remove() { /* {{{ */
 		$db = $this->_dms->getDB();
 
@@ -534,17 +534,17 @@ class LetoDMS_Core_Folder {
 		if (is_bool($res) && !$res) return false;
 		$res = $this->getDocuments();
 		if (is_bool($res) && !$res) return false;
-		
+
 		foreach ($this->_subFolders as $subFolder) {
 			$res = $subFolder->remove(FALSE);
 			if (!$res) return false;
 		}
-		
+
 		foreach ($this->_documents as $document) {
 			$res = $document->remove(FALSE);
 			if (!$res) return false;
 		}
-		
+
 		//Entfernen der Datenbankeinträge
 		$queryStr = "DELETE FROM tblFolders WHERE id =  " . $this->_id;
 		if (!$db->getResult($queryStr))
@@ -556,7 +556,7 @@ class LetoDMS_Core_Folder {
 		$queryStr = "DELETE FROM tblNotify WHERE target = ". $this->_id. " AND targetType = " . T_FOLDER;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		return true;
 	} /* }}} */
 
@@ -597,11 +597,11 @@ class LetoDMS_Core_Folder {
 
 	function clearAccessList() { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		$queryStr = "DELETE FROM tblACLs WHERE targetType = " . T_FOLDER . " AND target = " . $this->_id;
 		if (!$db->getResult($queryStr))
 			return false;
-		
+
 		unset($this->_accessList);
 		return true;
 	} /* }}} */
@@ -701,17 +701,17 @@ class LetoDMS_Core_Folder {
 	function getAccessMode($user) { /* {{{ */
 		/* Admins have full access */
 		if ($user->isAdmin()) return M_ALL;
-		
+
 		/* User has full access if he/she is the owner of the document */
 		if ($user->getID() == $this->_ownerID) return M_ALL;
-		
+
 		/* Guest has read access by default, if guest login is allowed at all */
 		if ($user->isGuest()) {
 			$mode = $this->getDefaultAccess();
 			if ($mode >= M_READ) return M_READ;
 			else return M_NONE;
 		}
-		
+
 		/* check ACLs */
 		$accessList = $this->getAccessList();
 		if (!$accessList) return false;
@@ -927,7 +927,7 @@ class LetoDMS_Core_Folder {
 	 */
 	function removeNotify($userOrGroupID, $isUser) { /* {{{ */
 		$db = $this->_dms->getDB();
-		
+
 		/* Verify that user / group exists. */
 		$obj = ($isUser ? $this->_dms->getUser($userOrGroupID) : $this->_dms->getGroup($userOrGroupID));
 		if (!is_object($obj)) {
