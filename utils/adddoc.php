@@ -15,8 +15,10 @@ function usage() { /* {{{ */
 	echo "  -h: print usage information and exit.\n";
 	echo "  -v: print version and exit.\n";
 	echo "  -F <folder id>: id of folder the file is uploaded to\n";
-	echo "  -c <comment>: set comment for file\n";
+	echo "  -c <comment>: set comment for document\n";
+	echo "  -C <comment>: set comment for version\n";
 	echo "  -k <keywords>: set keywords for file\n";
+	echo "  -K <categories>: set categories for file\n";
 	echo "  -s <number>: set sequence for file (used for ordering files within a folder\n";
 	echo "  -n <name>: set name of file\n";
 	echo "  -V <version>: set version of file (defaults to 1).\n";
@@ -26,7 +28,7 @@ function usage() { /* {{{ */
 	echo "      what you do. If not set, the mimetype will be determined automatically.\n";
 } /* }}} */
 
-$shortoptions = "F:c:k:s:V:f:n:t:hv";
+$shortoptions = "F:c:C:k:K:s:V:f:n:t:hv";
 if(false === ($options = getopt($shortoptions))) {
 	usage();
 	exit(0);
@@ -57,9 +59,27 @@ if(isset($options['c'])) {
 	$comment = $options['c'];
 }
 
+$version_comment = '';
+if(isset($options['C'])) {
+	$version_comment = $options['C'];
+}
+
 $keywords = '';
 if(isset($options['k'])) {
 	$keywords = $options['k'];
+}
+
+$categories = array();
+if(isset($options['K'])) {
+	$categorynames = explode(',', $options['K']);
+	foreach($categorynames as $categoryname) {
+		$cat = $dms->getDocumentCategoryByName($categoryname);
+		if($cat) {
+			$categories[] = $cat->getID();
+		} else {
+			echo "Category '".$categoryname."' not found\n";
+		}
+	}
 }
 
 $sequence = 0;
@@ -151,9 +171,9 @@ $reviewers = array();
 $approvers = array();
 
 $res = $folder->addDocument($name, $comment, $expires, $user, $keywords,
-                            $filetmp, basename($filename),
-                            '', $filetype, $sequence,
-                            $reviewers, $approvers, $reqversion);
+                            $categories, $filetmp, basename($filename),
+                            '', $filetype, $sequence, $reviewers,
+                            $approvers, $reqversion, $version_comment);
 
 if (is_bool($res) && !$res) {
 	echo "Could not add document to folder\n";
