@@ -86,6 +86,15 @@ UI::contentContainerStart();
 <option value="1" selected><?php printMLText("search_mode_and");?><br>
 <option value="0"><?php printMLText("search_mode_or");?>
 </select>
+<br />
+<a href="javascript:chooseKeywords('form1.query');"><?php printMLText("use_default_keywords");?></a>
+<script language="JavaScript">
+var openDlg;
+
+function chooseKeywords(target) {
+	openDlg = open("out.KeywordChooser.php?target="+target, "openDlg", "width=500,height=400,scrollbars=yes,resizable=yes");
+}
+</script>
 </td>
 </tr>
 <tr>
