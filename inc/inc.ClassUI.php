@@ -793,7 +793,7 @@ mayscript>
 	foreach($attributes as $name=>$value) {
 ?>
         attr = attrSet.createStringAttribute( '<?= $name ?>', <?= $value ?> );
-        attr.setSendToServer(1);
+        attr.setSendToServer(true);
 <?php
 	}
 ?>
@@ -993,7 +993,7 @@ mayscript>
          var files = uploader.getAllFiles();
         	var file = getSelectedFile();
 				 for (var i = 0; i < uploader.getFileCount() ; i++) { 
-				 		if(uploader.getFile(i) == file)
+				 		if(uploader.getFile(i).getID() == file.getID())
 							content += listFileAttributes( uploader.getFile(i), 1, i );
 						else
 							content += listFileAttributes( uploader.getFile(i), 0, i );
@@ -1012,27 +1012,27 @@ mayscript>
           var attrSet = file.getAttributeSet();
 					value = document.getElementById("name"+index);
           attr = attrSet.createStringAttribute( 'name', (value.value) ? value.value : "" );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 					value = document.getElementById("comment"+index);
           attr = attrSet.createStringAttribute( 'comment', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 					value = document.getElementById("reqversion"+index);
           attr = attrSet.createStringAttribute( 'reqversion', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 					value = document.getElementById("version_comment"+index);
           attr = attrSet.createStringAttribute( 'version_comment', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 					value = document.getElementById("keywords"+index);
           attr = attrSet.createStringAttribute( 'keywords', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 
 					value = document.getElementById("categoryidform"+index);
           attr = attrSet.createStringAttribute( 'categoryids', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 
 					value = document.getElementById("categorynameform"+index);
           attr = attrSet.createStringAttribute( 'categorynames', (value.value) ? value.value : ""  );
-          attr.setSendToServer( 1 );
+          attr.setSendToServer( true );
 
 					dumpAllFileAttributes();
         } else {
