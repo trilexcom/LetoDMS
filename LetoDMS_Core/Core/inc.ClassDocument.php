@@ -468,11 +468,11 @@ class LetoDMS_Core_Document { /* {{{ */
 			$st=$lc->getStatus();
 
 			if (($st["status"]==S_DRAFT_REV || $st["status"]==S_DRAFT_APP) && $this->hasExpired()){
-				$lc->setStatus(S_EXPIRED,"");
+				$lc->setStatus(S_EXPIRED,"", $this->getOwner());
 				return true;
 			}
 			else if ($st["status"]==S_EXPIRED && !$this->hasExpired() ){
-				$lc->verifyStatus(true);
+				$lc->verifyStatus(true, $this->getOwner());
 				return true;
 			}
 		}
