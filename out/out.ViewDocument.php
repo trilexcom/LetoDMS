@@ -267,7 +267,7 @@ if (is_array($reviewStatus) && count($reviewStatus)>0) {
 		print "<td>".getReviewStatusText($r["status"])."</td>\n";
 		print "<td><ul class=\"actions\">";
 		
-		if ($is_reviewer && $status["status"]==S_DRAFT_REV) {
+		if (($required==$user) && $is_reviewer && $status["status"]==S_DRAFT_REV) {
 			print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("submit_review")."</a></li>";
 		}else if (($updateUser==$user)&&(($r["status"]==1)||($r["status"]==-1))&&(!$document->hasExpired())){
 			print "<li><a href=\"../out/out.ReviewDocument.php?documentid=".$documentid."&version=".$latestContent->getVersion()."\">".getMLText("edit")."</a></li>";
