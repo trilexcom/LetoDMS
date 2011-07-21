@@ -6,7 +6,7 @@ include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
-	echo "  letodms-adddoc [-c <comment>] [-k <keywords>] [-s <number>] [-n <name>] [-V <version>] [-s <sequence>] [-t <mimetype>] [-h] [-v] -F <folder id> -f <filename>\n";
+	echo "  letodms-adddoc [--config <file>] [-c <comment>] [-k <keywords>] [-s <number>] [-n <name>] [-V <version>] [-s <sequence>] [-t <mimetype>] [-h] [-v] -F <folder id> -f <filename>\n";
 	echo "\n";
 	echo "Description:\n";
 	echo "  This program uploads a file into a folder of LetoDMS.\n";
