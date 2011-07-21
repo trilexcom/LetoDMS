@@ -361,6 +361,10 @@ function ShowHide(strId)
         <td><?php printMLText("settings_coreDir");?>:</td>
         <td><input name="coreDir" value="<?php echo $settings->_coreDir ?>" size="100" /></td>
       </tr>
+      <tr title="<?php printMLText("settings_luceneClassDir_desc");?>">
+        <td><?php printMLText("settings_luceneClassDir");?>:</td>
+        <td><input name="luceneClassDir" value="<?php echo $settings->_luceneClassDir ?>" size="100" /></td>
+      </tr>
       <tr title="<?php printMLText("settings_contentOffsetDir_desc");?>">
         <td><?php printMLText("settings_contentOffsetDir");?>:</td>
         <td><input name="contentOffsetDir" value="<?php echo $settings->_contentOffsetDir ?>" /></td>
