@@ -131,11 +131,11 @@
     -->    
     <database
       ADOdbPath = ""
-      dbDriver = "mysql"
-      dbHostname = "localhost"
-      dbDatabase = "letodms"
-      dbUser = "letodms"
-      dbPass = "letodms"
+      dbDriver = "_DBC_DBTYPE_"
+      dbHostname = "_DBC_DBSERVER_"
+      dbDatabase = "_DBC_DBNAME_"
+      dbUser = "_DBC_DBUSER_"
+      dbPass = "_DBC_DBPASS_"
     >
     </database>
     <!-- smtpServer: SMTP Server hostname
