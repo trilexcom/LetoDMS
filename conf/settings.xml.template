@@ -71,6 +71,7 @@
       luceneDir = ""
       logFileEnable = "true"
       logFileRotation = "d"
+      partitionSize = "2000000"
     >
     </server>
     
@@ -180,6 +181,7 @@
     >
     </edition>
     <!-- coreDir: Path to LetoDMS_Core (optional)
+       - luceneClassDir: Path to LetoDMS_Lucene (optional)
        - contentOffsetDir: To work around limitations in the underlying file system, a new 
        -                   directory structure has been devised that exists within the content 
        -                   directory ($_contentDir). This requires a base directory from which 
