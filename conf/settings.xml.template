@@ -190,6 +190,7 @@
     -->
     <server
       coreDir = ""
+      luceneClassDir = ""
       contentOffsetDir = "1048576"
       maxDirID = "32700"
       updateNotifyTime = "86400"
