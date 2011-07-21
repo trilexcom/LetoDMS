@@ -1,41 +1,51 @@
 <?php
-#ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
+ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
 
-include("/etc/letodms/conf.Settings.php");
+include("inc/inc.ClassSettings.php");
 include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
-	echo "  letocreatefolder [-c <comment>] [-n <name>] [-s <sequence>] [-h] [-v] -F <parent id>\n";
+	echo "  letodms-createfolder [--config <file>] [-c <comment>] [-n <name>] [-s <sequence>] [-h] [-v] -F <parent id>\n";
 	echo "\n";
 	echo "Description:\n";
 	echo "  This program creates a new folder in LetoDMS.\n";
 	echo "\n";
 	echo "Options:\n";
-	echo "  -h: print usage information and exit.\n";
-	echo "  -v: print version and exit.\n";
+	echo "  -h, --help: print usage information and exit.\n";
+	echo "  -v, --version: print version and exit.\n";
+	echo "  --config: set alternative config file.\n";
 	echo "  -F <parent id>: id of parent folder\n";
 	echo "  -c <comment>: set comment for file\n";
 	echo "  -n <name>: set name of the folder\n";
 	echo "  -s <sequence>: set sequence of folder\n";
 } /* }}} */
 
+$version = "0.0.1";
 $shortoptions = "F:c:s:n:hv";
-if(false === ($options = getopt($shortoptions))) {
+$longoptions = array('help', 'version', 'config:');
+if(false === ($options = getopt($shortoptions, $longoptions))) {
 	usage();
 	exit(0);
 }
 
 /* Print help and exit */
-if(isset($options['h'])) {
+if(isset($options['h']) || isset($options['help'])) {
 	usage();
 	exit(0);
 }
 
 /* Print version and exit */
-if(isset($options['v'])) {
+if(isset($options['v']) || isset($options['verѕion'])) {
 	echo $version."\n";
 	exit(0);
+}
+
+/* Set alternative config file */
+if(isset($options['config'])) {
+	$settings = new Settings($options['config']);
+} else {
+	$settings = new Settings();
 }
 
 if(isset($options['F'])) {
@@ -66,7 +76,7 @@ $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostn
 $db->_conn->debug = 1;
 
 
-$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir);
+$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setGuestID($settings->_guestID);
 $dms->setEnableGuestLogin($settings->_enableGuestLogin);
