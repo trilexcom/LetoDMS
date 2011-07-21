@@ -1,7 +1,8 @@
 CREATE TABLE `tblCategory` (
   `id` int(11) NOT NULL auto_increment,
   `name` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+	UNIQUE (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 INSERT INTO tblCategory VALUES (0, '');
 CREATE TABLE `tblDocumentCategory` (
