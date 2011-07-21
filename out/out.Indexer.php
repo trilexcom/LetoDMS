@@ -68,15 +68,15 @@ UI::globalNavigation();
 UI::pageNavigation($v->banner());
 UI::contentContainerStart();
 if($settings->_enableFullSearch) {
-	if(!empty($settings->_luceneDir))
-		require_once($settings->_luceneDir.'/Lucene.php');
+	if(!empty($settings->_luceneClassDir))
+		require_once($settings->_luceneClassDir.'/Lucene.php');
 	else
 		require_once('LetoDMS/Lucene.php');
 
 	if(isset($_GET['create']) && $_GET['create'] == 1) {
 		if(isset($_GET['confirm']) && $_GET['confirm'] == 1) {
 			echo "<p>Recreating index</p>";
-			$index = Zend_Search_Lucene::create($settings->_indexPath);
+			$index = Zend_Search_Lucene::create($settings->_luceneDir);
 		} else {
 			echo '<p>'.getMLText('create_fulltext_index_warning').'</p>';
 			echo '<a href="out.Indexer.php?create=1&confirm=1">'.getMLText('confirm_create_fulltext_index').'</a>';
@@ -86,7 +86,7 @@ if($settings->_enableFullSearch) {
 		}
 	} else {
 		echo "<p>Updating index</p>";
-		$index = Zend_Search_Lucene::open($settings->_indexPath);
+		$index = Zend_Search_Lucene::open($settings->_luceneDir);
 	}
 
 	if($settings->_stopWordsFile && file_exists($settings->_stopWordsFile)) {
