@@ -1,7 +1,7 @@
 <?php
-#ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
+ini_set('include_path', '.:/usr/share/php:/usr/share/letodms/www');
 
-include("/etc/letodms/conf.Settings.php");
+include("inc/inc.ClassSettings.php");
 include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
@@ -28,22 +28,31 @@ function usage() { /* {{{ */
 	echo "      what you do. If not set, the mimetype will be determined automatically.\n";
 } /* }}} */
 
+$version = "0.0.1";
 $shortoptions = "F:c:C:k:K:s:V:f:n:t:hv";
-if(false === ($options = getopt($shortoptions))) {
+$longoptions = array('help', 'version', 'config:');
+if(false === ($options = getopt($shortoptions, $longoptions))) {
 	usage();
 	exit(0);
 }
 
 /* Print help and exit */
-if(isset($options['h'])) {
+if(isset($options['h']) || isset($options['help'])) {
 	usage();
 	exit(0);
 }
 
 /* Print version and exit */
-if(isset($options['v'])) {
+if(isset($options['v']) || isset($options['verѕion'])) {
 	echo $version."\n";
 	exit(0);
+}
+
+/* Set alternative config file */
+if(isset($options['config'])) {
+	$settings = new Settings($options['config']);
+} else {
+	$settings = new Settings();
 }
 
 if(isset($options['F'])) {
@@ -117,7 +126,7 @@ $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostn
 $db->_conn->debug = 1;
 
 
-$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir, $settings->_contentOffsetDir);
+$dms = new LetoDMS_Core_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
 $dms->setRootFolderID($settings->_rootFolderID);
 $dms->setGuestID($settings->_guestID);
 $dms->setEnableGuestLogin($settings->_enableGuestLogin);
