@@ -117,12 +117,12 @@ if (isset($_GET["pg"])) {
 
 $startTime = getTime();
 if($settings->_enableFullSearch) {
-	if(!empty($settings->_luceneDir))
-		require_once($settings->_luceneDir.'/Lucene.php');
+	if(!empty($settings->_luceneClassDir))
+		require_once($settings->_luceneClassDir.'/Lucene.php');
 	else
 		require_once('LetoDMS/Lucene.php');
 }
-$index = Zend_Search_Lucene::open($settings->_indexPath);
+$index = Zend_Search_Lucene::open($settings->_luceneDir);
 $lucenesearch = new LetoDMS_Lucene_Search($index);
 $hits = $lucenesearch->search($query, $owner ? $owner->getLogin() : '', '', $categories);
 $limit = 25;
@@ -139,9 +139,12 @@ if($pageNumber != 'all' && count($hits) > $limit) {
 $resArr['docs'] = array();
 $resArr['totalDocs'] = 0;
 if($hits) {
-	$resArr['totalDocs'] = count($hits);
+	$resArr['totalDocs'] = 0; //count($hits);
 	foreach($hits as $hit) {
-		$resArr['docs'][] = $dms->getDocument($hit['document_id']);
+		if($tmp = $dms->getDocument($hit['document_id'])) {
+			$resArr['docs'][] = $tmp;
+			$resArr['totalDocs']++;
+		}
 	}
 }
 $searchTime = getTime() - $startTime;
