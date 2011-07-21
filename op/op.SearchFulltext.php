@@ -139,9 +139,12 @@ if($pageNumber != 'all' && count($hits) > $limit) {
 $resArr['docs'] = array();
 $resArr['totalDocs'] = 0;
 if($hits) {
-	$resArr['totalDocs'] = count($hits);
+	$resArr['totalDocs'] = 0; //count($hits);
 	foreach($hits as $hit) {
-		$resArr['docs'][] = $dms->getDocument($hit['document_id']);
+		if($tmp = $dms->getDocument($hit['document_id'])) {
+			$resArr['docs'][] = $tmp;
+			$resArr['totalDocs']++;
+		}
 	}
 }
 $searchTime = getTime() - $startTime;
