@@ -6,14 +6,15 @@ include("LetoDMS/Core.php");
 
 function usage() { /* {{{ */
 	echo "Usage:\n";
-	echo "  letoadddoc [-c <comment>] [-k <keywords>] [-s <number>] [-n <name>] [-V <version>] [-s <sequence>] [-t <mimetype>] [-h] [-v] -F <folder id> -f <filename>\n";
+	echo "  letodms-adddoc [-c <comment>] [-k <keywords>] [-s <number>] [-n <name>] [-V <version>] [-s <sequence>] [-t <mimetype>] [-h] [-v] -F <folder id> -f <filename>\n";
 	echo "\n";
 	echo "Description:\n";
 	echo "  This program uploads a file into a folder of LetoDMS.\n";
 	echo "\n";
 	echo "Options:\n";
-	echo "  -h: print usage information and exit.\n";
-	echo "  -v: print version and exit.\n";
+	echo "  -h, --help: print usage information and exit.\n";
+	echo "  -v, --version: print version and exit.\n";
+	echo "  --config: set alternative config file.\n";
 	echo "  -F <folder id>: id of folder the file is uploaded to\n";
 	echo "  -c <comment>: set comment for document\n";
 	echo "  -C <comment>: set comment for version\n";
