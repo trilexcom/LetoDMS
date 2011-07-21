@@ -119,6 +119,7 @@ if ($action == "saveSettings")
 
   // SETTINGS - ADVANCED - SERVER
   $settings->_coreDir = $_POST["coreDir"];
+  $settings->_luceneClassDir = $_POST["luceneClassDir"];
   $settings->_contentOffsetDir = intval($_POST["contentOffsetDir"]);
   $settings->_maxDirID = intval($_POST["maxDirID"]);
   $settings->_updateNotifyTime = intval($_POST["updateNotifyTime"]);
