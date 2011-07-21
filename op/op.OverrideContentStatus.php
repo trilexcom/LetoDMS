@@ -80,7 +80,7 @@ if ($overrideStatus != $overallStatus["status"]) {
 			$message = getMLText("document_status_changed_email")."\r\n";
 			$message .= 
 				getMLText("document").": ".$document->_name."\r\n".
-				getMLText("status").": ".getOverallStatusText($status)."\r\n".
+				getMLText("status").": ".getOverallStatusText($overrideStatus)."\r\n".
 				getMLText("folder").": ".$folder->getFolderPathPlain()."\r\n".
 				getMLText("comment").": ".$document->getComment()."\r\n".
 				"URL: ###URL_PREFIX###out/out.ViewDocument.php?documentid=".$document->getID()."&version=".$content->_version."\r\n";
