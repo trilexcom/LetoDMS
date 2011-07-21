@@ -1,4 +1,12 @@
 --------------------------------------------------------------------------------
+                     Changes in version 3.2.0
+--------------------------------------------------------------------------------
+- select keywords from list in advanced search form
+- support for full text index lucene
+- much better support for uploading several files at once
+- put configuration into xml file
+
+--------------------------------------------------------------------------------
                      Changes in version 3.0.1
 --------------------------------------------------------------------------------
 - Fixed license in package.xml
@@ -6,6 +14,7 @@
 - updated czech translation (Thanks to Radek Žufan Tichý <silent.cz@gmail.com>)
 - do not ask for a filename if _strictFormCheck is set to false
 - do not erase file selection fields if a new document is added
+- fixed problems with expiry system
 
 --------------------------------------------------------------------------------
                      Changes in version 3.0.0
