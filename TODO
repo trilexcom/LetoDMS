@@ -1,3 +1,7 @@
+Delete document from full text index when document is deleted
+
+Do not show documents which are not reviewed or approved or which rejected
+
 installation script:
 - user simply unpack the tar.gz in a server folder and access that folder
 - on startup if there are installation problems php automatically run the configuration script
