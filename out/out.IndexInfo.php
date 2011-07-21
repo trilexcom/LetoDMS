@@ -37,12 +37,12 @@ UI::globalNavigation();
 UI::pageNavigation(getMLText('fulltext_info'));
 UI::contentContainerStart();
 if($settings->_enableFullSearch) {
-	if(!empty($settings->_luceneDir))
-		require_once($settings->_luceneDir.'/Lucene.php');
+	if(!empty($settings->_luceneClassDir))
+		require_once($settings->_luceneClassDir.'/Lucene.php');
 	else
 		require_once('LetoDMS/Lucene.php');
 
-	$index = Zend_Search_Lucene::open($settings->_indexPath);
+	$index = Zend_Search_Lucene::open($settings->_luceneDir);
 
 	$terms = $index->terms();
 	echo "<p>".count($terms)." Terms</p>";
