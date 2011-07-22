@@ -388,7 +388,7 @@ if (count($versions)>1) {
 		if ($file_exists) print "<li>". formatted_size(filesize($dms->contentDir . $version->getPath())) ." ".$version->getMimeType()."</li>";
 		else print "<li><span class=\"warning\">".getMLText("document_deleted")."</span></li>";
 		$updatingUser = $version->getUser();
-		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a><li>";
+		print "<li>".getMLText("uploaded_by")." <a href=\"mailto:".$updatingUser->getEmail()."\">".$updatingUser->getFullName()."</a></li>";
 		print "<li>".getLongReadableDate($version->getDate())."</li>";
 		print "</ul>\n";
 		print "<td>".$version->getComment()."</td>";
