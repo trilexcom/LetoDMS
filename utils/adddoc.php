@@ -124,13 +124,11 @@ if($reqversion<1)
 
 $db = new LetoDMS_Core_DatabaseAccess($settings->_dbDriver, $settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
 $db->connect() or die ("Could not connect to db-server \"" . $settings->_dbHostname . "\"");
-$db->_conn->debug = 1;
+//$db->_conn->debug = 1;
 
 
 $dms = new LetoDMS_Core_DMS($db, $settings->_contentDir.$settings->_contentOffsetDir);
 $dms->setRootFolderID($settings->_rootFolderID);
-$dms->setGuestID($settings->_guestID);
-$dms->setEnableGuestLogin($settings->_enableGuestLogin);
 $dms->setEnableAdminRevApp($settings->_enableAdminRevApp);
 $dms->setEnableConverting($settings->_enableConverting);
 $dms->setViewOnlineFileTypes($settings->_viewOnlineFileTypes);
