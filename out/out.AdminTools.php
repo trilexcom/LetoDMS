@@ -51,6 +51,7 @@ if($settings->_enableFullSearch) {
 <?php
 }
 ?>
+	<li><a href="../out/out.ImportCSV.php"><?php echo getMLText("importcsv")?></a></li>
 	</ul>
 <?php
 UI::contentContainerEnd();
