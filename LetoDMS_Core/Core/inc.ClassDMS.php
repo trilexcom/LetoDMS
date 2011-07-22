@@ -935,7 +935,7 @@ class LetoDMS_Core_DMS {
 		$queryStr = "SELECT * FROM tblCategory where name='".$name."'";
 
 		$resArr = $this->db->getResultArray($queryStr);
-		if (is_bool($resArr) && !$resArr)
+		if(!$resArr)
 			return false;
 
 		$row = $resArr[0];
