@@ -3,8 +3,9 @@
 --------------------------------------------------------------------------------
 - select keywords from list in advanced search form
 - support for full text index lucene
-- much better support for uploading several files at once
+- much better support for uploading several files at once and huge files
 - put configuration into xml file
+- added installation script
 
 --------------------------------------------------------------------------------
                      Changes in version 3.0.1
