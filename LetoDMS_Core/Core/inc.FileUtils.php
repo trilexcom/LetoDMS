@@ -49,6 +49,14 @@ class LetoDMS_Core_File {
 
 	function makeDir($path) {
 		
+		if( !is_dir( $path ) ){
+			$res=@mkdir( $path , 0777, true);
+			if (!$res) return false;
+		}
+
+		return true;
+
+/* some old code 
 		if (strncmp($path, DIRECTORY_SEPARATOR, 1) == 0) {
 			$mkfolder = DIRECTORY_SEPARATOR;
 		}
@@ -91,7 +99,7 @@ class LetoDMS_Core_File {
 		}
 
 		return true;
-
+*/
 	}
 
 	function removeDir($path) {
