@@ -58,7 +58,15 @@ function ShowHide(strId)
 
   <form action="../op/op.Settings.php" method="post" enctype="multipart/form-data" name="form0" >
   <input type="Hidden" name="action" value="saveSettings" />
+<?php
+if(!is_writeable($settings->_configFilePath)) {
+	echo "<p>".getMLText("settings_notwritable")."</p>";
+} else {
+?>
   <input type="Submit" value="<?php printMLText("save");?>" />
+<?php
+}
+?>
 
 
   <div class="contentHeading" onClick="ShowHide('siteID')" style="cursor:pointer">+ <?php printMLText("settings_Site");?></div>
