@@ -134,6 +134,28 @@ UI::contentContainerStart();
 if (isset($_GET['phpinfo'])) {
 	echo '<a href="install.php">' . getMLText("back") . '</a>';
   phpinfo();
+	UI::contentContainerEnd();
+	UI::htmlEndPage();
+  exit();
+}
+
+/**
+ * Show phpinfo
+ */
+if (isset($_GET['disableinstall'])) {
+	if(file_exists($configDir."/ENABLE_INSTALL_TOOL")) {
+		if(unlink($configDir."/ENABLE_INSTALL_TOOL")) {
+			echo getMLText("settings_install_disabled");
+			echo "<br/><br/>";
+			echo '<a href="' . $httpRoot . '/out/out.Settings.php">' . getMLText("settings_more_settings") .'</a>';
+		}
+	} else {
+		echo getMLText("settings_cannot_disable");
+		echo "<br/><br/>";
+		echo '<a href="install.php">' . getMLText("back") . '</a>';
+	}
+	UI::contentContainerEnd();
+	UI::htmlEndPage();
   exit();
 }
 
@@ -196,11 +218,9 @@ if ($action=="setSettings") {
 
 			include $settings->_ADOdbPath."adodb/adodb.inc.php";
     	$connTmp = ADONewConnection($settings->_dbDriver);
-	    if ($connTmp)
-	    {
+	    if ($connTmp) {
 	    	$connTmp->Connect($settings->_dbHostname, $settings->_dbUser, $settings->_dbPass, $settings->_dbDatabase);
-      	if ($connTmp->IsConnected())
-      	{
+      	if ($connTmp->IsConnected()) {
       		// read SQL file
       		if ($settings->_dbDriver=="mysql")
       			$queries = file_get_contents("create_tables-innodb.sql");
@@ -211,17 +231,14 @@ if ($action=="setSettings") {
       		$queries = explode(";", $queries);
 
       		// execute queries
-      		foreach($queries as $query)
-      		{
+      		foreach($queries as $query) {
       		//	 var_dump($query);
       			$query = trim($query);
-      			if (!empty($query))
-      			{
+      			if (!empty($query)) {
 		      		$connTmp->Execute($query);
 
-		      		if ($connTmp->ErrorNo()<>0)
-		      		{
-		      			$errorMsg .= $connTmp->ErrorMsg() . "<br>";
+		      		if ($connTmp->ErrorNo()<>0) {
+		      			$errorMsg .= $connTmp->ErrorMsg() . "<br/>";
 		      		}
       			}
       		}
@@ -230,32 +247,30 @@ if ($action=="setSettings") {
       		if (empty($errorMsg))
       		  $createOK = true;
 
-      	}
-      	else
-      	{
+      	} else {
       		$errorMsg = $connTmp->ErrorMsg();
       	}
       	$connTmp->Disconnect();
 	    }
 
 	    // Show error
-	    if (!$createOK)
-	    {
+	    if (!$createOK) {
 	    	echo $errorMsg;
 	    	$hasError = true;
 	    }
 		} // create database
 
-		if (!$hasError)
-		{
+		if (!$hasError) {
 			// Save settings
 			$settings->save();
 
 			// Show Web page
 			echo getMLText("settings_install_success");
-			echo "<br><br>";
+			echo "<br/><br/>";
 			echo getMLText("settings_delete_install_folder");
-			echo "<br><br>";
+			echo "<br/><br/>";
+			echo '<a href="install.php?disableinstall=1">' . getMLText("settings_disable_install") . '</a>';
+			echo "<br/><br/>";
 			echo '<a href="' . $httpRoot . '/out/out.Settings.php">' . getMLText("settings_more_settings") .'</a>';
 		}
 	}
