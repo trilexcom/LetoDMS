@@ -494,7 +494,7 @@ class HTTP_WebDAV_Server_LetoDMS extends HTTP_WebDAV_Server
 			}
 
 		} else {
-			if(!$res = $folder->addDocument($name, '', 0, $this->user, '', $tmpFile, $name, $fileType, $mimetype, 0, array(), array(), 0, "")) {
+			if(!$res = $folder->addDocument($name, '', 0, $this->user, '', array(), $tmpFile, $name, $fileType, $mimetype, 0, array(), array(), 0, "")) {
 				unlink($tmpFile);
 				return "409 Conflict";
 			}
@@ -775,7 +775,7 @@ class HTTP_WebDAV_Server_LetoDMS extends HTTP_WebDAV_Server
 			$content = $objsource->getLatestContent();
 			$fspath = $this->dms->contentDir.'/'.$content->getPath();
 
-			if(!$newdoc = $objdest->addDocument($newdocname, '', 0, $this->user, '', $fspath, $content->getOriginalFileName(), $content->getFileType(), $content->getMimeType(), 0, array(), array(), 0, "")) {
+			if(!$newdoc = $objdest->addDocument($newdocname, '', 0, $this->user, '', array(), $fspath, $content->getOriginalFileName(), $content->getFileType(), $content->getMimeType(), 0, array(), array(), 0, "")) {
 				if($this->logger)
 					$this->logger->log('COPY: error copying object', PEAR_LOG_INFO);
 				return "409 Conflict";
